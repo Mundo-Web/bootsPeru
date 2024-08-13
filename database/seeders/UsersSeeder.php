@@ -26,6 +26,14 @@ class UsersSeeder extends Seeder
         ])->assignRole('Admin');
 
         User::updateOrCreate([
+            'email' => 'admin@boostperu.com'
+        ], [
+            'name' => 'Admin Boost Peru',
+            'email' => 'admin@boostperu.com',
+            'password' => Hash::make('b0057P3ru#2024'),
+        ])->assignRole('Admin');
+
+        User::updateOrCreate([
             'email' => 'customer@mundoweb.pe'
         ],[
             'name' => 'Customer Mundo Web',

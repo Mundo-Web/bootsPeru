@@ -79,7 +79,7 @@ class PriceController extends Controller
     public function calculeEnvio(Request $request)
     {
 
-        $LocalidadParaEnvio = Price::where('distrito_id', $request->id)->get();
+        $LocalidadParaEnvio = Price::where('distrito_id', $request->id)->where("status", true)->get();
         return response()->json(['message' => 'LLegando Correctamente', 'LocalidadParaEnvio' => $LocalidadParaEnvio]);
     }
 
@@ -142,8 +142,11 @@ class PriceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Price $price)
-    {
-        //
-    }
+    
+     public function deletePrice(Request $request){
+        $price = Price::find($request->id);
+        $price->status = 0;
+        $price->save();
+        return response()->json(['message' => 'Precio eliminado correctamente']);
+     }
 }

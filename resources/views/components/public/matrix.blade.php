@@ -6,21 +6,30 @@
 <html lang="es">
 
 <head>
+  @viteReactRefresh
   <meta charset="UTF-8">
   <meta name="language" content="spanish">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
-    content="Somos especialistas en Wall Panel, mármol UV, piedra PU y otros productos para ti. Confía en la calidad de Deco TAB y dale otro estilo a tu ambiente favorito.">
+    content="Especialistas en la Venta, reparacion y servicios tecnologicos. Con mas de 13 años de experiencia obtendras calidad en todos nuestros servicios , no dejes pasar esta oportunidad de ver nuestros excelentes productos.">
   {{-- <title> Boost Peru</title> --}}
   <title>@yield('title', config('app.name', 'Laravel'))</title>
   <meta name="keywords"
-    content="Wall Panel, Mármol UV, Piedra PU, Piedra Cincelada, Wall Panel Negro, Pisos SPC, Panel Tipo piedra PU" />
+    content="Accesorios Celulares, Accesorios Gamers, Accesorios Laptop, Accesorios Auto, Accesorios Carro, Cargadores, Cases, Gaming, Gamer" />
+
+  <link rel="icon" type="image/svg+xml" href="{{ asset('images/svg/Boost.svg') }}">
+
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   @vite([...$sources, 'resources/css/app.css', 'resources/js/app.js'])
   <link rel="stylesheet" href="{{ asset('css/styles.css') }}" />
 
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  {{-- <script src="https://cdn.sode.me/extends/notify.extend.min.js"></script> --}}
+  {{-- public\js\notify.extend.min.js  --}}
+
+
+  <script src="{{ asset('js/notify.extend.min.js') }}"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
@@ -45,6 +54,78 @@
   <script src="/js/cookies.extend.js"></script>
 
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="{{ asset('js/functions.js') }}?v={{ uniqid() }}"></script>
+  <style>
+    .select2-container .select2-selection--single {
+      margin-top: 0.25rem;
+      /* mt-1 */
+      background-color: #F9FAFB;
+      /* bg-gray-50 */
+      border: 1px solid #D1D5DB;
+      /* border-gray-300 */
+      color: #111827;
+      /* text-gray-900 */
+      border-radius: 0.5rem;
+      /* rounded-lg */
+      padding-left: 2.5rem;
+      /* pl-10 */
+      padding: 7px 14px;
+      /* p-2.5 */
+      height: unset;
+      font-size: 0.875rem;
+      /* text-sm */
+    }
+
+    .select2-container--open .select2-dropdown--below {
+      border-color: #D1D5DB;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+      color: #111827;
+      /* text-gray-900 */
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+      height: 100%;
+      right: 1rem;
+      /* align with pl-10 */
+    }
+
+    .select2-container--default .select2-selection--single:focus {
+      border-color: #3B82F6;
+      /* focus:border-blue-500 */
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+      /* focus:ring-blue-500 */
+    }
+
+    /* Dark mode styles */
+    .dark .select2-container .select2-selection--single {
+      background-color: #374151;
+      /* dark:bg-gray-700 */
+      border-color: #4B5563;
+      /* dark:border-gray-600 */
+      color: #F9FAFB;
+      /* dark:text-white */
+    }
+
+    .dark .select2-container--default .select2-selection--single .select2-selection__rendered {
+      color: #F9FAFB;
+      /* dark:text-white */
+    }
+
+    .dark .select2-container--default .select2-selection--single:focus {
+      border-color: #3B82F6;
+      /* dark:focus:border-blue-500 */
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+      /* dark:focus:ring-blue-500 */
+    }
+
+    /* Adjust the width to match Tailwind CSS block w-full */
+    .select2-container {
+      width: 100% !important;
+      /* block w-full */
+    }
+  </style>
 
 </head>
 
@@ -66,7 +147,6 @@
 
   @yield('scripts_importados')
   {{-- @vite(['resources/js/functions.js']) --}}
-  <script src="{{ asset('js/functions.js') }}?v={{ uniqid() }}"></script>
 
 
   {{--   <script>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\EmailConfig;
 use App\Http\Requests\StoreIndexRequest;
 use App\Http\Requests\UpdateIndexRequest;
+use App\Models\AboutUs;
 use App\Models\Address;
 use App\Models\Attributes;
 use App\Models\AttributesValues;
@@ -63,16 +64,16 @@ class IndexController extends Controller
     // $productos = Products::all();
     $url_env = env('APP_URL');
     $productos =  Products::with('tags')->get();
-    $ultimosProductos = Products::where('status', '=', 1)->where('visible', '=', 1)->orderBy('id', 'desc')->take(5)->get();
-    $productosPupulares = Products::where('status', '=', 1)->where('visible', '=', 1)->where('destacar', '=', 1)->orderBy('id', 'desc')->take(8)->get();
+    $ultimosProductos = Products::select('products.*')->join('categories', 'products.categoria_id', '=', 'categories.id')->where('categories.visible', 1)->where('products.status', '=', 1)->where('products.visible', '=', 1)->orderBy('products.id', 'desc')->take(5)->get();
+    $productosPupulares = Products::select('products.*')->join('categories', 'products.categoria_id', '=', 'categories.id')->where('categories.visible', 1)->where('products.status', '=', 1)->where('products.visible', '=', 1)->where('products.destacar', '=', 1)->orderBy('products.id', 'desc')->take(8)->get();
     $blogs = Blog::where('status', '=', 1)->where('visible', '=', 1)->orderBy('id', 'desc')->take(3)->get();
     $banners = Banners::where('status',  1)->where('visible',  1)->get()->toArray();
 
     $categorias = Category::where('destacar', '=', 1)->where('visible', '=', 1)->get();
     $categoriasAll = Category::where('visible', '=', 1)->get();
-    $destacados = Products::where('destacar', '=', 1)->where('status', '=', 1)
+    $destacados = Products::where('products.destacar', '=', 1)->where('products.status', '=', 1)
       ->where('visible', '=', 1)->with('tags')->activeDestacado()->get();
-    $descuentos = Products::where('descuento', '>', 0)->where('status', '=', 1)
+    $descuentos = Products::where('products.descuento', '>', 0)->where('products.status', '=', 1)
       ->where('visible', '=', 1)->with('tags')->activeDestacado()->get();
 
     $popups = Popup::where('status', '=', 1)->where('visible', '=', 1)->get();
@@ -95,10 +96,15 @@ class IndexController extends Controller
     $tag_id = $request->input('tag');
 
     $catId = $request->input('category');
+    $subCatId = $request->input('subcategoria');
     $tag_id = $request->input('tag');
     $id_cat = $id_cat ?? $catId;
 
-    $categories = Category::where('visible', true)->get();
+    // $categories = Category::with('subcategories')->where('visible', true)->get();
+    $categories = Category::with(['subcategories' => function ($query) {
+      $query->whereHas('products');
+    }])->where('visible', true)->get();
+
     $tags = Tag::where('visible', true)->get();
 
     $minPrice = Products::select()
@@ -123,14 +129,21 @@ class IndexController extends Controller
       'tags' => $tags,
       'attribute_values' => $attribute_values,
       'id_cat' => $id_cat,
-      'tag_id' => $tag_id
+      'tag_id' => $tag_id,
+      'subCatId' => $subCatId
     ])->rootView('app');
   }
 
   public function ofertas(Request $request, string $id_cat = null)
   {
+    $subCatId = $request->input('subcategoria');
 
-    $categories = Category::where('visible', true)->get();
+    // $categories = Category::where('visible', true)->get();
+
+    $categories = Category::with(['subcategories' => function ($query) {
+      $query->whereHas('products');
+    }])->where('visible', true)->get();
+
     $tags = Tag::where('visible', true)->get();
 
     $minPrice = Products::select()
@@ -156,6 +169,11 @@ class IndexController extends Controller
       'attribute_values' => $attribute_values,
       'id_cat' => $id_cat
     ])->rootView('app');
+  }
+  public function nosotros(){
+    $nosotros = AboutUs::all();
+    $benefit = Strength::where('status', '=', 1)->take(3)->get();
+    return view('public.nosotros' , compact('nosotros','benefit'));
   }
 
 
@@ -240,6 +258,7 @@ class IndexController extends Controller
       ->join('provinces', 'provinces.id', 'districts.province_id')
       ->join('departments', 'departments.id', 'provinces.department_id')
       ->where('departments.active', 1)
+      ->where('status', 1)
       ->groupBy('id', 'description')
       ->get();
 
@@ -307,7 +326,7 @@ class IndexController extends Controller
         "amount" => 1000,
         "capture" => true,
         "currency_code" => "PEN",
-        "description" => "Compra en Decotab",
+        "description" => "Compra en " . env('APP_NAME'),
         "email" => "test@culqi.com",
         "installments" => 0,
         "antifraud_details" => array(
@@ -515,7 +534,7 @@ class IndexController extends Controller
   public function listadeseos()
   {
     $user = Auth::user();
-   
+
 
     $usuario = User::find($user->id);
 
@@ -528,17 +547,20 @@ class IndexController extends Controller
 
 
     $productos = Products::with('tags')->whereIn('id', $array)->get();
-    return view('public.dashboard_wishlist', compact('user', 'wishlistItems', 'productos') );
+    return view('public.dashboard_wishlist', compact('user', 'wishlistItems', 'productos'));
   }
 
- 
+
   public function searchProduct(Request $request)
   {
     $query = $request->input('query');
-    $resultados = Products::where('producto', 'like', "%$query%")
-    ->leftJoin('categories', 'categories.id', 'products.categoria_id') 
-    ->where('categories.visible', 1)
-    ->get();
+    $resultados = Products::select('products.*')
+      ->where('producto', 'like', "%$query%")
+      ->join('categories', 'categories.id', 'products.categoria_id')
+      ->where('categories.visible', 1)
+      ->get();
+
+
 
     return response()->json($resultados);
   }
@@ -601,6 +623,14 @@ class IndexController extends Controller
   public function producto(string $id)
   {
 
+    
+    $is_reseller = false; 
+    if(Auth::check()){
+     $user = Auth::user();
+     $is_reseller = $user->hasRole('Reseller');
+     
+   }
+
     // $productos = Products::where('id', '=', $id)->first();
     // $especificaciones = Specifications::where('product_id', '=', $id)->get();
     $product = Products::findOrFail($id);
@@ -656,8 +686,8 @@ class IndexController extends Controller
     $isWhishList = false;
     if (Auth::check()) {
       $user = Auth::user();
-      $exite= Wishlist::where('user_id', $user->id)->where('product_id', $id)->first();
-      if($exite){
+      $exite = Wishlist::where('user_id', $user->id)->where('product_id', $id)->first();
+      if ($exite) {
         $isWhishList = true;
       }
     }
@@ -673,18 +703,18 @@ class IndexController extends Controller
 
     if (!$combo) $combo = new Offer();
 
-    return view('public.product', compact('atributos', 'isWhishList', 'testimonios', 'general', 'valorAtributo', 'ProdComplementarios', 'productosConGalerias', 'especificaciones', 'url_env', 'product', 'capitalizeFirstLetter', 'categorias', 'destacados', 'otherProducts', 'galery', 'combo'));
+    return view('public.product', compact('is_reseller', 'atributos', 'isWhishList', 'testimonios', 'general', 'valorAtributo', 'ProdComplementarios', 'productosConGalerias', 'especificaciones', 'url_env', 'product', 'capitalizeFirstLetter', 'categorias', 'destacados', 'otherProducts', 'galery', 'combo'));
   }
 
   public function wishListAdd(Request $request)
   {
     $user = Auth::user();
-    
-    $exite= Wishlist::where('user_id', $user->id)->where('product_id', $request->product_id)->first();
-    if($exite){
+
+    $exite = Wishlist::where('user_id', $user->id)->where('product_id', $request->product_id)->first();
+    if ($exite) {
       Wishlist::find($exite->id)->delete();
       return response()->json(['message' => 'El producto ya se encuentra en la lista de deseos']);
-    }else{
+    } else {
       $whistList = Wishlist::create([
         'user_id' => $user->id,
         'product_id' => $request->product_id,
@@ -692,7 +722,7 @@ class IndexController extends Controller
         'note' => ''
       ]);
     }
-    
+
 
     return response()->json(['message' => 'Producto agregado a la lista de deseos']);
   }
@@ -962,8 +992,9 @@ class IndexController extends Controller
   private function envioCorreoCompra($data)
   {
 
+    $appUrl = env('APP_URL');
     $name = $data['nombre'];
-    $mensaje = "Gracias por comprar en Decotab";
+    $mensaje = "Gracias por comprar en $appUrl ";
     $mail = EmailConfig::config($name, $mensaje);
     try {
       $mail->addAddress($data['email']);
@@ -994,10 +1025,11 @@ class IndexController extends Controller
                 height: 700px;
                 margin: 0 auto;
                 text-align: center;
-                background-image: url(https://decotab.pe/mail/ImagenFondo.png);
-                background-repeat: no-repeat;
-                background-position: center;
-                background-size: cover;
+                 background-image:url(' . $appUrl . 'images/Ellipse_18.png),  url(' . $appUrl . 'images/Tabpanel.png);
+                background-repeat: no-repeat, no-repeat;
+                background-position: center bottom , center bottom;;
+                background-size: fit , fit;
+                background-color: #f9f9f9;
               "
             >
               <thead>
@@ -1011,7 +1043,9 @@ class IndexController extends Controller
                       margin: 40px;
                     "
                   >
-                    <img src="https://decotab.pe/mail/Logo P.png" alt="mundo web" />
+                     <img src="' . $appUrl . 'images/Group1.png" alt="mundo web"  style="
+                    margin: auto;
+                  "/>
                   </th>
                 </tr>
               </thead>
@@ -1089,7 +1123,7 @@ class IndexController extends Controller
                 "
                 >
                     <a
-                      href="https://decotab.pe/"
+                      href="' . $appUrl . '"
                       style="
                         text-decoration: none;
                         background-color: #006bf6;

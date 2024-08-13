@@ -121,7 +121,7 @@ class NewsletterSubscriberController extends Controller
                 height: 850px;
                 margin: 0 auto;
                 text-align: center;
-                background-image:url(' . $appUrl . 'images/Ellipse_18.png),  url(' . $appUrl . 'images/Tabpanel.png);
+                background-image:url(' . $appUrl . '/images/Ellipse_18.png),  url(' . $appUrl . '/images/Tabpanel.png);
                 background-repeat: no-repeat, no-repeat;
                 background-position: center bottom , center bottom;;
                 background-size: fit , fit;
@@ -139,7 +139,7 @@ class NewsletterSubscriberController extends Controller
                       margin: 40px;
                     "
                   >
-                    <img src="' . $appUrl . 'images/Group1.png" alt="mundo web"  style="
+                    <img src="' . $appUrl . '/images/Group1.png" alt="img_logo"  style="
                     margin: auto;
                   "/>
                   </th>

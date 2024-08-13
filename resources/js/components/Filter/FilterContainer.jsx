@@ -1,11 +1,18 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import FilterItem from './FilterItem'
 import FilterItemSelect2 from './FilterItemSelect2'
 
 const FilterContainer = ({ minPrice, setFilter, filter, maxPrice, categories = [], tags = [], brands = [], sizes = [], colors = [], attribute_values, tag_id, selected_category }) => {
   const categoryRef = useRef()
 
+  const [openCategories, setOpenCategories] = useState({});
 
+  const toggleAccordion = (id) => {
+    setOpenCategories(prevState => ({
+      ...prevState,
+      [id]: !prevState[id]
+    }));
+  };
 
   const setMinPrice = (e) => {
     const newFilter = structuredClone(filter)
@@ -33,7 +40,7 @@ const FilterContainer = ({ minPrice, setFilter, filter, maxPrice, categories = [
   }
 
   return (<>
-    <button className="w-full h-12 text-[15px] bg-slate-100 text-center font-medium rounded-lg" type="reset">
+    <button className="w-full h-12 text-[17px] bg-[#006BF6] text-white text-center font-semibold rounded-full" type="reset">
       Limpiar filtros
     </button>
 
@@ -42,12 +49,47 @@ const FilterContainer = ({ minPrice, setFilter, filter, maxPrice, categories = [
       <input type="number" className="w-28 rounded-md border" placeholder="Hasta" min={minPrice} max={maxPrice} step={0.01} onChange={setMaxPrice} />
     </FilterItem>
     {
-      categories.length > 0 &&
-      <FilterItemSelect2 eRef={categoryRef} label='Categoría' onChange={onCategoryChange} filter={filter} multiple defaultValue={[selected_category]} placeholder="Seleccione una categoria">
-        {categories.map(x => (
-          <option key={x.id} value={x.id}>{x.name}</option>
-        ))}
-      </FilterItemSelect2>
+      categories.length > 0 && (
+
+        <div className="w-full ">
+          <h2 className="font-semibold mb-4">Categorias</h2>
+          {categories.map((item) => (
+            item.subcategories.length > 0 && (<div key={item.id} className="w-full">
+              <div className="border-b border-gray-200">
+                <button
+                  type="button"
+                  className="w-full flex justify-between items-center py-2 px-4 text-left text-[#006BF6] bg-gray-100 hover:bg-gray-200 focus:outline-none"
+                  onClick={() => toggleAccordion(item.id)}
+                >
+                  <span>{item.name}</span>
+                  <svg
+                    className={`w-5 h-5 transform transition-transform ${openCategories[item.id] ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </button>
+              </div>
+              {openCategories[item.id] && (
+                <div className="p-4 border border-t-0 border-gray-200 space-y-4">
+                  {item.subcategories.map((subitem) => (
+                    <label key={subitem.id} htmlFor={`item-category-${subitem.id}`} className="text-custom-border flex flex-row gap-2  items-center cursor-pointer">
+                      <input id={`item-category-${subitem.id}`} name='category' type="checkbox" className="bg-blue-500 rounded-sm  border-none" value={subitem.id} onClick={(e) => onClick(`subcategory_id`, e.target.value, e.target.checked)} />
+                      {subitem.name}
+                    </label>
+                  ))}
+
+                </div>
+              )}
+            </div>)
+
+          ))}
+        </div>
+
+      )
     }
     {
       tags.length > 0 && <div className="flex flex-col gap-4 w-full">

@@ -21,7 +21,8 @@ class OfferController extends BasicController
         $offers = Offer::with('products')
             ->where('status', true)
             ->get();
-        return Inertia::render('Catalogo', [
+
+        return Inertia::render('Admin/Offers', [
             'offers' => $offers,
         ])->rootView('admin');
     }

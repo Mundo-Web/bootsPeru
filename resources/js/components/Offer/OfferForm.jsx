@@ -38,6 +38,7 @@ const OfferForm = ({ data, setData, refreshOffers }) => {
   useEffect(() => {
     if (data != null) setIsOpen(true)
     else setIsOpen(false)
+    console.log('temrino de cargar')
   }, [data])
 
   const onFormSubmit = async (e) => {

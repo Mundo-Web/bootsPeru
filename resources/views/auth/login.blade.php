@@ -42,7 +42,7 @@
                 class="font-Inter_Medium w-full py-5 px-4 focus:outline-none placeholder-gray-400 font-normal text-base bg-[#F8F8F8] rounded-lg border-0 focus:border-transparent focus:ring-0" />
               <!-- Imagen -->
               <img src="./images/svg/pass_eyes.svg" alt="password"
-                class="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer" />
+                class="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer ojopassWord" />
             </div>
 
             <div class="flex gap-3 px-4 justify-between">
@@ -54,7 +54,8 @@
 
               @if (Route::has('password.request'))
                 <div>
-                  <a href="{{ route('password.request') }}" class="font-normal text-base font-Inter_Medium text-[#006BF6]">¿Olvidaste
+                  <a href="{{ route('password.request') }}"
+                    class="font-normal text-base font-Inter_Medium text-[#006BF6]">¿Olvidaste
                     tu contraseña?</a>
                 </div>
               @endif
@@ -66,9 +67,10 @@
                 class="text-white bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-light font-Inter_Medium tracking-wide" />
             </div>
 
-           <div class="flex flex-row justify-center items-centerpx-4">
-              <a href="{{ route('register') }}" 
-                class="text-[#006BF6] w-full py-2 rounded-3xl cursor-pointer font-light font-Inter_Medium tracking-normal text-center">Crear una Cuenta</a>
+            <div class="flex flex-row justify-center items-centerpx-4">
+              <a href="{{ route('register') }}"
+                class="text-[#006BF6] w-full py-2 rounded-3xl cursor-pointer font-light font-Inter_Medium tracking-normal text-center">Crear
+                una Cuenta</a>
             </div>
 
           </form>
@@ -77,4 +79,20 @@
       </div>
     </div>
   </div>
+
+  <script>
+    $(document).on("click", '.ojopassWord', function() {
+
+
+      var input = $(this).siblings('input');
+
+      // Alterna el tipo de entrada entre 'password' y 'text'
+      if (input.attr('type') === 'password') {
+        input.attr('type', 'text');
+      } else {
+        input.attr('type', 'password');
+      }
+
+    })
+  </script>
 </x-authentication-layout>

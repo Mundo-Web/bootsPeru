@@ -9,6 +9,7 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SaleDetailController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +32,9 @@ Route::post('/ofertas/paginate', [ProductsController::class, 'paginateOffers'])-
 Route::post('/payment/culqi', [PaymentController::class, 'culqi'])->name('payment.culqi');
 
 Route::get('/offers/{id}', [OfferController::class, 'get'])->name('offers.get');
+
+Route::post('login-rev-api', [AuthController::class, 'login']);
+Route::post('signup', [AuthController::class, 'signup']);
 
 Route::middleware(['web', 'auth:sanctum', 'verified'])->group(function () {
 

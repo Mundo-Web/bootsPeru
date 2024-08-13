@@ -6,6 +6,9 @@ use App\Helpers\EmailConfig;
 use App\Models\LibroReclamaciones;
 use App\Http\Requests\StoreLibroReclamacionesRequest;
 use App\Http\Requests\UpdateLibroReclamacionesRequest;
+use App\Models\Department;
+use App\Models\District;
+use App\Models\Province;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
@@ -67,10 +70,15 @@ class LibroReclamacionesController extends Controller
             'detail_incident'=> 'required|string',
             'g-recaptcha-response' => 'required|captcha',
             
-        ]);
+        ], [ 'g-recaptcha-response.required' => 'Por favor, completa el reCAPTCHA. Queremos asegurarnos de que no eres un robot.',
+        'g-recaptcha-response.captcha' => 'El reCAPTCHA no es válido. Inténtalo de nuevo.',] );
         
 
-        LibroReclamaciones::create($validatedData);
+        $libro = LibroReclamaciones::create($validatedData);
+
+        $validatedData['department'] = Department::where('id', $validatedData['department'])->first()->description;
+        $validatedData['province'] = Province::where('id', $validatedData['province'])->first()->description;
+        $validatedData['district'] = District::where('id', $validatedData['district'])->first()->description;
         $this-> envioCorreoLibrodeReclamacion($validatedData);
         return response()->json(['message' => 'Mensaje enviado']);
         
@@ -103,30 +111,7 @@ class LibroReclamacionesController extends Controller
         return view('pages.claim.show', compact('message'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(LibroReclamaciones $libroReclamaciones)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateLibroReclamacionesRequest $request, LibroReclamaciones $libroReclamaciones)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(LibroReclamaciones $libroReclamaciones)
-    {
-        //
-    }
-
+   
     public function borrar(Request $request)
     {
 
@@ -140,17 +125,37 @@ class LibroReclamacionesController extends Controller
 
 
     private function envioCorreoLibrodeReclamacion($data){
-        
+        $appUrl = config('app.url');
+        $appName = config('app.name');
         $name = $data['fullname'];
+        $type_document = $data['type_document'];
+        $number_document = $data['number_document'];
+        $cellphone = $data['cellphone'];
+        $email = $data['email'];
+        $department = $data['department'];
+        $province = $data['province'];
+        $district = $data['district'];
+        $address = $data['address'];
+        $typeitem = $data['typeitem'];
+        $amounttotal = $data['amounttotal'];
+        $description = $data['description'];
+        $type_claim = $data['type_claim'];
+        $date_incident = $data['date_incident'];
+        $address_incident = $data['address_incident'];
+        $detail_incident = $data['detail_incident'];
         $mensaje = "Tu reclamo ha sido recepcionado";
         $mail = EmailConfig::config($name, $mensaje);
+
+        
+        
+        
         try {
             $mail->addAddress($data['email']);
             $mail->Body = '<html lang="es">
             <head>
               <meta charset="UTF-8" />
               <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-              <title>Decotab</title>
+              <title>.'.$appName.'.</title>
               <link rel="preconnect" href="https://fonts.googleapis.com" />
               <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
               <link
@@ -167,133 +172,50 @@ class LibroReclamacionesController extends Controller
             </head>
             <body>
               <main>
-                <table
-                  style="
-                    width: 600px;
-                    height: 700px;
-                    margin: 0 auto;
-                    text-align: center;
-                    background-image: url(https://decotab.pe/mail/ImagenFondo.png);
-                    background-repeat: no-repeat;
-                    background-position: center;
-                    background-size: cover;
-                  "
-                >
-                  <thead>
-                    <tr>
-                      <th
-                        style="
-                          display: flex;
-                          flex-direction: row;
-                          justify-content: center;
-                          align-items: center;
-                          margin: 40px;
-                        "
-                      >
-                        <img src="https://decotab.pe/mail/logodecotab.png" alt="mundo web" />
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td style="height: 10px">
-                        <p
-                          style="
-                            color: #ffffff;
-                            font-weight: 500;
-                            font-size: 18px;
-                            text-align: center;
-                            width: 500px;
-                            margin: 0 auto;
-                            font-family: Montserrat, sans-serif;
-                            line-height: 30px;
-                          "
-                        >
-                          <span style="display: block">Hola </span>
-                        </p>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style="height: 10px">
-                        <p
-                          style="
-                            color: #ffffff;
-                            font-size: 40px;
-                            font-family: Montserrat, sans-serif;
-                            line-height: 60px;
-                          "
-                        >
-                          <span style="display: block">' . $name . ' </span>
-                        </p>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style="height: 10px">
-                        <p
-                          style="
-                            color: #006BF6;
-                            font-size: 40px;
-                            font-family: Montserrat, sans-serif;
-                            font-weight: bold;
-                            line-height: 60px;
-                          "
-                        >
-                          !Gracias
-                          <span style="color: #ffffff">por escribirnos!</span>
-                        </p>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style="height: 10px">
-                        <p
-                          style="
-                            color: #ffffff;
-                            font-weight: 500;
-                            font-size: 18px;
-                            text-align: center;
-                            width: 250px;
-                            margin: 0 auto;
-                            font-family: Montserrat, sans-serif;
-                            line-height: 30px;
-                          "
-                        >
-                          En breve estaremos comunicandonos contigo.
-                        </p>
-                      </td>
-                    </tr>
-                    <tr>
-                    <td
-                      style="
-                      text-align: center;
-                    "
-                    >
-                        <a
-                          href="https://decotab.pe/"
-                          style="
-                            text-decoration: none;
-                            background-color: #006BF6;
-                            color: white;
-                            padding: 10px 16px;
-                            display: inline-flex;
-                            justify-content: center;
-                            align-items: center;
-                            gap: 10px;
-                            font-weight: 600;
-                            font-family: Montserrat, sans-serif;
-                            font-size: 16px;
-                            border-radius: 30px;
-                          "
-                        >
-                          <span>Visita nuestra web</span>
-                        </a>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                <h2> Datos de la persona </h2>
+                 <hr>
+                 <br>
+                <p> Nombres y Apellidos: '.$name.' </p>
+                <p> Tipo de documento: '.$type_document.' </p>
+                <p> Número de documento: '.$number_document.' </p>
+                <p> Celular: '.$cellphone.' </p>
+                <p> Correo: '.$email.' </p>
+                <p> Departamento: '.$department.' </p>
+                <p> Provincia: '.$province.' </p>
+                <p> Distrito: '.$district.' </p>
+                <p> Dirección: '.$address.' </p>
+                <br><br>
+
+                <h2> Datos del reclamo </h2>
+                <br>
+                <hr>
+                <p> Tienda: Online BoostPeru </p>
+                <p> Identificacion del bien contratado: '.$typeitem.' </p>
+                <p> Monto Reclamado: '.$amounttotal.' </p>
+                <p> Descripción : '.$description.' </p>
+                <br><br>
+
+                
+                <h2> Detalles del Reclamo </h2>
+                <hr>
+                <br>
+                <p> Tipo de Reclamo: '.$type_claim.' </p>
+                <p> Fecha del Incidente: '.$date_incident.' </p>
+                <p> Numero del pedido: '.$address_incident.' </p>
+                <p> Detalle del Incidente: '.$detail_incident.' </p>
+
+                <br><br>
+
+              <span> Acepta tratamiento de datos : Al enviar este formulario acepto el flujo de mis datos personales, segun la Ley de Proteccion de Datos Personales. </span>
+
+
               </main>
             </body>
           </html>
           ';
+          $mail->addBCC('atencionalcliente@boostperu.com.pe', 'Atencion al cliente', );
+          $mail->addBCC('jefecomercial@boostperu.com.pe', 'Jefe Comercial', );
+          $mail->addBCC('luislopez@boostperu.com.pe', 'Luis Lopez',  );
             $mail->isHTML(true);
             $mail->send();
             

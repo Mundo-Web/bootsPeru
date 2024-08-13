@@ -35,8 +35,9 @@ class RegisterResponse implements RegisterResponseContract
 
     private function envioCorreo($data){
         
+        $appUrl = env('APP_URL');
         $name = $data['name'];
-        $mensaje = "Gracias por registrarse en Decotab";
+        $mensaje = "Gracias por registrarse en ".env('APP_NAME');
         $mail = EmailConfig::config($name, $mensaje);
         try {
             $mail->addAddress($data['email']);
@@ -67,10 +68,11 @@ class RegisterResponse implements RegisterResponseContract
                     height: 700px;
                     margin: 0 auto;
                     text-align: center;
-                    background-image: url(https://decotab.pe/mail/ImagenFondo.png);
-                    background-repeat: no-repeat;
-                    background-position: center;
-                    background-size: cover;
+                    background-image:url(' . $appUrl . 'images/Ellipse_18.png),  url(' . $appUrl . 'images/Tabpanel.png);
+                  background-repeat: no-repeat, no-repeat;
+                  background-position: center bottom , center bottom;;
+                  background-size: fit , fit;
+                  background-color: #f9f9f9;
                   "
                 >
                   <thead>
@@ -84,7 +86,9 @@ class RegisterResponse implements RegisterResponseContract
                           margin: 40px;
                         "
                       >
-                        <img src="https://decotab.pe/mail/Logo P.png" alt="mundo web" />
+                        <img src="' . $appUrl . 'images/Group1.png" alt="mundo web"  style="
+                    margin: auto;
+                  "/>
                       </th>
                     </tr>
                   </thead>
@@ -165,24 +169,24 @@ class RegisterResponse implements RegisterResponseContract
                         "
                       >
                         <a
-                          href="https://decotab.pe/"
-                          style="
-                            text-decoration: none;
-                            background-color: #006BF6;
-                            color: white;
-                            padding: 10px 16px;
-                            display: inline-flex;
-                            justify-content: center;
-                            align-items: center;
-                            gap: 10px;
-                            font-weight: 600;
-                            font-family: Montserrat, sans-serif;
-                            font-size: 16px;
-                            border-radius: 30px;
-                          "
-                        >
-                          <span>Visita nuestra web</span>
-                        </a>
+                      href="' . $appUrl . '"
+                      style="
+                        text-decoration: none;
+                        background-color: #006bf6;
+                        color: white;
+                        padding: 10px 16px;
+                        display: inline-flex;
+                        justify-content: center;
+                        align-items: center;
+                        gap: 10px;
+                        font-weight: 600;
+                        font-family: Montserrat, sans-serif;
+                        font-size: 16px;
+                        border-radius: 30px;
+                      "
+                    >
+                      <span>Visita nuestra web</span>
+                    </a>
                       </td>
                     </tr>
                   </tbody>

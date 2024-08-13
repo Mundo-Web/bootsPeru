@@ -3,6 +3,7 @@
 use App\Http\Controllers\AboutUsController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AttributesController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BannersController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataFeedController;
@@ -32,6 +33,7 @@ use App\Http\Controllers\IndexController;
 use App\Http\Controllers\LibroReclamacionesController;
 use App\Http\Controllers\NewsletterSubscriberController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PoliticaDatosController;
 use App\Http\Controllers\PolyticsConditionController;
 use App\Http\Controllers\PopupController;
 use App\Http\Controllers\PriceController;
@@ -61,7 +63,8 @@ use App\Models\LibroReclamaciones;
 */
 
 /* Las rutas publicas */
-
+// Route::get('/login-rev', [AuthController::class, 'loginView'])->name('Login.jsx');
+Route::get('/register-rev', [AuthController::class, 'registerView'])->name('Register.jsx');
 Route::get('/', [IndexController::class, 'index'])->name('index');
 Route::get('/nosotros', [IndexController::class, 'nosotros'])->name('nosotros');
 Route::get('/servicios', [IndexController::class, 'servicios'])->name('servicios');
@@ -96,10 +99,15 @@ Route::get('/obtenerDistritos/{provinceId}', [IndexController::class, 'obtenerDi
 Route::get('/politicas-de-devolucion', [IndexController::class, 'politicasDevolucion'])->name('politicas_dev');
 Route::get('/terminos-y-condiciones', [IndexController::class, 'TerminosyCondiciones'])->name('terms_condition');
 
+
 // Route::post('/payment/culqi', [PaymentController::class, 'culqi'])->name('payment.culqi');
 Route::get('/buscarblog', [IndexController::class, 'searchBlog'])->name('buscarblog');
 
 Route::post('guardarUserNewsLetter', [NewsletterSubscriberController::class, 'guardarUserNewsLetter'])->name('guardarUserNewsLetter');
+
+Route::get('/confirm-email/{token}', [AuthController::class, 'confirmEmailView'])->name('ConfirmEmail.jsx');
+Route::get('/confirmation/{token}', [AuthController::class, 'loginView']);
+
 
 Route::middleware(['auth:sanctum', 'verified', 'can:Admin'])->group(function () {
 
@@ -115,6 +123,10 @@ Route::middleware(['auth:sanctum', 'verified', 'can:Admin'])->group(function () 
 
 
         Route::resource('/pedidos', SaleController::class);
+
+        Route::get('/politica-datos/{id}', [PoliticaDatosController::class, 'edit'])->name('politicadatos.detalle');
+        Route::post('/politica-datos/update/{id}', [PoliticaDatosController::class, 'update'])->name('politicadatos.act');
+
         //messages
         Route::resource('/mensajes', MessageController::class);
         Route::post('/mensajes/borrar', [MessageController::class, 'borrar'])->name('mensajes.borrar');
@@ -154,6 +166,7 @@ Route::middleware(['auth:sanctum', 'verified', 'can:Admin'])->group(function () 
         Route::post('/getProvincia', [PriceController::class, 'getProvincias'])->name('prices.getProvincias');
         Route::post('/getDistrito', [PriceController::class, 'getDistrito'])->name('prices.getDistrito');
         Route::post('/calculeEnvio', [PriceController::class, 'calculeEnvio'])->name('prices.calculeEnvio');
+        Route::post('/deletePrice', [PriceController::class, 'deletePrice'])->name('prices.deletePrice');
 
         //Servicios
         Route::resource('/servicios', ServiceController::class);

@@ -5,6 +5,15 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
 @stop
+<style>
+  .dropdown {
+    height: fit-content;
+    box-sizing: border-box;
+    position: relative;
+    border-bottom: 1.5px solid white;
+    /* padding: 16px 0; */
+  }
+</style>
 
 
 @section('content')
@@ -23,7 +32,7 @@
         <x-breadcrumb.item>Pago</x-breadcrumb.item>
       </x-breadcrumb>
 
-      <div class="flex md:gap-20">
+      <div class="flex md:gap-20 flex-col md:flex-row">
         <div class="flex justify-between items-center md:basis-8/12 w-full md:w-auto">
           <x-ecommerce.gateway.container completed="{{ 2 }}">
             <div class="flex flex-col gap-5">
@@ -73,6 +82,16 @@
                             required>
 
                         </div>
+
+
+                      </div>
+
+                      <div class="basis-2/3 flex flex-row gap-2 ">
+                        <input id="termsandconditions" type="checkbox" required class="border-2 rounded-sm w-5 h-5" />
+                        <label for="termsandconditions" class="font-medium text-sm text-[#6C7275]">Estoy de acuerdo con
+                          los <a class="font-bold" href="{{ route('terms_condition') }}" target="_blanck">terminos y
+                            condiciones</a></label>
+
                       </div>
                     </div>
                   </div>
@@ -86,7 +105,7 @@
                         <input type="radio" name="envio" id="recoger-option" value="recoger" class="hidden peer"
                           required @if (!$hasDefaultAddress) checked @endif>
                         <label for="recoger-option"
-                          class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border-3 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 peer-checked:border-[#006BF6] hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
+                          class="border inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border-3 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 peer-checked:border-[#006BF6] hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
                           <div class="block">
                             <svg class="w-6 h-6 mb-2 text-gray-800 dark:text-white" aria-hidden="true"
                               xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
@@ -105,7 +124,7 @@
                         <input type="radio" name="envio" id="express-option" value="express" class="hidden peer"
                           @if ($hasDefaultAddress) checked @endif>
                         <label for="express-option"
-                          class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border-3 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 peer-checked:border-[#006BF6] hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
+                          class="border inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border-3 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 peer-checked:border-[#006BF6] hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
                           <div class="block">
                             <svg class="w-6 h-6 mb-2 text-gray-800 dark:text-white" aria-hidden="true"
                               xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
@@ -146,63 +165,73 @@
                           </div>
                         @endif
                         <div data-show="new" class="flex flex-col gap-5 md:flex-row">
-                          <div class="basis-1/3 flex flex-col gap-2 z-[45]">
-                            <label class="font-medium text-[12px] text-[#6C7275]">Departamento <span
-                                class="text-red-500">*</span></label>
+                          @if ($departments->count() > 0)
+                            <div class="basis-1/3 flex flex-col gap-2 z-[45]">
+                              <label class="font-medium text-[12px] text-[#6C7275]">Departamento <span
+                                  class="text-red-500">*</span></label>
 
-                            <div>
-                              <!-- combo -->
-                              <div class="dropdown w-full">
-                                <select name="departamento_id" id="departamento_id"
-                                  class="mt-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 select2-hidden-accessible"
-                                  data-address>
-                                  <option value="" data-select2-id="select2-data-2-4o85">Seleccione un
-                                    departamento</option>
-                                  @foreach ($departments as $department)
-                                    <option value="{{ $department->id }}">{{ $department->description }}</option>
-                                  @endforeach
-                                </select>
+                              <div>
+                                <!-- combo -->
+                                <div class="dropdown w-full">
+                                  <select name="departamento_id" id="departamento_id"
+                                    class="selectpicker mt-1 h-4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 select2-hidden-accessible"
+                                    data-address>
+                                    <option value="" data-select2-id="select2-data-2-4o85">Seleccione un
+                                      departamento</option>
+                                    @foreach ($departments as $department)
+                                      <option value="{{ $department->id }}">{{ $department->description }}</option>
+                                    @endforeach
+                                  </select>
+                                </div>
+                              </div>
+
+
+
+                            </div>
+
+                            <div class="basis-1/3 flex flex-col gap-2 z-[40]">
+                              <label class="font-medium text-[12px] text-[#6C7275]">
+                                Provincia <span class="text-red-500">*</span>
+                              </label>
+
+                              <div>
+                                <!-- combo -->
+                                <div class="dropdown-provincia w-full">
+                                  <select name="provincia_id" id="provincia_id"
+                                    class="selectpicker mt-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 select2-hidden-accessible"
+                                    data-address>
+                                    <option value="" data-select2-id="select2-data-4-gokf">Seleccione una
+                                      provincia
+                                    </option>
+
+                                  </select>
+                                </div>
                               </div>
                             </div>
-                          </div>
 
-                          <div class="basis-1/3 flex flex-col gap-2 z-[40]">
-                            <label class="font-medium text-[12px] text-[#6C7275]">
-                              Provincia <span class="text-red-500">*</span>
-                            </label>
+                            <div class="basis-1/3 flex flex-col gap-2 z-[30]">
+                              <label class="font-medium text-[12px] text-[#6C7275]">
+                                Distrito <span class="text-red-500">*</span>
+                              </label>
 
-                            <div>
-                              <!-- combo -->
-                              <div class="dropdown-provincia w-full">
-                                <select name="provincia_id" id="provincia_id"
-                                  class="mt-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 select2-hidden-accessible"
-                                  data-address>
-                                  <option value="" data-select2-id="select2-data-4-gokf">Seleccione una
-                                    provincia
-                                  </option>
-
-                                </select>
+                              <div>
+                                <!-- combo -->
+                                <div class="dropdown-distrito w-full">
+                                  <select name="distrito_id" id="distrito_id"
+                                    class="selectpicker mt-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 select2-hidden-accessible"
+                                    data-address>
+                                    <option value="" data-select2-id="select2-data-6-ihrp">Seleccione un distrito
+                                    </option>
+                                  </select>
+                                </div>
                               </div>
                             </div>
-                          </div>
-
-                          <div class="basis-1/3 flex flex-col gap-2 z-[30]">
-                            <label class="font-medium text-[12px] text-[#6C7275]">
-                              Distrito <span class="text-red-500">*</span>
-                            </label>
-
-                            <div>
-                              <!-- combo -->
-                              <div class="dropdown-distrito w-full">
-                                <select name="distrito_id" id="distrito_id"
-                                  class="mt-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 select2-hidden-accessible"
-                                  data-address>
-                                  <option value="" data-select2-id="select2-data-6-ihrp">Seleccione un distrito
-                                  </option>
-                                </select>
-                              </div>
+                          @else
+                            <div><span> ** Configure los "Costos de Envio" para que pueda visualizar esta lista
+                                **</span>
                             </div>
-                          </div>
+                          @endif
+
                         </div>
 
                         <div data-show="new" class="flex flex-col gap-2">
@@ -259,11 +288,15 @@
             <label for="tipo-comprobante" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tipo de
               comprobante</label>
             <select id="tipo-comprobante" name="comprobante"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-              <option>Nota de venta</option>
-              <option>Boleta</option>
-              <option>Factura</option>
+              class="selectpicker bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+              <option value="nota_venta">Nota de venta</option>
+              <option value="boleta">Boleta</option>
+              <option value="factura">Factura</option>
             </select>
+          </div>
+          <div class="p-4 grid grid-cols-4" id="ElementosFacturacion">
+
+
           </div>
           <div class="p-4 py-0">
             <hr>
@@ -311,13 +344,19 @@
             cart: carrito.map((x) => ({
               id: x.id,
               quantity: x.cantidad,
-              isCombo : x.isCombo || false
+              isCombo: x.isCombo || false
             })),
             contact: {
               name: $('#nombre').val(),
               lastname: $('#apellidos').val(),
               email: $('#email').val(),
-              phone: $('#celular').val()
+              phone: $('#celular').val(),
+              doc_number: $('#DNI').val() || $('#RUC').val(),
+              doc_type: $('#tipo-comprobante').val() ?? 'nota_venta',
+              razon_fact: $('#razonFact').val(),
+              direccion_fact: $('#direccionFact').val(),
+
+
             },
             address: null,
             saveAddress: !Boolean($('#addresses').val()),
@@ -372,11 +411,146 @@
       }
     }
 
+
+    $(document).on('change', '#tipo-comprobante', function() {
+      console.log('cambio', $(this).val())
+
+      let tipoComrobante = $(this).val()
+
+      // ElementosFacturacion
+      if (tipoComrobante == 'boleta') {
+        $("#ElementosFacturacion").html('')
+        $('#ElementosFacturacion').html(`
+          <div class="col-span-2 mb-2">
+            <label for="nombre" class="font-medium text-[12px] text-[#6C7275]">DNI<span class="text-red-500">*</span></label>
+            <input maxlength="8" id="DNI" type="number"  placeholder="DNI" name="DNI" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" >
+
+            
+          </div>
+          <div class="col-span-4 mb-2">
+            <label for="nombre" class="font-medium text-[12px] text-[#6C7275]">Razon Social<span class="text-red-500">*</span></label>
+            <input  id="razonFact" type="text"  placeholder="Razon Social" name="razon_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" >
+
+            
+          </div>
+          <div class="col-span-4 mb-2">
+            <label for="nombre" class="font-medium text-[12px] text-[#6C7275]">Direccion Facturacion<span class="text-red-500">*</span></label>
+            <input  id="direccionFact" type="text"  placeholder="Direccion Boleta" name="direccion_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" >
+
+            
+          </div>
+        `)
+      } else if (tipoComrobante == 'factura') {
+        $("#ElementosFacturacion").html('')
+        $('#ElementosFacturacion').html(`
+          <div class="col-span-2 mb-2">
+            <label for="ruc" class="font-medium text-[12px] text-[#6C7275]">RUC <span class="text-red-500">*</span></label>
+            <input maxlength="11" id="RUC" type="number" placeholder="RUC" name="RUC" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" >
+          </div>
+          <div class="col-span-4 mb-2">
+            <label for="nombre" class="font-medium text-[12px] text-[#6C7275]">Razon Social<span class="text-red-500">*</span></label>
+            <input  id="razonFact" type="text"  placeholder="Ingrese Razon Social" name="razon_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" >
+
+            
+          </div>
+          <div class="col-span-4 mb-2">
+            <label for="nombre" class="font-medium text-[12px] text-[#6C7275]">Direccion Facturacion<span class="text-red-500">*</span></label>
+            <input  id="direccionFact" type="text"  placeholder="Direccion Facturacion" name="direccion_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" >
+
+            
+          </div>
+          
+        `)
+      } else {
+        $("#ElementosFacturacion").html('')
+      }
+
+
+    })
+
+    $(document).on('keydown', '#DNI, #RUC', function(e) {
+      const controlKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
+      if (controlKeys.includes(e.key)) {
+        return;
+      }
+
+      if (e.key === '.' || e.key === ',') {
+        e.preventDefault();
+      }
+      console.log($(this.id))
+      if (this.id == 'DNI' && $(this).val().length > 7) {
+        e.preventDefault();
+      } else if (this.id == 'RUC' && $(this).val().length > 10) {
+        e.preventDefault();
+      }
+
+    });
+
     $('#paymentForm').on('submit', function(e) {
       e.preventDefault();
 
       const precioProductos = getTotalPrice()
       const precioEnvio = getCostoEnvio()
+
+
+      let existeRuc = $('#RUC').length == '' ? false : true
+      let ExisteDni = $('#DNI').length == '' ? false : true
+      let razonFact = $('#razonFact').length == '' ? false : true
+      let direccionFact = $('#direccionFact').length == '' ? false : true
+
+      if (ExisteDni) {
+        if ($('#tipo-comprobante').val() == 'boleta' && ($('#DNI').val() == '' || $('#DNI').val().length !== 8)) {
+          Swal.fire({
+            title: `Error!!`,
+            text: 'Ingrese su DNI Completo',
+            icon: "error",
+          });
+          return
+        }
+
+      }
+      if (existeRuc) {
+        if ($('#tipo-comprobante').val() == 'factura' && ($('#RUC').val() == '' || $('#RUC').val().length !== 11)) {
+          Swal.fire({
+            title: `Error!!`,
+            text: 'Ingrese su Ruc Completo',
+            icon: "error",
+          });
+          return
+        }
+
+      }
+
+      if (razonFact) {
+        if ($('#razonFact').val() == '') {
+          Swal.fire({
+            title: `Error!!`,
+            text: 'Ingrese su Razon Social',
+            icon: "error",
+          });
+          return
+        }
+
+      }
+      if (direccionFact) {
+        if ($('#direccionFact').val() == '') {
+          Swal.fire({
+            title: `Error!!`,
+            text: 'Ingrese su Direccion de Facturacion',
+            icon: "error",
+          });
+          return
+        }
+      }
+      const paymentMethods = { // las opciones se ordenan según se configuren
+        tarjeta: true,
+        yape: true,
+        billetera: true,
+        bancaMovil: true,
+        agente: true,
+        cuotealo: true,
+      }
+
 
       Culqi.settings({
         title: 'Boost .its more',
@@ -384,9 +558,12 @@
         amount: Math.round((precioProductos + precioEnvio) * 100),
       });
       Culqi.options({
+        paymentMethods: paymentMethods,
+        paymentMethodsSort: Object.keys(paymentMethods),
         style: {
           logo: `${location.origin}/images/svg/logo_boost_header.svg`,
           bannerColor: '#272727'
+
         }
       })
       Culqi.open();
@@ -406,6 +583,8 @@
         $('#direccionContainer').fadeOut(125)
         $('#precioEnvio').text('Gratis')
         $('[data-address]').prop('required', false)
+        console.log("costo Envio", getCostoEnvio())
+        console.log(value)
       }
       calcularTotal()
     })
@@ -447,6 +626,8 @@
     $('#departamento_id').select2()
     $('#provincia_id').select2()
     $('#distrito_id').select2()
+
+    $('.selectpicker').select2()
 
     $('#addresses').on('change', function() {
       const address = $(this).val()
@@ -546,7 +727,9 @@
     }
 
     const getCostoEnvio = () => {
-      if ($('[name="envio"]:checked').val() == 'recojo') return 0
+      console.log('getcostoEnvio', $('[name="envio"]:checked').val());
+
+      if ($('[name="envio"]:checked').val() == 'recoger') return 0
       const priceStr = $('#distrito_id option:selected').attr('data-price')
       const price = Number(priceStr) || 0
       return price
@@ -632,7 +815,7 @@
     })
   </script>
   <script>
-    let articulosCarrito = [];
+    // let articulosCarrito = [];
     let checkedRadio = false
 
 

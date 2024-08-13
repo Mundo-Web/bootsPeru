@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\OfferController;
+use App\Http\Controllers\ProductsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,7 @@ Route::get('/ofertas/{id?}', [IndexController::class, 'ofertas'])->name('Ofertas
 Route::middleware(['auth:sanctum', 'verified', 'can:Admin'])->group(function () {
   Route::prefix('admin')->group(function () {
     Route::get('/offers', [OfferController::class, 'reactView'])->name('Admin/Offers.jsx');
+    Route::get('/products2', [ProductsController::class, 'reactView'])->name('Admin/Products.jsx');
   });
 });
 // foreach (Router::components as $path => $page) {

@@ -12,7 +12,7 @@ class SaleDetailController extends Controller
      */
     public function bySale(Request $request, string $sale)
     {
-        $details = SaleDetail::where('sale_id', $sale)->get();
+        $details = SaleDetail::select('sale_details.*' , 'sales.doc_number' )->join('sales', 'sale_details.sale_id', '=', 'sales.id')->where('sale_id', $sale)->get();
         return $details;
     }
 

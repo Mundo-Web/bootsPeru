@@ -19,7 +19,9 @@ use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 use SoDe\Extend\JSON;
+use Illuminate\Support\Facades\Auth;
 
 use function PHPUnit\Framework\isNull;
 
@@ -35,8 +37,26 @@ class ProductsController extends Controller
     return view('pages.products.index', compact('products'));
   }
 
+  public function reactView()
+  {
+    $products = Products::all();
+
+    return Inertia::render('Admin/Products', [
+      'products' => $products,
+    ])->rootView('admin');
+  }
+
   public function paginate(Request $request)
   {
+    //validar el rol del usuario logueado 
+    // $user = Auth::user();
+    // dump($user->hasRole('Reseller'));
+
+    $user = false;
+   
+
+    
+    
     $response =  new dxResponse();
     try {
       $instance = Products::select([
@@ -47,7 +67,16 @@ class ProductsController extends Controller
         ->leftJoin('attributes AS a', 'apv.attribute_id', 'a.id')
         ->leftJoin('tags_xproducts AS txp', 'txp.producto_id', 'products.id')
         ->leftJoin('categories', 'categories.id', 'products.categoria_id') 
-        ->where('categories.visible', 1);       
+        ->where('categories.visible', 1);    
+        
+        if(Auth::check()){
+          $user = Auth::user();
+          $user = $user->hasRole('Reseller');
+          if ($user) { // Cambia 'admin' por el rol que deseas validar
+            $instance->where('products.precio_reseller', '>', 0);
+         }
+        }
+        
 
       if ($request->group != null) {
         [$grouping] = $request->group;
@@ -103,6 +132,7 @@ class ProductsController extends Controller
       $response->message = 'Operación correcta';
       $response->data = $jpas;
       $response->totalCount = $totalCount;
+      $response->is_proveedor = $user ; 
     } catch (\Throwable $th) {
       $response->status = 400;
       $response->message = $th->getMessage() . " " . $th->getFile() . ' Ln.' . $th->getLine();
@@ -215,7 +245,7 @@ class ProductsController extends Controller
     $valorAtributo = AttributesValues::where("status", "=", true)->get();
     $especificacion = Specifications::where("product_id", "=", $id)->get();
     if ($especificacion->count() == 0) $especificacion = [json_decode('{"tittle":"", "specifications":""}', false)];
-    $tags = Tag::all();
+    $tags = Tag::where('status', 1)->get();
     $categoria = Category::all();
     $subcategories = SubCategory::all();
     $galery = Galerie::where("product_id", "=", $id)->get();
@@ -259,7 +289,7 @@ class ProductsController extends Controller
       return null;
     } catch (\Throwable $th) {
       //throw $th;
-      // dump($th);
+      
     }
   }
 
@@ -268,10 +298,11 @@ class ProductsController extends Controller
    */
   public function store(Request $request)
   {
+    
     try {
       $especificaciones = [];
       $data = $request->all();
-      // dump($data);
+      
       $atributos = null;
       $tagsSeleccionados = $request->input('tags_id');
       // $valorprecio = $request->input('precio') - 0.1;
@@ -320,6 +351,10 @@ class ProductsController extends Controller
       $cleanedData = Arr::where($data, function ($value, $key) {
         return !is_null($value);
       });
+
+      if (!isset($cleanedData['stock'])) {
+         $cleanedData['stock'] = 0 ;
+      }
 
       $slug = strtolower(str_replace(' ', '-', $request->producto . '-' . $request->color));
 
@@ -379,6 +414,7 @@ class ProductsController extends Controller
       return redirect()->route('products.index')->with('success', 'Publicación creado exitosamente.');
     } catch (\Throwable $th) {
       //  dump($th->getMessage());
+      
     }
   }
 

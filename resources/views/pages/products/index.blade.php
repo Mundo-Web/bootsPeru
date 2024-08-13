@@ -254,6 +254,10 @@
         caption: 'DESCUENTO'
       },
       {
+        dataField: 'precio_reseller',
+        caption: 'REVENDEDOR'
+      },
+      {
         dataField: 'stock',
         caption: 'STOCK'
       },

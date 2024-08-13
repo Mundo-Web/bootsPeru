@@ -80,7 +80,8 @@
     breakpoints: {
       0: {
         slidesPerView: 2,
-        centeredSlides: {{ count($product->galeria) <= 1 ? 'true' : 'false' }},
+        // centeredSlides: {{ count($product->galeria) <= 2 ? 'true' : 'false' }},
+        centeredSlides: false,
         loop: {{ count($product->galeria) > 1 ? 'true' : 'false' }},
       },
       1024: {

@@ -25,6 +25,19 @@ class CreateNewUser implements CreatesNewUsers
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => $this->passwordRules(),
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
+        ], [
+            'name.required' => 'El campo nombre es obligatorio.',
+            'name.string' => 'El campo nombre debe ser una cadena de texto.',
+            'name.max' => 'El campo nombre no debe exceder los 255 caracteres.',
+            'email.required' => 'El campo correo electrónico es obligatorio.',
+            'email.string' => 'El campo correo electrónico debe ser una cadena de texto.',
+            'email.email' => 'El campo correo electrónico debe ser una dirección de correo válida.',
+            'email.max' => 'El campo correo electrónico no debe exceder los 255 caracteres.',
+            'email.unique' => 'El correo electrónico ya ha sido registrado.',
+            'password.required' => 'El campo contraseña es obligatorio.',
+            'password.min' => 'El campo contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'La confirmación de la contraseña no coincide.',
+            'terms.accepted' => 'Debe aceptar los términos y condiciones.',
         ])->validate();
 
         $user = User::create([

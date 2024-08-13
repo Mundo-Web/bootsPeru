@@ -6,7 +6,11 @@
 
 
 @stop
-
+<style>
+  .fixedWhastapp {
+    right: 128px !important;
+  }
+</style>
 
 @section('content')
 
@@ -28,10 +32,10 @@
         <input id="email" type="email" placeholder="Correo electrónico" required name="email" value=""
           class=" py-3 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" />
       </div> --}}
-      <div class="flex md:gap-20">
+      <div class="flex md:gap-20 flex-col  md:flex-row">
         <div class="flex justify-between items-center md:basis-8/12 w-full md:w-auto">
           <x-ecommerce.gateway.container>
-            <div class="flex flex-col 2lg:flex-row pb-5 border-b-[2px] border-[#E8ECEF] gap-5">
+            <div class="flex flex-col 2lg:flex-row pb-5  border-[#E8ECEF] gap-5">
               <table>
                 <tbody id="itemsCarritoCheck">
 
@@ -60,18 +64,105 @@
           </div>
         </div>
       </div>
+      @if ($destacados->count() > 0)
+        <h1 class="text-2xl md:text-3xl font-semibold font-Inter_Medium text-[#323232] mb-6">Aprovecha estas ofertas
+          especiales
+          antes de completar tu compra</h1>
+        <div class="relative">
+
+          <div class="swiper-container">
+            <div class="swiper-wrapper">
+              @foreach ($destacados as $item)
+                <div class="swiper-slide">
+                  <x-product.container width="w-1/5" bgcolor="bg-[#FFFFFF]" :item="$item" />
+                </div>
+              @endforeach
+            </div>
+            <!-- Add Pagination -->
+            <div class="swiper-pagination"></div>
+            <!-- Add Navigation -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+          </div>
+        </div>
+
+      @endif
+
     </section>
   </main>
+  <style>
+    .swiper-horizontal>.swiper-pagination-bullets,
+    .swiper-pagination-bullets.swiper-pagination-horizontal,
+    .swiper-pagination-custom,
+    .swiper-pagination-fraction {
+      position: absolute;
+      bottom: -50px !important;
+      /* Ajusta este valor según sea necesario */
+      width: 100%;
+      text-align: center;
+      /* bottom: 0% !important; */
+
+    }
 
 
+    .custom-pagination-bullet {
+      background: #000;
+      /* Cambia el color de los bullets si es necesario */
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var swiper = new Swiper('.swiper-container', {
+        slidesPerView: 1,
+        spaceBetween: 5,
+        autoplay: {
+          delay: 2500,
+          disableOnInteraction: false,
+        },
+        loop: true,
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true,
+        },
+        breakpoints: {
+          0: {
+            slidesPerView: 1,
+            spaceBetween: 10,
+          },
+          640: {
+            slidesPerView: 2,
+            spaceBetween: 20,
+          },
+          768: {
+            slidesPerView: 3,
+            spaceBetween: 30,
+          },
+          1024: {
+            slidesPerView: 5,
+            spaceBetween: 40,
+          },
+        },
+      });
+    });
+  </script>
 
 
 @section('scripts_importados')
   <script>
-    let articulosCarrito = [];
+    $(document).ready(function() {
+      calcularTotal()
+    });
+
+    // let articulosCarrito = [];
     let checkedRadio = false
 
     function calcularTotal() {
+      console.log('Calculo el total');
       const precioProductos = getTotalPrice()
       $('#itemSubtotal').text(`S/. ${precioProductos.toFixed(2)}`)
       const precioEnvio = getCostoEnvio()
@@ -149,7 +240,7 @@
     $(document).ready(function() {
       articulosCarrito = Local.get('carrito') || [];
 
-      PintarCarrito();
+      // PintarCarrito();
     });
 
     function limpiarHTML() {

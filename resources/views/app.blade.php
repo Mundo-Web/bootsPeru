@@ -9,11 +9,11 @@
   <meta charset="UTF-8">
   <meta name="language" content="es">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description"
-    content="Somos especialistas en Wall Panel, mármol UV, piedra PU y otros productos para ti. Confía en la calidad de Deco TAB y dale otro estilo a tu ambiente favorito.">
+  {{--  <meta name="description"
+    content="Somos especialistas en Wall Panel, mármol UV, piedra PU y otros productos para ti. Confía en la calidad de Deco TAB y dale otro estilo a tu ambiente favorito."> --}}
   <title> Boots Peru </title>
-  <meta name="keywords"
-    content="Wall Panel, Mármol UV, Piedra PU, Piedra Cincelada, Wall Panel Negro, Pisos SPC, Panel Tipo piedra PU" />
+  {{--   <meta name="keywords"
+    content="Wall Panel, Mármol UV, Piedra PU, Piedra Cincelada, Wall Panel Negro, Pisos SPC, Panel Tipo piedra PU" /> --}}
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   @vite(['resources/js/' . $component, 'resources/css/app.css', 'resources/js/app.js'])
   <link rel="stylesheet" href="{{ asset('css/styles.css') }}" />

@@ -4,7 +4,7 @@
       {{ $item['title'] }}
     @endforeach
   </span>
-  <h2 class="text-xl lg:text-2xl font-normal font-Inter_Medium text-[#323232]">
+  <h2 class="text-xl lg:text-2xl font-normal font-Inter_Medium text-[#323232] text-center px-2">
     @foreach ($banner as $item)
       {{ $item['description'] }}
     @endforeach
@@ -24,6 +24,7 @@
 </div>
 <div class="w-full flex items-end justify-center content-center relative px-[5%] ">
   @foreach ($banner as $item)
-    <img src="{{ asset($item['image']) }}" alt="" class="object-contain lg:-mt-24 object-bottom md:h-[400px] lg:h-[450px]">
+    <img src="{{ asset($item['image']) }}" alt=""
+      class="object-contain lg:-mt-24 object-bottom md:h-[400px] lg:h-[450px]">
   @endforeach
 </div>

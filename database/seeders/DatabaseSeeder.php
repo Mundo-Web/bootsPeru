@@ -39,10 +39,14 @@ class DatabaseSeeder extends Seeder
             FaqsSeeder::class,
             BeneficiosSeeder::class,
             SliderSeeder::class,
-            SubcategorySeeder::class,
+            SubCategorySeeder::class,
             ProductSeeder::class,
-            StatusSeeder::class
+            StatusSeeder::class,
+            PricesTableSeeder::class,
+            PoliticasDatos::class,
+            AboutUsSeeder::class
             //ServiceSeeder::class,
         ]);
+        
     }
 }

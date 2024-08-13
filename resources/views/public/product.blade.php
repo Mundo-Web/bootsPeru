@@ -21,6 +21,10 @@
       border-spacing: 10;
     }
 
+    .fixedWhastapp {
+      right: 128px !important;
+    }
+
     .clase_table td {
       /* border: 1px solid black; */
       border-radius: 10px;
@@ -57,7 +61,10 @@
         $maxStock = $product->max_stock;
     }
     # calculamos en % cuanto queda en base a 100
-    $stock = ($StockActual * 100) / $maxStock;
+    $stock = 0;
+    if ($maxStock !== 0) {
+        $stock = ($StockActual * 100) / $maxStock;
+    }
 
   @endphp
   @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
@@ -100,27 +107,49 @@
               <p class="font-Inter_Regular text-[15.34px] gap-2 text-[#666666] mt-2">SKU: {{ $product->sku }}</p>
             @endif
 
-            <div class="flex flex-row gap-3 content-center items-center mt-4">
-              @if ($product->descuento == 0)
-                <div class="content-center flex flex-row gap-2 items-center">
-                  <span class="font-Inter_SemiBold text-3xl gap-2 text-[#006BF6]">S/
-                    {{ $product->precio }}</span>
-                </div>
-              @else
-                <div class="content-center flex flex-row gap-2 items-center">
-                  <span class="font-Inter_SemiBold text-3xl gap-2 text-[#006BF6]">S/
+
+            @if ($is_reseller)
+              <div class="flex flex-col gap-3 content-start items-start mt-4">
+
+                <div class="content-center flex flex-row gap-2 items-center ">
+                  <span class="font-Inter_Regular text-sm gap-2 text-[#666666] line-through">S/
                     {{ $product->descuento }}</span>
                   <span class="text-[#666666] font-Inter_Regular line-through text-sm">S/
                     {{ $product->precio }}</span>
                 </div>
-                @php
-                  $descuento = round((($product->precio - $product->descuento) * 100) / $product->precio);
-                @endphp
-                <span
-                  class="ml-2 font-Inter_Medium text-center content-center text-xs gap-2 bg-[#006BF6] text-white h-9 w-16 rounded-3xl px-2">
-                  -{{ $descuento }}% </span>
-              @endif
-            </div>
+                <div class="content-center flex flex-row gap-2 items-center ">
+                  Reseller:
+                  <span class="font-Inter_SemiBold text-3xl gap-2 text-[#006BF6]">S/
+                    {{ $product->precio_reseller }}</span>
+                </div>
+              </div>
+            @else
+              <div class="flex flex-row gap-3 content-center items-center mt-4">
+                @if ($product->descuento == 0)
+                  <div class="content-center flex flex-row gap-2 items-center">
+                    <span class="font-Inter_SemiBold text-3xl gap-2 text-[#006BF6]">S/
+                      {{ $product->precio }}</span>
+                  </div>
+                @else
+                  <div class="content-center flex flex-row gap-2 items-center">
+                    <span class="font-Inter_SemiBold text-3xl gap-2 text-[#006BF6]">S/
+                      {{ $product->descuento }}</span>
+                    <span class="text-[#666666] font-Inter_Regular line-through text-sm">S/
+                      {{ $product->precio }}</span>
+                  </div>
+                  @php
+                    $descuento = round((($product->precio - $product->descuento) * 100) / $product->precio);
+                  @endphp
+                  <span
+                    class="ml-2 font-Inter_Medium text-center content-center text-xs gap-2 bg-[#006BF6] text-white h-9 w-16 rounded-3xl px-2">
+                    -{{ $descuento }}% </span>
+                @endif
+              </div>
+
+            @endif
+
+
+
             <div class="font-medium text-base font-Inter_Regular w-full mt-4 text-[#444]">
               {!! $product->description !!}
             </div>
@@ -199,7 +228,7 @@
                 </div>
               </div>
               <div class="xl:ml-8 flex flex-row gap-5 justify-start items-center">
-                <button id="btnAgregarCarrito"
+                <button id="btnAgregarCarritoPr" data-id="{{ $product->id }}"
                   class="bg-[#0D2E5E] w-[286px] h-16  text-white text-center rounded-full font-Inter_SemiBold tracking-wide text-lg hover:bg-[#1E8E9E]">
                   Agregar
                   al Carrito
@@ -216,12 +245,7 @@
               </div>
             </div>
           </div>
-          {{-- <div class="w-full flex -mt-2 justify-center items-center content-center ">
-                  <a id="btnAgregarCarrito" href="{{ route('carrito') }}"
-                    class="bg-[#006BF6] w-full h-14 justify-center items-center content-center text-white text-center rounded-full font-Inter_SemiBold text-[18px] mr-[172px]">
-                    Comprar ahora
-                  </a>
-                </div> --}}
+
 
           <div class="flex flex-col gap-2 pb-8 lg:pb-16" data-aos="fade-up">
             <span class="text-base font-Inter_Medium">
@@ -316,7 +340,7 @@
           <a href="{{ $url }}" class="flex items-center text-base font-Inter_SemiBold text-[#006BF6] ">Ver
             todos los productos <img src="{{ asset('images/img/arrowBlue.png') }}" alt="Icono" class="ml-5 "></a>
         </div>
-        <div class="grid grid-cols-4 gap-4 mt-14 w-full">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-14 w-full">
           @foreach ($ProdComplementarios->take(4) as $item)
             {{-- <x-product.container-combinalo width="" height="h-[400px]" bgcolor="bg-[#FFFFFF]"
               textpx="text-[20px]" :item="$item" /> --}}
@@ -432,7 +456,7 @@
     })
   </script>
   <script>
-    let articulosCarrito = [];
+    // let articulosCarrito = [];
 
 
     function deleteOnCarBtn(id, operacion) {
@@ -502,7 +526,7 @@
     $(document).ready(function() {
       articulosCarrito = Local.get('carrito') || [];
 
-      PintarCarrito();
+      // PintarCarrito();
     });
 
     function limpiarHTML() {
@@ -560,92 +584,7 @@
       });
     })
 
-    $('#btnAgregarCarrito').on('click', function() {
-      let url = window.location.href;
-      let partesURl = url.split('/')
-      let item = partesURl[partesURl.length - 1]
-      let cantidad = Number($('#cantidadSpan span').text())
-      item = item.replace('#', '')
 
-
-
-      // id='nodescuento'
-
-
-      $.ajax({
-
-        url: `{{ route('carrito.buscarProducto') }}`,
-        method: 'POST',
-        data: {
-          _token: $('input[name="_token"]').val(),
-          id: item,
-          cantidad
-
-        },
-        success: function(success) {
-          let {
-            producto,
-            id,
-            descuento,
-            precio,
-            imagen,
-            color
-          } = success.data
-          let cantidad = Number(success.cantidad)
-          let detalleProducto = {
-            id,
-            producto,
-            descuento,
-            precio,
-            imagen,
-            cantidad,
-            color
-
-          }
-          let existeArticulo = articulosCarrito.some(item => item.id === detalleProducto.id)
-          if (existeArticulo) {
-            //sumar al articulo actual 
-            const prodRepetido = articulosCarrito.map(item => {
-              if (item.id === detalleProducto.id) {
-                item.cantidad += Number(detalleProducto.cantidad);
-                return item; // retorna el objeto actualizado 
-              } else {
-                return item; // retorna los objetos que no son duplicados 
-              }
-
-            });
-          } else {
-            articulosCarrito = [...articulosCarrito, detalleProducto]
-
-          }
-
-          Local.set('carrito', articulosCarrito)
-          let itemsCarrito = $('#itemsCarrito')
-          let ItemssubTotal = $('#ItemssubTotal')
-          let itemsTotal = $('#itemsTotal')
-          limpiarHTML()
-          PintarCarrito()
-          mostrarTotalItems()
-
-          Swal.fire({
-
-            icon: "success",
-            title: `Producto agregado correctamente`,
-            showConfirmButton: true
-
-
-          });
-        },
-        error: function(error) {
-          console.log(error)
-        }
-
-      })
-
-
-
-      // articulosCarrito = {...articulosCarrito , detalleProducto }
-    })
 
     $('#addWishlist').on('click', function() {
       $.ajax({

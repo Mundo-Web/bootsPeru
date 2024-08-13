@@ -9,6 +9,16 @@ import arrayJoin from './Utils/ArrayJoin'
 import ProductCard from './components/Product/ProductCard'
 
 const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_cat: selected_category }) => {
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = "https://cdn.sode.me/extends/notify.extend.min.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, [null]);
   const take = 10
 
   const [items, setItems] = useState([])
@@ -99,6 +109,17 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
         }
       })
       filterBody.push(categoryFilter)
+    }
+    if (filter['subcategory_id'] && filter['subcategory_id'].length > 0) {
+      const subcategoryFilter = []
+      filter['subcategory_id'].forEach((x, i) => {
+        if (i == 0) {
+          subcategoryFilter.push(['subcategory_id', '=', x])
+        } else {
+          subcategoryFilter.push('or', ['subcategory_id', '=', x])
+        }
+      })
+      filterBody.push(subcategoryFilter)
     }
 
     const { status, result } = await Fetch('/api/ofertas/paginate', {

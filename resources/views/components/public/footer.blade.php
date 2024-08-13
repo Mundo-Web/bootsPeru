@@ -64,6 +64,7 @@
       <a href="/contacto">Contacto</a>
       <a id="linkTerminos">Terminos y condiciones </a>
       <a id="linkPoliticas">Politicas de devolucion </a>
+      <a id="linkPoliticasDatos">Politica de Datos</a>
 
       <a href="{{ route('librodereclamaciones') }}"><img class="w-24"
           src="{{ asset('images/img/reclamaciones.png') }}" /></a>
@@ -109,7 +110,7 @@
     <!-- Modal body -->
     <div class="p-4 ">
       <h1 class="font-Inter_SemiBold">Terminos y condiciones</h1>
-      <p class="font-Inter_Regular p-2">{!! $terminos->content ?? '' !!}</p>
+      <p class="font-Inter_Regular p-2 prose">{!! $terminos->content ?? '' !!}</p>
     </div>
   </div>
   <div id="modalPoliticasDev" class="modal" style="max-width: 900px !important; width: 100% !important;  ">
@@ -118,6 +119,16 @@
       <h1 class="font-Inter_SemiBold">Politicas de devolucion</h1>
 
       <p class="font-Inter_Regular p-2">{!! $politicas->content ?? '' !!}</p>
+
+
+    </div>
+  </div>
+  <div id="modallinkPoliticasDatos" class="modal" style="max-width: 900px !important; width: 100% !important;  ">
+    <!-- Modal body -->
+    <div class="p-4 ">
+      <h1 class="font-Inter_SemiBold">Politicas de Datos</h1>
+
+      <p class="font-Inter_Regular  ">{!! $politicaDatos->content ?? '' !!}</p>
 
 
     </div>
@@ -139,6 +150,14 @@
     })
     $(document).on('click', '#linkPoliticas', function() {
       $('#modalPoliticasDev').modal({
+        show: true,
+        fadeDuration: 400,
+
+
+      })
+    })
+    $(document).on('click', '#linkPoliticasDatos', function() {
+      $('#modallinkPoliticasDatos').modal({
         show: true,
         fadeDuration: 400,
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Products;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CarritoController extends Controller
 {
@@ -66,11 +67,17 @@ class CarritoController extends Controller
     public function buscarProducto(Request $request){
        $id =  $request->id; 
        $cantidad =  (int)$request->cantidad; 
-       
+
+       $is_reseller = false; 
+       if(Auth::check()){
+        $user = Auth::user();
+        $is_reseller = $user->hasRole('Reseller');
+        
+      }
         //busco producto 
 
         $producto = Products::find($id);
 
-        return response()->json(['message' => 'Producto encontrado ', 'data' => $producto , 'cantidad'=> $cantidad] );
+        return response()->json(['message' => 'Producto encontrado ', 'data' => $producto , 'cantidad'=> $cantidad, 'is_reseller' => $is_reseller] );
     }
 }

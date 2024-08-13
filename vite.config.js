@@ -14,6 +14,7 @@ export default defineConfig({
                 ...glob.sync('resources/js/**/*.jsx'),
                 'resources/css/app.css',
                 'resources/js/app.js',
+                
             ],
             refresh: true,
         }),

@@ -27,19 +27,32 @@ class PaymentController extends Controller
     $sale = new Sale();
     try {
 
-      $products = array_filter($body['cart'], fn ($x) => !(isset($x['isCombo']) && $x['isCombo'] == true));
-      $offers = array_filter($body['cart'], fn ($x) => isset($x['isCombo']) && $x['isCombo'] == true);
+      $products = array_filter($body['cart'], fn($x) => !(isset($x['isCombo']) && $x['isCombo'] == true));
+      $offers = array_filter($body['cart'], fn($x) => isset($x['isCombo']) && $x['isCombo'] == true);
 
-      $productsJpa = Products::select(['id', 'imagen', 'producto', 'color', 'precio', 'descuento'])
-        ->whereIn('id', array_map(fn ($x) => $x['id'], $products))
+      $productsJpa = []; 
+
+      if (Auth::check() && Auth::user()->hasRole('Reseller')) {
+         
+          $productsJpa = Products::select(['id', 'imagen', 'producto', 'color', 'precio', 'precio_reseller as descuento'])
+            ->whereIn('id', array_map(fn($x) => $x['id'], $products))
+            ->get();
+        
+        
+      }else{
+        $productsJpa = Products::select(['id', 'imagen', 'producto', 'color', 'precio', 'descuento'])
+        ->whereIn('id', array_map(fn($x) => $x['id'], $products))
         ->get();
+      }
+
 
       $offersJpa = [];
       if (count($offers) > 0) {
         $offersJpa = Offer::select(['id', 'imagen', 'producto', DB::raw('null AS color'), 'precio', 'descuento'])
-          ->whereIn('id', array_map(fn ($x) => $x['id'], $offers))
+          ->whereIn('id', array_map(fn($x) => $x['id'], $offers))
           ->get();
       }
+
 
       $totalCost = 0;
       foreach ($productsJpa as $productJpa) {
@@ -60,7 +73,6 @@ class PaymentController extends Controller
         }
       }
 
-
       $sale->name = $body['contact']['name'];
       $sale->lastname = $body['contact']['lastname'];
       $sale->email = Auth::check() ? Auth::user()->email : $body['contact']['email'];
@@ -68,6 +80,9 @@ class PaymentController extends Controller
       $sale->address_price = 0;
       $sale->total = $totalCost;
       $sale->tipo_comprobante = $body['tipo_comprobante'];
+      $sale->doc_number = $body['contact']['doc_number'] ?? null;
+      $sale->razon_fact = $body['contact']['razon_fact'] ?? null;
+      $sale->direccion_fact = $body['contact']['direccion_fact'] ?? null;
       $sale->code = '000000000000';
 
       if ($request->address) {
@@ -107,7 +122,7 @@ class PaymentController extends Controller
 
       $sale->status_id = 1;
       $sale->status_message = 'La venta se ha creado. Aun no se ha pagado';
-
+     
       $sale->save();
 
       foreach ($productsJpa as $productJpa) {
@@ -148,11 +163,12 @@ class PaymentController extends Controller
         ]);
       }
 
+
       $config = [
         "amount" => round($totalCost * 100),
         "capture" => true,
         "currency_code" => "PEN",
-        "description" => "Compra en Decotab",
+        "description" => "Compra en " . env('APP_NAME'),
         "email" => $body['culqi']['email'] ?? $body['contact']['email'],
         "installments" => 0,
         "antifraud_details" => [
@@ -188,9 +204,13 @@ class PaymentController extends Controller
       $response->status = 400;
       $response->message = $th->getMessage();
 
+      if(!$sale->code){
+        $sale->code = '000000000000';
+      }
       $sale->status_id = 2;
       $sale->status_message = $th->getMessage();
     } finally {
+      
       $sale->save();
       return response($response->toArray(), $response->status);
     }

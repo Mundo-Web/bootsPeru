@@ -8,7 +8,9 @@ use App\Models\Category;
 use App\Models\General;
 use App\Models\LibroReclamaciones;
 use App\Models\Message;
+use App\Models\PoliticaDatos;
 use App\Models\PolyticsCondition;
+use App\Models\Products;
 use App\Models\Sale;
 use App\Models\Tag;
 use App\Models\TermsAndCondition;
@@ -32,10 +34,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        View::composer('auth.register', function ($view) {
+            $termsAndCondicitions = TermsAndCondition::first();
+            $politicas = PoliticaDatos::first();
+            $view->with(['politicas'=> $politicas , 'terminos' => $termsAndCondicitions]);
+        });
 
         View::composer('components.public.footer', function ($view) {
-        
-           
+
 
             // Obtener los datos del footer
             $datosgenerales = General::first(); // Suponiendo que tienes un modelo Footer y un método footerData() en él
@@ -44,20 +50,33 @@ class AppServiceProvider extends ServiceProvider
             //jalar datos de un controlador 
             $politicDev = PolyticsCondition::first();
             $termsAndCondicitions = TermsAndCondition::first();
+            $politicaDatos = PoliticaDatos::first();
 
-            $view->with(['datosgenerales'=> $datosgenerales, 'politicas' => $politicDev, 'terminos' => $termsAndCondicitions]);
+            $view->with(['datosgenerales' => $datosgenerales, 'politicas' => $politicDev, 'terminos' => $termsAndCondicitions , 'politicaDatos' => $politicaDatos]);
         });
 
         View::composer('components.public.header', function ($view) {
-            // Obtener los datos del footer
+            
             $datosgenerales = General::all();
-            $blog = Blog::where('status', '=', 1)->where('visible', '=', 1)->count() ; // Suponiendo que tienes un modelo Footer y un método footerData() en él
+            $blog = Blog::where('status', '=', 1)->where('visible', '=', 1)->count(); // Suponiendo que tienes un modelo Footer y un método footerData() en él
             $categoriasMenu = Category::where('visible', '=', 1)->where('is_menu', 1)->get();
+
+            $categorias = Category::with(['subcategories' => function ($query) {
+                $query->whereHas('products');
+            }])->get();
+
+
             $tags = Tag::where('is_menu', 1)
-            ->whereHas('productos')
-            ->get();
+                ->whereHas('productos')
+                ->get();
+
+            $offerExists = Products::where('status', true)
+                ->where('descuento', '>', 0)
+                ->exists();
+
             // Pasar los datos a la vista
-            $view->with(['datosgenerales'=> $datosgenerales, 'blog' => $blog ,  'categoriasMenu' =>$categoriasMenu, 'tags' => $tags]);
+            $view->with(['datosgenerales' => $datosgenerales, 'blog' => $blog,  
+            'categoriasMenu' => $categoriasMenu, 'tags' => $tags, 'offerExists' => $offerExists , 'categorias'=> $categorias]);
         });
 
         View::composer('components.app.sidebar', function ($view) {

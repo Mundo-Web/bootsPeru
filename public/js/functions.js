@@ -415,7 +415,11 @@ cuentas.forEach((cuenta) => {
   });
 });
 
+
+
 function PintarCarrito() {
+  console.log('llama a la funciuon')
+  console.log('appUrl', appUrl)
 
   let itemsCarrito = $('#itemsCarrito')
   let itemsCarritoCheck = $('#itemsCarritoCheck')
@@ -423,7 +427,7 @@ function PintarCarrito() {
   articulosCarrito.forEach(element => {
     let plantilla = `<tr class=" font-poppins border-b">
           <td class="p-2">
-            <img src="/${element.imagen}" class="block bg-[#F3F5F7] rounded-md p-0" alt="producto" style="width: 100px; height: 75px; object-fit: contain; object-position: center;" />
+            <img src="${appUrl}/${element.imagen}" class="block bg-[#F3F5F7] rounded-md p-0 " alt="producto" onerror="this.onerror=null;this.src='/images/img/noimagen.jpg';"  style="width: 100px; height: 75px; object-fit: contain; object-position: center;" />
           </td>
           <td class="p-2">
             <p class="font-semibold text-[14px] text-[#151515] mb-1">
@@ -462,4 +466,23 @@ function PintarCarrito() {
   mostrarTotalItems()
   calcularTotal()
 }
+function calcularTotal() {
+  let articulos = Local.get('carrito')
+  let total = articulos.map(item => {
+    let monto
+    if (Number(item.descuento) !== 0) {
+      monto = item.cantidad * Number(item.descuento)
+    } else {
+      monto = item.cantidad * Number(item.precio)
+
+    }
+    return monto
+
+  })
+  const suma = total.reduce((total, elemento) => total + elemento, 0);
+
+  $('#itemsTotal').text(`S/. ${suma} `)
+
+}
+
 

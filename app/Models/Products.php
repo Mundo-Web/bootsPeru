@@ -34,7 +34,8 @@ class Products extends Model
     'image_texture',
     'slug',
     'sku',
-    'max_stock'
+    'max_stock', 
+    'precio_reseller'
   ];
 
   public function categoria()

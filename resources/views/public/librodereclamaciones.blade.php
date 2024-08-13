@@ -3,7 +3,11 @@
 @section('css_importados')
 
 @stop
-
+<style>
+  .fixedWhastapp {
+    right: 128px !important;
+  }
+</style>
 
 @section('content')
   <section class="w-11/12 mx-auto font-poppins">
