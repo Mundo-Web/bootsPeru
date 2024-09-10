@@ -90,19 +90,19 @@ const Transactions = () => {
           format: 'yyyy-MM-dd HH:mm:ss',
           sortOrder: 'desc'
         },
-        {
-          caption: 'Acciones',
-          cellTemplate: (container, { data }) => {
-            container.append(DxButton({
-              className: 'px-2 py-0 text-xs font-medium text-blue-700 bg-blue-100 rounded hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-150 ease-in-out border-none text-blue-500',
-              title: 'Ver venta',
-              icon: 'fa fa-eye',
-              onClick: () => location.href = '/admin/'
-            }))
-          },
-          allowFiltering: false,
-          allowExporting: false
-        }
+        // {
+        //   caption: 'Acciones',
+        //   cellTemplate: (container, { data }) => {
+        //     container.append(DxButton({
+        //       className: 'px-2 py-0 text-xs font-medium text-blue-700 bg-blue-100 rounded hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-150 ease-in-out border-none text-blue-500',
+        //       title: 'Ver venta',
+        //       icon: 'fa fa-eye',
+        //       onClick: () => location.href = '/admin/'
+        //     }))
+        //   },
+        //   allowFiltering: false,
+        //   allowExporting: false
+        // }
       ]}
       customizeCell={(options) => {
         if (options?.gridCell?.rowType == 'data' && !options?.gridCell?.value) {
