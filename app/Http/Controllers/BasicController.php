@@ -56,7 +56,8 @@ class BasicController extends Controller
 
       if ($request->group != null) {
         [$grouping] = $request->group;
-        $selector = str_replace('.', '__', $grouping['selector']);
+        // $selector = str_replace('.', '__', $grouping['selector']);
+        $selector = $grouping['selector'];
         $instance = $this->model::select([
           "{$selector} AS key"
         ])
@@ -75,7 +76,8 @@ class BasicController extends Controller
 
       if ($request->sort != null) {
         foreach ($request->sort as $sorting) {
-          $selector = \str_replace('.', '__', $sorting['selector']);
+          // $selector = \str_replace('.', '__', $sorting['selector']);
+          $selector = $sorting['selector'];
           $instance->orderBy(
             $selector,
             $sorting['desc'] ? 'DESC' : 'ASC'
@@ -95,14 +97,15 @@ class BasicController extends Controller
 
       $results = [];
 
-      foreach ($jpas as $jpa) {
-        $result = JSON::unflatten($jpa->toArray(), '__');
-        $results[] = $result;
-      }
+      // foreach ($jpas as $jpa) {
+      //   $result = JSON::unflatten($jpa->toArray(), '__');
+      //   $results[] = $result;
+      // }
 
       $response->status = 200;
       $response->message = 'Operación correcta';
-      $response->data = $results;
+      // $response->data = $results;
+      $response->data = $jpas;
       $response->totalCount = $totalCount;
     } catch (\Throwable $th) {
       $response->status = 400;

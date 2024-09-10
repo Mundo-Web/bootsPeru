@@ -123,6 +123,7 @@ Route::middleware(['auth:sanctum', 'verified', 'can:Admin'])->group(function () 
 
 
         Route::resource('/pedidos', SaleController::class);
+        Route::get('/transactions', [TransactionController::class, 'reactView'])->name('Admin/Transactions.jsx');
 
         Route::get('/politica-datos/{id}', [PoliticaDatosController::class, 'edit'])->name('politicadatos.detalle');
         Route::post('/politica-datos/update/{id}', [PoliticaDatosController::class, 'update'])->name('politicadatos.act');

@@ -10,6 +10,7 @@ use App\Http\Controllers\SaleDetailController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TransactionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +45,7 @@ Route::middleware(['web', 'auth:sanctum', 'verified'])->group(function () {
     Route::delete('/address/{id}', [AddressController::class, 'delete'])->name('address.delete');
     Route::patch('/address/markasfavorite', [AddressController::class, 'markasfavorite'])->name('address.markasfavorite');
 
+    
     Route::post('/sales/paginate', [SaleController::class, 'paginate'])->name('sales.paginate');
     Route::post('/sales/confirmation', [SaleController::class, 'confirmation'])->name('sales.confirmation');
     Route::patch('/sales/status', [SaleController::class, 'status'])->name('sales.status');
@@ -52,4 +54,8 @@ Route::middleware(['web', 'auth:sanctum', 'verified'])->group(function () {
     Route::get('/offers', [OfferController::class, 'all'])->name('offers.all');
     Route::patch('/offers', [OfferController::class, 'save'])->name('offers.save');
     Route::delete('/offers/{offer_id}', [OfferController::class, 'delete'])->name('offers.delete');
+    
+    Route::prefix('admin')->group(function () {
+        Route::post('/transactions/paginate', [TransactionController::class, 'paginate']);
+    });
 });

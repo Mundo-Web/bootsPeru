@@ -30,19 +30,35 @@ class PaymentController extends Controller
       $products = array_filter($body['cart'], fn($x) => !(isset($x['isCombo']) && $x['isCombo'] == true));
       $offers = array_filter($body['cart'], fn($x) => isset($x['isCombo']) && $x['isCombo'] == true);
 
-      $productsJpa = []; 
+      $productsJpa = [];
 
       if (Auth::check() && Auth::user()->hasRole('Reseller')) {
-         
-          $productsJpa = Products::select(['id', 'imagen', 'producto', 'color', 'precio', 'precio_reseller as descuento'])
-            ->whereIn('id', array_map(fn($x) => $x['id'], $products))
-            ->get();
-        
-        
-      }else{
-        $productsJpa = Products::select(['id', 'imagen', 'producto', 'color', 'precio', 'descuento'])
-        ->whereIn('id', array_map(fn($x) => $x['id'], $products))
-        ->get();
+
+        $productsJpa = Products::select([
+          'products.id',
+          'products.imagen',
+          'products.producto',
+          'products.color',
+          'products.precio',
+          'products.precio_reseller as descuento',
+          'categories.name AS category'
+        ])
+          ->join('categories', 'categories.id', 'products.categoria_id')
+          ->whereIn('products.id', array_map(fn($x) => $x['id'], $products))
+          ->get();
+      } else {
+        $productsJpa = Products::select([
+          'products.id',
+          'products.imagen',
+          'products.producto',
+          'products.color',
+          'products.precio',
+          'products.descuento',
+          'categories.name AS category'
+        ])
+          ->join('categories', 'categories.id', 'products.categoria_id')
+          ->whereIn('products.id', array_map(fn($x) => $x['id'], $products))
+          ->get();
       }
 
 
@@ -122,7 +138,7 @@ class PaymentController extends Controller
 
       $sale->status_id = 1;
       $sale->status_message = 'La venta se ha creado. Aun no se ha pagado';
-     
+
       $sale->save();
 
       foreach ($productsJpa as $productJpa) {
@@ -132,6 +148,7 @@ class PaymentController extends Controller
 
         SaleDetail::create([
           'sale_id' => $sale->id,
+          'category' => $productJpa->category,
           'product_image' => $productJpa->imagen,
           'product_name' => $productJpa->producto,
           'product_color' => $productJpa->color,
@@ -155,6 +172,7 @@ class PaymentController extends Controller
 
         SaleDetail::create([
           'sale_id' => $sale->id,
+          'category' => 'Combos',
           'product_image' => $offerJpa->imagen,
           'product_name' => $name,
           'product_color' => $offerJpa->color,
@@ -206,22 +224,20 @@ class PaymentController extends Controller
       $indexController = new IndexController();
       $datacorreo = [
         'nombre' => $sale->name . ' ' . $sale->lastname,
-        
         'email' => $sale->email,
-       
       ];
       $indexController->envioCorreoCompra($datacorreo);
     } catch (\Throwable $th) {
       $response->status = 400;
       $response->message = $th->getMessage();
 
-      if(!$sale->code){
+      if (!$sale->code) {
         $sale->code = '000000000000';
       }
       $sale->status_id = 2;
       $sale->status_message = $th->getMessage();
     } finally {
-      
+
       $sale->save();
       return response($response->toArray(), $response->status);
     }

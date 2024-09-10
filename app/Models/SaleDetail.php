@@ -11,10 +11,15 @@ class SaleDetail extends Model
 
     protected $fillable = [
         'sale_id',
+        'category',
         'product_image',
         'product_name',
         'product_color',
         'quantity',
         'price',
     ];
+
+    public function sale() {
+        return $this->hasOne(Sale::class, 'id', 'sale_id');
+    }
 }
