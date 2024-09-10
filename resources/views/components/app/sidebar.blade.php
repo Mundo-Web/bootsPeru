@@ -59,7 +59,7 @@
             </x-slot>
           @endif
         </x-menu.item>
-        <x-menu.item id="transactions" href="{{ route('Admin/Transactions.jsxgit status') }}" icon="fas fa-truck-loading">
+        <x-menu.item id="transactions" href="{{ route('Admin/Transactions.jsx') }}" icon="fas fa-truck-loading">
           Movimientos
         </x-menu.item>
         <x-menu.item id="mensajes" href="{{ route('mensajes.index') }}" icon="fas fa-comments">
