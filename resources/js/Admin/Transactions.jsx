@@ -87,7 +87,8 @@ const Transactions = () => {
           dataField: 'sale.created_at',
           caption: 'Fecha',
           dataType: 'datetime',
-          format: 'yyyy-MM-dd HH:mm:ss'
+          format: 'yyyy-MM-dd HH:mm:ss',
+          sortOrder: 'desc'
         },
         {
           caption: 'Acciones',

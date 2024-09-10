@@ -74,7 +74,7 @@
     "src": "resources/js/Admin/Offers.jsx"
   },
   "resources/js/Admin/Transactions.jsx": {
-    "file": "assets/Transactions-O9WYweD3.js",
+    "file": "assets/Transactions-5kziKFHA.js",
     "imports": [
       "resources/js/components/DataGrid.jsx",
       "resources/js/Utils/ReactAppend.jsx",
