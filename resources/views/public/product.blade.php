@@ -263,11 +263,14 @@
                 </div>
               </div>
               <div class="xl:ml-8 flex flex-row gap-5 justify-start items-center">
-                <button id="btnAgregarCarritoPr" data-id="{{ $product->id }}"
-                  class="bg-[#0D2E5E] w-[286px] h-16  text-white text-center rounded-full font-Inter_SemiBold tracking-wide text-lg hover:bg-[#1E8E9E]">
-                  Agregar
-                  al Carrito
-                </button>
+                @if ($product->status == 1 && $product->visible == 1)
+                  <button id="btnAgregarCarritoPr" data-id="{{ $product->id }}"
+                    class="bg-[#0D2E5E] w-[286px] h-16  text-white text-center rounded-full font-Inter_SemiBold tracking-wide text-lg hover:bg-[#1E8E9E]">
+                    Agregar
+                    al Carrito
+                  </button>
+                @endif
+
                 @if (Auth::user() !== null)
                   <button
                     class=" @if ($isWhishList) bg-[#0D2E5E]  @else bg-[#99b9eb] @endif w-12 h-12 rounded-full text-white flex justify-center items-center hover:bg-[#1E8E9E]"
@@ -601,7 +604,7 @@
           "producto": nombre,
           "descuento": data.descuento,
           "precio": data.precio,
-          "imagen": data.imagen ?? '/images/img/noimagen.jpg',
+          "imagen": data.imagen ? `${appUrl}${data.imagen}` : `${appUrl}/images/img/noimagen.jpg`,
           "cantidad": 1,
           "color": null
         }]

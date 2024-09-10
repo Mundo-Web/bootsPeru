@@ -59,7 +59,7 @@
             </x-slot>
           @endif
         </x-menu.item>
-        <x-menu.item id="transactions" href="{{ route('Admin/Transactions.jsx') }}" icon="fas fa-truck-loading">
+        <x-menu.item id="transactions" href="{{ route('Admin/Transactions.jsxgit status') }}" icon="fas fa-truck-loading">
           Movimientos
         </x-menu.item>
         <x-menu.item id="mensajes" href="{{ route('mensajes.index') }}" icon="fas fa-comments">
@@ -111,14 +111,14 @@
         <x-menu.item id="politica-datos" href="{{ route('politicadatos.detalle', 1) }}" icon="fas fa-file-contract">
           Terminos Datos
         </x-menu.item>
-        <x-menu.item id="servicios" href="{{ route('servicios.index') }}"
-          icon="fas fa-wrench">Servicios</x-menu.item>
+        {{-- <x-menu.item id="servicios" href="{{ route('servicios.index') }}"
+          icon="fas fa-wrench">Servicios</x-menu.item> --}}
         <x-menu.item id="blog" href="{{ route('blog.index') }}" icon="fas fa-pencil-alt">Blog</x-menu.item>
         <x-menu.item id="logos" href="{{ route('logos.index') }}" icon="fas fa-shapes">Logos
           cliente</x-menu.item>
         <x-menu.item id="staff" href="{{ route('staff.index') }}" icon="fas fa-users">Personal</x-menu.item>
         <x-menu.item id="strength" href="{{ route('strength.index') }}">Beneficios</x-menu.item>
-        <x-menu.item id="aboutus" href="{{ route('aboutus.index') }}">Nosotros</x-menu.item>
+        {{-- <x-menu.item id="aboutus" href="{{ route('aboutus.index') }}">Nosotros</x-menu.item> --}}
         <x-menu.item id="attributes" href="{{ route('attributes.index') }}">Atributos</x-menu.item>
         <x-menu.item id="valoresattributes" href="{{ route('valoresattributes.index') }}">
           Valor de atributo
@@ -129,14 +129,14 @@
         <x-menu.item id="estados" href="{{ route('estados.index') }}" icon="fas fa-toggle-on">
           Estados de pedidos
         </x-menu.item>
-        <x-menu.item id="faqs" href="{{ route('faqs.index') }}"
-          icon="fas fa-question-circle">FAQs</x-menu.item>
+        {{-- <x-menu.item id="faqs" href="{{ route('faqs.index') }}"
+          icon="fas fa-question-circle">FAQs</x-menu.item> --}}
         <x-menu.item id="slider" href="{{ route('slider.index') }}" icon="fas fa-sliders-h">Sliders</x-menu.item>
         <x-menu.item id="popup" href="{{ route('popup.index') }}" icon="fas fa-sliders-h">Popup</x-menu.item>
         <x-menu.item id="banners" href="{{ route('banners.index') }}"
           icon="fa fa-solid fa-image">Banners</x-menu.item>
 
-        <x-menu.item id="galerie" href="{{ route('galerie.index') }}" icon="fas fa-images">Galerias</x-menu.item>
+        {{--   <x-menu.item id="galerie" href="{{ route('galerie.index') }}" icon="fas fa-images">Galerias</x-menu.item> --}}
         <x-menu.item id="subscripciones" href="{{ route('subscripciones') }}"
           icon="fas fa-images">Subscripciones</x-menu.item>
       </x-menu.group>

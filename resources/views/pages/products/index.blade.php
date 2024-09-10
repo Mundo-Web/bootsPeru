@@ -294,7 +294,7 @@
           </form>`)
         }
       },
-      {
+      /* {
         dataField: 'recomendar',
         caption: 'RECOMENDAR',
         cellTemplate: (container, {
@@ -314,7 +314,7 @@
             <label for="r_${data.id}"></label>
           </form>`)
         }
-      },
+      }, */
       {
         dataField: 'visible',
         caption: 'VISIBLE',

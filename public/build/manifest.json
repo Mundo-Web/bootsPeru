@@ -49,7 +49,11 @@
     ]
   },
   "resources/css/app.css": {
+<<<<<<< HEAD
     "file": "assets/app-L0J2lS4G.css",
+=======
+    "file": "assets/app-uKy8U73d.css",
+>>>>>>> 8799c74e7272e847815c55f7b5842f50fc8c7c9e
     "isEntry": true,
     "src": "resources/css/app.css"
   },

@@ -50,7 +50,7 @@
       <x-swipper-card :items="$slider" />
     </section>
 
-    {{-- 
+
     @if ($categorias->count() > 0)
       <x-sections.simple title="Categorias" class="sectionOverflow">
         <div style="overflow-x: hidden">
@@ -59,7 +59,7 @@
         </div>
       </x-sections.simple>
     @endif
- --}}
+
 
     {{-- seccion Ultimos Productos  --}}
     @if ($ultimosProductos->count() > 0)
