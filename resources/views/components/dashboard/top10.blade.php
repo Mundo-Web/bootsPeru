@@ -36,9 +36,9 @@
             <tr>
               <td class="p-2">
                 <div class="flex items-center">
-                  <img class="object-center object-cover rounded-md me-2" src="{{ asset($item->image) }}"
+                  <img class="object-center object-cover rounded-md me-2" src="{{ $item->image ? asset($item->image): '/images/img/noimagen.jpg' }}"
                     alt="{{ $item->name }}" width="36" height="36">
-                  <div class="text-slate-800 dark:text-slate-100">{{ $item->name }}
+                  <div class="text-slate-800 dark:text-slate-100">{!! $item->name !!}
                     @if ($item->color)
                       - {{ $item->color }}
                     @endif
