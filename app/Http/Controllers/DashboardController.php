@@ -127,7 +127,8 @@ class DashboardController extends Controller
             // ->whereNotNull('address_district')
             ->groupBy('department', 'province', 'district')
             ->limit(10)
-            ->orderBy('quantity', 'desc');
+            ->orderBy('quantity', 'desc')
+            ->orderBy('district', 'desc');
 
         if ($request->startsAt) {
             $instance->where('created_at', '>=', $request->startsAt);
