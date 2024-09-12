@@ -1,22 +1,61 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import Modal from 'react-modal';
 import 'tippy.js/dist/tippy.css';
 import TransactionsRest from '../actions/TransactionsRest';
 import Table from '../components/Table';
 import CreateReactScript from '../Utils/CreateReactScript';
 import ReactAppend from '../Utils/ReactAppend';
 import html2string from '../Utils/html2string';
-import DxButton from '../components/dx/DxButton';
+import moment from 'moment-timezone';
 
 const transactionsRest = new TransactionsRest()
 
 const Transactions = () => {
 
+  // moment.tz.setDefault('America/Lima')
+
   const gridRef = useRef();
 
+  const [fromDate, setFromDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1))
+  const [toDate, setToDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0))
+
+  const formatDate = (date) => {
+    return date.toISOString().split('T')[0];
+  }
+
+  useEffect(() => {
+    const grid = $(gridRef.current).dxDataGrid('instance');
+    if (grid) {
+      const dateColumn = grid.columnOption('sale.created_at');
+      if (dateColumn) {
+        const adjustedFromDate = moment(fromDate).startOf('day');
+        const adjustedToDate = moment(toDate).endOf('day');
+
+        grid.columnOption('sale.created_at', {
+          filterValue: [adjustedFromDate.toDate(), adjustedToDate.toDate()],
+          filterType: 'between',
+          selectedFilterOperation: 'between'
+        });
+      }
+      grid.refresh();
+    }
+  }, [fromDate, toDate]);
+
   return (<>
-    <Table gridRef={gridRef} title='Movimientos' rest={transactionsRest} exportable
+    <Table gridRef={gridRef} rest={transactionsRest} exportable
+      title={<div className='flex justify-between items-center'>
+        <h3 className='font-semibold mb-3'>Movimientos</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 md:gap-6 max-w-80 w-full mt-2">
+          <div className="relative z-0 w-full group">
+            <input type="date" name="floating_first_name" id="floating_first_name" className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " defaultValue={formatDate(fromDate)} required onChange={e => setFromDate(new Date(e.target.value))} />
+            <label htmlFor="floating_first_name" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Desde</label>
+          </div>
+          <div className="relative z-0 w-full group">
+            <input type="date" name="floating_last_name" id="floating_last_name" className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " defaultValue={formatDate(toDate)} required onChange={e => setToDate(new Date(e.target.value))} />
+            <label htmlFor="floating_last_name" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Hasta</label>
+          </div>
+        </div>
+      </div>}
       toolBar={(container) => {
         container.unshift({
           widget: 'dxButton', location: 'after',
@@ -90,19 +129,6 @@ const Transactions = () => {
           format: 'yyyy-MM-dd HH:mm:ss',
           sortOrder: 'desc'
         },
-        // {
-        //   caption: 'Acciones',
-        //   cellTemplate: (container, { data }) => {
-        //     container.append(DxButton({
-        //       className: 'px-2 py-0 text-xs font-medium text-blue-700 bg-blue-100 rounded hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-150 ease-in-out border-none text-blue-500',
-        //       title: 'Ver venta',
-        //       icon: 'fa fa-eye',
-        //       onClick: () => location.href = '/admin/'
-        //     }))
-        //   },
-        //   allowFiltering: false,
-        //   allowExporting: false
-        // }
       ]}
       customizeCell={(options) => {
         if (options?.gridCell?.rowType == 'data' && !options?.gridCell?.value) {

@@ -9,7 +9,6 @@ class BasicRest {
     controller.abort('Nothing')
     controller = new AbortController()
     const signal = controller.signal
-    console.log(params)
     const res = await fetch(`/api/${this.path}/paginate`, {
       method: 'POST',
       headers: {

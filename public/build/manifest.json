@@ -48,6 +48,9 @@
       "resources/js/components/DataGrid.jsx"
     ]
   },
+  "_moment-UpGjyhjE.js": {
+    "file": "assets/moment-UpGjyhjE.js"
+  },
   "resources/css/app.css": {
     "file": "assets/app-L0J2lS4G.css",
     "isEntry": true,
@@ -74,17 +77,16 @@
     "src": "resources/js/Admin/Offers.jsx"
   },
   "resources/js/Admin/Transactions.jsx": {
-    "file": "assets/Transactions-F8CkxWQS.js",
+    "file": "assets/Transactions-YJ53VxIT.js",
     "imports": [
       "resources/js/components/DataGrid.jsx",
       "resources/js/Utils/ReactAppend.jsx",
-      "resources/js/components/Offer/OfferForm.jsx",
       "resources/js/components/form/TippyButton.jsx",
       "resources/js/components/form/SelectAPIFormGroup.jsx",
       "_CreateReactScript-PevQqOAi.js",
       "__commonjsHelpers-4gQjN7DL.js",
+      "_moment-UpGjyhjE.js",
       "_index-peyf00p_.js",
-      "_index-VFMbf6KQ.js",
       "resources/js/Utils/CreateReactScript.jsx",
       "_axios-_sX4vCAy.js"
     ],
@@ -234,10 +236,11 @@
     "css": [
       "assets/app-dGvTjJ5y.css"
     ],
-    "file": "assets/app-hU9lT6GY.js",
+    "file": "assets/app-smupNbK4.js",
     "imports": [
       "_axios-_sX4vCAy.js",
-      "__commonjsHelpers-4gQjN7DL.js"
+      "__commonjsHelpers-4gQjN7DL.js",
+      "_moment-UpGjyhjE.js"
     ],
     "isEntry": true,
     "src": "resources/js/app.js"
