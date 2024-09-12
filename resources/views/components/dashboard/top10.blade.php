@@ -11,6 +11,22 @@
       <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Vendidos</span>
     </label>
   </header>
+  <div class="grid grid-cols-1 md:grid-cols-2 md:gap-6 max-w-80 w-full px-4 mt-4">
+    <div class="relative z-0 w-full group">
+      <input type="date" name="top10FromDate" id="top10FromDate"
+        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+        value="{{ date('Y-m-01') }}" required />
+      <label htmlFor="top10FromDate"
+        class="peer-focus:font-medium absolute text-sm text-gray-500  duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Desde</label>
+    </div>
+    <div class="relative z-0 w-full group">
+      <input type="date" name="top10ToDate" id="top10ToDate"
+        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+        value="{{ date('Y-m-t') }}" required />
+      <label htmlFor="top10ToDate"
+        class="peer-focus:font-medium absolute text-sm text-gray-500  duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Hasta</label>
+    </div>
+  </div>
   <div class="p-3">
     <div class="overflow-x-auto max-h-[320px] overflow-y-auto">
       <table class="table-auto w-full dark:text-slate-500">
@@ -32,12 +48,13 @@
           </tr>
         </thead>
         <tbody id="topProducts" class="text-sm font-medium divide-y divide-slate-100 dark:divide-slate-700">
-          @foreach ($data as $item)
+          {{-- @foreach ($data as $item)
             <tr>
               <td class="p-2">
                 <div class="flex items-center">
-                  <img class="object-center object-cover rounded-md me-2" src="{{ $item->image ? asset($item->image): '/images/img/noimagen.jpg' }}"
-                    alt="{{ $item->name }}" width="36" height="36">
+                  <img class="object-center object-cover rounded-md me-2"
+                    src="{{ $item->image ? asset($item->image) : '/images/img/noimagen.jpg' }}" width="36"
+                    height="36">
                   <div class="text-slate-800 dark:text-slate-100">{!! $item->name !!}
                     @if ($item->color)
                       - {{ $item->color }}
@@ -55,7 +72,7 @@
                 <div class="text-center">{{ $item->total_quantity }}</div>
               </td>
             </tr>
-          @endforeach
+          @endforeach --}}
         </tbody>
       </table>
 
@@ -64,9 +81,22 @@
 </div>
 
 <script>
-  $('#orderBy').on('change', function() {
-    const checked = this.checked
-    fetch(`/api/dashboard/top-products/${checked ? 'total_quantity' : 'total_price'}`)
+  const reloadTopProducts = () => {
+    const checked = $('#orderBy').prop('checked')
+    const startsAt = $('#top10FromDate').val()
+    const endsAt = $('#top10ToDate').val()
+
+    console.log(startsAt, endsAt)
+
+    fetch(`/api/dashboard/top-products/${checked ? 'total_quantity' : 'total_price'}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'x-xsrf-token': decodeURIComponent(Cookies.get('XSRF-TOKEN'))
+        },
+        body: JSON.stringify({ startsAt, endsAt })
+      })
       .then(res => res.json())
       .then(data => {
         const rows = data ?? []
@@ -75,8 +105,8 @@
           $('#topProducts').append(`<tr>
             <td class="p-2">
               <div class="flex items-center">
-                <img class="object-center object-cover rounded-md me-2" src="/${row.image}"
-                  alt="${row.name}" width="36" height="36">
+                <img class="object-center object-cover rounded-md me-2" src="${row.image ? `/${row.image}`: '/images/img/noimagen.jpg'}"
+                  alt="" width="36" height="36">
                 <div class="text-slate-800 dark:text-slate-100">${row.name}
                   ${row.color ? `- ${row.color}`: ''}
                 </div>
@@ -94,5 +124,9 @@
           </tr>`)
         })
       })
-  })
+  }
+  $(document).on('change', '#orderBy', () => reloadTopProducts())
+  $(document).on('change', '#top10FromDate', () => reloadTopProducts())
+  $(document).on('change', '#top10ToDate', () => reloadTopProducts())
+  reloadTopProducts()
 </script>

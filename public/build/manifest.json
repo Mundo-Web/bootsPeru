@@ -52,7 +52,7 @@
     "file": "assets/moment-UpGjyhjE.js"
   },
   "resources/css/app.css": {
-    "file": "assets/app-L0J2lS4G.css",
+    "file": "assets/app-xeEe3_mr.css",
     "isEntry": true,
     "src": "resources/css/app.css"
   },
@@ -77,7 +77,7 @@
     "src": "resources/js/Admin/Offers.jsx"
   },
   "resources/js/Admin/Transactions.jsx": {
-    "file": "assets/Transactions-YJ53VxIT.js",
+    "file": "assets/Transactions-g98xbvc3.js",
     "imports": [
       "resources/js/components/DataGrid.jsx",
       "resources/js/Utils/ReactAppend.jsx",

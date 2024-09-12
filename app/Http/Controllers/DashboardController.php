@@ -55,19 +55,19 @@ class DashboardController extends Controller
         $pendingSales = Sale::where('confirmation_user', false)->count();
         $servedSales = Sale::where('confirmation_user', true)->count();
 
-        $topProducts = SaleDetail::select([
-            'sale_details.product_image AS image',
-            'sale_details.product_name AS name',
-            'sale_details.product_color AS color',
-            DB::raw('COUNT(DISTINCT sales.email) AS total_customers'),
-            DB::raw('SUM(quantity) AS total_quantity'),
-            DB::raw('SUM(quantity * price) AS total_price')
-        ])
-            ->join('sales', 'sale_details.sale_id', '=', 'sales.id')
-            ->groupBy('sale_details.product_name', 'sale_details.product_image', 'sale_details.product_color')
-            ->orderBy('total_price', 'desc')
-            ->limit(10)
-            ->get();
+        // $topProducts = SaleDetail::select([
+        //     'sale_details.product_image AS image',
+        //     'sale_details.product_name AS name',
+        //     'sale_details.product_color AS color',
+        //     DB::raw('COUNT(DISTINCT sales.email) AS total_customers'),
+        //     DB::raw('SUM(quantity) AS total_quantity'),
+        //     DB::raw('SUM(quantity * price) AS total_price')
+        // ])
+        //     ->join('sales', 'sale_details.sale_id', '=', 'sales.id')
+        //     ->groupBy('sale_details.product_name', 'sale_details.product_image', 'sale_details.product_color')
+        //     ->orderBy('total_price', 'desc')
+        //     ->limit(10)
+        //     ->get();
 
         $topDistricts = Sale::select([
             'address_department AS department',
@@ -86,13 +86,13 @@ class DashboardController extends Controller
             ->with('salesPerDay', $salesPerDay)
             ->with('pendingSales', $pendingSales)
             ->with('servedSales', $servedSales)
-            ->with('topProducts', $topProducts)
+            // ->with('topProducts', $topProducts)
             ->with('topDistricts', $topDistricts);
     }
 
     public function topProducts(Request $request, $orderBy = 'total_price')
     {
-        return SaleDetail::select([
+        $instance = SaleDetail::select([
             'sale_details.product_image AS image',
             'sale_details.product_name AS name',
             'sale_details.product_color AS color',
@@ -103,8 +103,16 @@ class DashboardController extends Controller
             ->join('sales', 'sale_details.sale_id', '=', 'sales.id')
             ->groupBy('product_name', 'product_image', 'product_color')
             ->orderBy($orderBy, 'desc')
-            ->limit(10)
-            ->get();
+            ->limit(10);
+
+        if ($request->startsAt) {
+            $instance->where('sales.created_at', '>=', $request->startsAt);
+        }
+        if ($request->endsAt) {
+            $instance->where('sales.created_at', '<=', $request->endsAt);
+        }
+
+        return $instance->get();
     }
 
     /**
