@@ -83,7 +83,7 @@
 </div>
 
 <script>
-  const reloadTopProducts = () => {
+  const reloadTop10Products = () => {
     const checked = $('#orderBy').prop('checked')
     const startsAt = $('#top10FromDate').val()
     const endsAt = $('#top10ToDate').val()
@@ -126,8 +126,8 @@
         })
       })
   }
-  $(document).on('change', '#orderBy', () => reloadTopProducts())
-  $(document).on('change', '#top10FromDate', () => reloadTopProducts())
-  $(document).on('change', '#top10ToDate', () => reloadTopProducts())
-  reloadTopProducts()
+  $(document).on('change', '#orderBy', () => reloadTop10Products())
+  $(document).on('change', '#top10FromDate', () => reloadTop10Products())
+  $(document).on('change', '#top10ToDate', () => reloadTop10Products())
+  reloadTop10Products()
 </script>

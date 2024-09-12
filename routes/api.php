@@ -40,6 +40,7 @@ Route::post('signup', [AuthController::class, 'signup']);
 Route::middleware(['web', 'auth:sanctum', 'verified'])->group(function () {
 
     Route::post('/dashboard/top-products/{orderBy}', [DashboardController::class, 'topProducts'])->name('dashboard.top-products');
+    Route::post('/dashboard/top-districts', [DashboardController::class, 'topDistricts'])->name('dashboard.top-districts');
 
     Route::post('/address', [AddressController::class, 'save'])->name('address.save');
     Route::delete('/address/{id}', [AddressController::class, 'delete'])->name('address.delete');

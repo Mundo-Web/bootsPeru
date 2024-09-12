@@ -116,6 +116,29 @@ class DashboardController extends Controller
         return $instance->get();
     }
 
+    public function topDistricts(Request $request)
+    {
+        $instance = Sale::select([
+            'address_department AS department',
+            'address_province AS province',
+            'address_district AS district',
+            DB::raw('COUNT(id) AS quantity')
+        ])
+            // ->whereNotNull('address_district')
+            ->groupBy('department', 'province', 'district')
+            ->limit(10)
+            ->orderBy('quantity', 'desc');
+
+        if ($request->startsAt) {
+            $instance->where('created_at', '>=', $request->startsAt);
+        }
+        if ($request->endsAt) {
+            $instance->where('created_at', '<=', $request->endsAt);
+        }
+
+        return $instance->get();
+    }
+
     /**
      * Displays the analytics screen
      *
