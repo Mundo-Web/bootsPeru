@@ -78,6 +78,7 @@ class DashboardController extends Controller
             ->whereNotNull('address_district')
             ->groupBy('department', 'province', 'district')
             ->limit(10)
+            ->orderBy('quantity', 'desc')
             ->get();
 
         return view('pages/dashboard/dashboard')
