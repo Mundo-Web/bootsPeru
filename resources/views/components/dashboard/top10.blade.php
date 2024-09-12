@@ -105,8 +105,7 @@
           $('#topProducts').append(`<tr>
             <td class="p-2">
               <div class="flex items-center">
-                <img class="object-center object-cover rounded-md me-2 border" src="${row.image ? `/${row.image}`: '/images/img/noimagen.jpg'}"
-                  alt="" width="36px" height="36px">
+                <img class="object-center object-cover rounded-md me-2 border w-[32px] aspect-square" src="${row.image ? `/${row.image}`: '/images/img/noimagen.jpg'}" alt="Imagen del producto">
                 <div class="text-slate-800 dark:text-slate-100">${row.name}
                   ${row.color ? `- ${row.color}`: ''}
                 </div>
