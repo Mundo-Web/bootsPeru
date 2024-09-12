@@ -2,7 +2,25 @@
   class="col-span-full xl:col-span-8 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700">
   <header class="px-5 py-4 border-b border-slate-100 dark:border-slate-700 flex justify-between">
     <h2 class="font-semibold text-slate-800 dark:text-slate-100">{{ $title }}</h2>
-    <label class="inline-flex items-center cursor-pointer">
+  </header>
+  <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 md:gap-6 max-w-80 w-full px-4 mt-4">
+      <div class="relative z-0 w-full group">
+        <input type="date" name="top10FromDate" id="top10FromDate"
+          class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+          value="{{ date('Y-m-01') }}" required />
+        <label htmlFor="top10FromDate"
+          class="peer-focus:font-medium absolute text-sm text-gray-500  duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Desde</label>
+      </div>
+      <div class="relative z-0 w-full group">
+        <input type="date" name="top10ToDate" id="top10ToDate"
+          class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+          value="{{ date('Y-m-t') }}" required />
+        <label htmlFor="top10ToDate"
+          class="peer-focus:font-medium absolute text-sm text-gray-500  duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Hasta</label>
+      </div>
+    </div>
+    <label class="inline-flex items-center cursor-pointer px-4" title="Ordenar por">
       <input id="orderBy" type="checkbox" value="" class="sr-only peer">
       <span class="me-3 text-sm font-medium text-gray-900 dark:text-gray-300">Ingresos</span>
       <div
@@ -10,22 +28,6 @@
       </div>
       <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Vendidos</span>
     </label>
-  </header>
-  <div class="grid grid-cols-1 md:grid-cols-2 md:gap-6 max-w-80 w-full px-4 mt-4">
-    <div class="relative z-0 w-full group">
-      <input type="date" name="top10FromDate" id="top10FromDate"
-        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-        value="{{ date('Y-m-01') }}" required />
-      <label htmlFor="top10FromDate"
-        class="peer-focus:font-medium absolute text-sm text-gray-500  duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Desde</label>
-    </div>
-    <div class="relative z-0 w-full group">
-      <input type="date" name="top10ToDate" id="top10ToDate"
-        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-        value="{{ date('Y-m-t') }}" required />
-      <label htmlFor="top10ToDate"
-        class="peer-focus:font-medium absolute text-sm text-gray-500  duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Hasta</label>
-    </div>
   </div>
   <div class="p-3">
     <div class="overflow-x-auto max-h-[320px] overflow-y-auto">
