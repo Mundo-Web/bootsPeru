@@ -106,7 +106,7 @@
             <td class="p-2">
               <div class="flex items-center">
                 <img class="object-center object-cover rounded-md me-2" src="${row.image ? `/${row.image}`: '/images/img/noimagen.jpg'}"
-                  alt="" width="36" height="36">
+                  alt="" width="36px" height="36px">
                 <div class="text-slate-800 dark:text-slate-100">${row.name}
                   ${row.color ? `- ${row.color}`: ''}
                 </div>
