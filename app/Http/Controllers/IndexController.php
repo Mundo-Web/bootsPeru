@@ -172,7 +172,7 @@ class IndexController extends Controller
   }
   public function nosotros(){
     $nosotros = AboutUs::all();
-    $benefit = Strength::where('status', '=', 1)->take(3)->get();
+    $benefit = Strength::where('status', '=', 1)->take(4)->get();
     return view('public.nosotros' , compact('nosotros','benefit'));
   }
 
