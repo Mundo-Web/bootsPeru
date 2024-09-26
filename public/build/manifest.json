@@ -146,7 +146,7 @@
     "src": "resources/js/Login.jsx"
   },
   "resources/js/Ofertas.jsx": {
-    "file": "assets/Ofertas-iypvepqc.js",
+    "file": "assets/Ofertas-4ZTmnSDf.js",
     "imports": [
       "resources/js/components/DataGrid.jsx",
       "resources/js/Utils/ReactAppend.jsx",

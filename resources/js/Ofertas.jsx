@@ -19,7 +19,7 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
       document.body.removeChild(script);
     };
   }, [null]);
-  const take = 10
+  const take = 12
 
   const [items, setItems] = useState([])
   const [filter, setFilter] = useState(selected_category ? { category_id: [selected_category] } : {})
