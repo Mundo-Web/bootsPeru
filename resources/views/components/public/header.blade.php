@@ -284,11 +284,7 @@
 
             </a>
 
-            @if ($offerExists)
-              <a href="{{ route('Ofertas.jsx') }}" class="font-medium hover:opacity-75 other-class">
-                <span class="underline-this">OFERTAS</span>
-              </a>
-            @endif
+
 
             @if ($blog > 0)
               <a href="/blog/0" class="font-medium hover:opacity-75 other-class">
@@ -300,6 +296,11 @@
             <a href="/contacto" class="font-medium hover:opacity-75  other-class">
               <span class="underline-this">CONTACTO</span>
             </a>
+            @if ($offerExists)
+              <a href="{{ route('Ofertas.jsx') }}" class="font-medium hover:opacity-75 other-class">
+                <span class="underline-this">OFERTAS</span>
+              </a>
+            @endif
             @if ($tags->count() > 0)
               @foreach ($tags as $item)
                 <a href="/catalogo?tag={{ $item->id }}" class="font-medium hover:opacity-75    other-class"
