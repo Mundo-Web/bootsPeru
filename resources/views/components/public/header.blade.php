@@ -239,7 +239,7 @@
 
       </a>
       <h3 class="text-white font-Inter_Regular  text-center  lg:flex">
-        Cuéntale a un amigo sobre Boost y consigue un 20% de descuento *
+        {{ $datosgenerales[0]->cintillo }}
       </h3>
       <div class="text-white font-Inter_Regular  text-end hidden lg:flex">
         @if (Auth::user() == null)
