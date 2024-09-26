@@ -53,7 +53,7 @@
 
     @if ($categorias->count() > 0)
       <x-sections.simple title="Categorias" class="sectionOverflow">
-        <div style="overflow-x: hidden">
+        <div style="overflow-x: hidden relative">
           <x-swipper-card-categoria :items="$categorias" />
 
         </div>
