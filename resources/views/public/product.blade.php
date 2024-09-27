@@ -395,21 +395,21 @@
           <h3 class="text-[34.7px] font-Inter_Medium "> ¿Qué dicen los clientes sobre nosotros?</h3>
           <div class="grid grid-cols-3 w-full gap-8 pt-16">
             @foreach ($testimonios->take(3) as $item)
-              <div class="flex flex-col bg-[#F7F7F7] col-span-1 p-12 gap-4">
+              <div class="flex flex-col bg-[#F7F7F7] col-span-1 p-12 gap-4 h-max min-h-[369px]">
                 <div class="flex items-center gap-4 pt-3">
                   <!-- Contenedor Flex para la imagen y el texto -->
                   <p class="font-Inter_Medium text-[24px] flex-1">{{ $item->name }}</p>
                   <!-- flex-1 hace que el texto ocupe el espacio disponible -->
                   <img src="{{ asset('images\svg\icons8-comillas-48.png') }}" alt=""
-                    class="w-10 h-10 rounded-full">
+                    class="w-10 h-10 rounded-full opacity-20">
                 </div>
                 <div class="min-h-[130px]">
-                  <p class="font-Inter_Medium text-[19px] pt-1 leading-8 ">
+                  <p class="font-Inter_Regular text-[19px] pt-1 leading-8  ">
                     {{ $item->testimonie }}
                   </p>
                 </div>
 
-                <div class="font-Inter_Bold text-[24px] w-5">
+                <div class="font-Inter_Bold text-[24px] w-full">
                   {{ $item->ocupation }}
                 </div>
                 <p class="text-[16px] font-Inter_Regular">Lima, Peru</p>
