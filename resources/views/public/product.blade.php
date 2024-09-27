@@ -409,7 +409,7 @@
                   </p>
                 </div>
 
-                <div class="font-Inter_Bold text-[24px] w-full">
+                <div class="font-Inter_Bold text-[24px] w-full min-h-[72px]">
                   {{ $item->ocupation }}
                 </div>
                 <p class="text-[16px] font-Inter_Regular">Lima, Peru</p>
