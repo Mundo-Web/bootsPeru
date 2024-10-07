@@ -873,6 +873,9 @@
     })
   }
   $(document).on('click', '#btnAgregarCarritoPr', function() {
+
+    console.log('agregando al carrito');
+
     let url = window.location.href;
     let partesURL = url.split('/');
     let productoEncontrado = partesURL.find(parte => parte === 'producto');

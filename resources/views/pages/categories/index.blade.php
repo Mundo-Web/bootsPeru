@@ -260,28 +260,28 @@
 
             });
 
-            if (response.cantidad >= 4) {
+            /*  if (response.cantidad >= 4) {
 
 
-              Swal.fire({
-                position: "top-center",
-                icon: "success",
-                title: "Ya no puedes destacar más",
-                showConfirmButton: false,
-                timer: 2000
+               Swal.fire({
+                 position: "top-center",
+                 icon: "success",
+                 title: "Ya no puedes destacar más",
+                 showConfirmButton: false,
+                 timer: 2000
 
-              });
+               });
 
-              // Deshabilitar todos los checkboxes con la clase .check_d
-              $('.check_d:not(:checked)').prop('disabled', true);
+               // Deshabilitar todos los checkboxes con la clase .check_d
+               $('.check_d:not(:checked)').prop('disabled', true);
 
 
 
-            } else {
+             } else {
 
-              // Habilitar todos los checkboxes con la clase .check_d
-              $('.check_d').prop('disabled', false);
-            }
+               // Habilitar todos los checkboxes con la clase .check_d
+               $('.check_d').prop('disabled', false);
+             } */
 
           },
           error: function(response) {
