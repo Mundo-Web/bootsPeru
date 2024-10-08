@@ -161,7 +161,7 @@ class PaymentController extends Controller
 
     $sale->address_full = $addresFull;
 
-    $sale->address_data = JSON::stringify($body['address']);
+    $sale->address_data = JSON::stringify($body['address'] ?? '');
     $sale->precio_envio = $precioEnvio;
     $sale->monto = $totalCost - $descuento;
     $sale->billing_type = $tipoComprobante;
