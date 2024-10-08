@@ -3,18 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Models\Address;
-use App\Models\Offer;
+use App\Models\DetalleOrden;
+use App\Models\General;
+
+use App\Models\Ordenes;
+use App\Models\Person;
+use App\Models\PrecioEnvio;
 use App\Models\Price;
 use App\Models\Products;
-use App\Models\Sale;
-use App\Models\SaleDetail;
+use App\Models\User;
 use Culqi\Culqi;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use SoDe\Extend\JSON;
+use SoDe\Extend\Math;
 use SoDe\Extend\Response;
+use SoDe\Extend\Crypto;
+use SoDe\Extend\File;
 
 class PaymentController extends Controller
 {
@@ -24,184 +30,14 @@ class PaymentController extends Controller
     $response = new Response();
     $culqi = new Culqi(['api_key' => env('CULQI_PRIVATE_KEY')]);
 
-    $sale = new Sale();
+    $sale = new Ordenes();
+    $this->processSale($body, $sale, $response);
+    dump($sale);
+
+    $config = $this->getCulqiConfig($body, $sale);
+
+
     try {
-
-      $products = array_filter($body['cart'], fn($x) => !(isset($x['isCombo']) && $x['isCombo'] == true));
-      $offers = array_filter($body['cart'], fn($x) => isset($x['isCombo']) && $x['isCombo'] == true);
-
-      $productsJpa = [];
-
-      if (Auth::check() && Auth::user()->hasRole('Reseller')) {
-
-        $productsJpa = Products::select([
-          'products.id',
-          'products.imagen',
-          'products.producto',
-          'products.color',
-          'products.precio',
-          'products.precio_reseller as descuento',
-          'categories.name AS category'
-        ])
-          ->join('categories', 'categories.id', 'products.categoria_id')
-          ->whereIn('products.id', array_map(fn($x) => $x['id'], $products))
-          ->get();
-      } else {
-        $productsJpa = Products::select([
-          'products.id',
-          'products.imagen',
-          'products.producto',
-          'products.color',
-          'products.precio',
-          'products.descuento',
-          'categories.name AS category'
-        ])
-          ->join('categories', 'categories.id', 'products.categoria_id')
-          ->whereIn('products.id', array_map(fn($x) => $x['id'], $products))
-          ->get();
-      }
-
-
-      $offersJpa = [];
-      if (count($offers) > 0) {
-        $offersJpa = Offer::select(['id', 'imagen', 'producto', DB::raw('null AS color'), 'precio', 'descuento'])
-          ->whereIn('id', array_map(fn($x) => $x['id'], $offers))
-          ->get();
-      }
-
-
-      $totalCost = 0;
-      foreach ($productsJpa as $productJpa) {
-        $key = array_search($productJpa->id, array_column($body['cart'], 'id'));
-        if ($productJpa->descuento > 0) {
-          $totalCost += $productJpa->descuento * $body['cart'][$key]['quantity'];
-        } else {
-          $totalCost += $productJpa->precio * $body['cart'][$key]['quantity'];
-        }
-      }
-
-      foreach ($offersJpa as $offerJpa) {
-        $key = array_search($offerJpa->id, array_column($body['cart'], 'id'));
-        if ($offerJpa->descuento > 0) {
-          $totalCost += $offerJpa->descuento * $body['cart'][$key]['quantity'];
-        } else {
-          $totalCost += $offerJpa->precio * $body['cart'][$key]['quantity'];
-        }
-      }
-
-      $sale->name = $body['contact']['name'];
-      $sale->lastname = $body['contact']['lastname'];
-      $sale->email = Auth::check() ? Auth::user()->email : $body['contact']['email'];
-      $sale->phone = $body['contact']['phone'];
-      $sale->address_price = 0;
-      $sale->total = $totalCost;
-      $sale->tipo_comprobante = $body['tipo_comprobante'];
-      $sale->doc_number = $body['contact']['doc_number'] ?? null;
-      $sale->razon_fact = $body['contact']['razon_fact'] ?? null;
-      $sale->direccion_fact = $body['contact']['direccion_fact'] ?? null;
-      $sale->code = '000000000000';
-
-      if ($request->address) {
-        $price = Price::with([
-          'district',
-          'district.province',
-          'district.province.department'
-        ])
-          ->where('prices.id', $body['address']['id'])
-          ->first();
-
-        if ($price) {
-          $totalCost += $price->price;
-
-          $sale->address_department = $price->district->province->department->description;
-          $sale->address_province = $price->district->province->description;
-          $sale->address_district = $price->district->description;
-          $sale->address_street = $body['address']['street'];
-          $sale->address_number = $body['address']['number'];
-          $sale->address_description = $body['address']['description'];
-          $sale->address_price = $price->price;
-          try {
-            if ($request->saveAddress) {
-              Address::create([
-                'email' =>  Auth::check() ? Auth::user()->email : $body['contact']['email'],
-                'price_id' => $price->id,
-                'street' =>  $body['address']['street'],
-                'number' => $body['address']['number'],
-                'description' => $body['address']['description'],
-              ]);
-            }
-          } catch (\Throwable $th) {
-            // dump('No se pudo guardar la direccion', $th);
-          }
-        }
-      }
-
-      $sale->status_id = 1;
-      $sale->status_message = 'La venta se ha creado. Aun no se ha pagado';
-
-      $sale->save();
-
-      foreach ($productsJpa as $productJpa) {
-        $key = array_search($productJpa->id, array_column($body['cart'], 'id'));
-        $quantity = $body['cart'][$key]['quantity'];
-        $price = $productJpa->descuento > 0 ? $productJpa->descuento : $productJpa->precio;
-
-        SaleDetail::create([
-          'sale_id' => $sale->id,
-          'category' => $productJpa->category,
-          'product_image' => $productJpa->imagen,
-          'product_name' => $productJpa->producto,
-          'product_color' => $productJpa->color,
-          'quantity' => $quantity,
-          'price' => $price
-        ]);
-      }
-
-      foreach ($offersJpa as $offerJpa) {
-        $key = array_search($offerJpa->id, array_column($body['cart'], 'id'));
-        $quantity = $body['cart'][$key]['quantity'];
-        $price = $offerJpa->descuento > 0 ? $offerJpa->descuento : $offerJpa->precio;
-
-        $name = '<b>' . $offerJpa->producto . '</b><ul class="mb-1">';
-
-        foreach ($offerJpa->products as $productJpa) {
-          $name .= '<li class="text-xs text-nowrap overflow-hidden text-ellipsis w-[270px]">' . $productJpa->producto . '</li>';
-        }
-
-        $name .= '</ul>';
-
-        SaleDetail::create([
-          'sale_id' => $sale->id,
-          'category' => 'Combos',
-          'product_image' => $offerJpa->imagen,
-          'product_name' => $name,
-          'product_color' => $offerJpa->color,
-          'quantity' => $quantity,
-          'price' => $price
-        ]);
-      }
-
-
-
-
-      $config = [
-        "amount" => round($totalCost * 100),
-        "capture" => true,
-        "currency_code" => "PEN",
-        "description" => "Compra en " . env('APP_NAME'),
-        "email" => $body['culqi']['email'] ?? $body['contact']['email'],
-        "installments" => 0,
-        "antifraud_details" => [
-          "address" => isset($request['address']['street']) ? $request['address']['street'] : 'Sin direccion',
-          "address_city" => isset($request['address']['city']) ? $request['address']['city'] : 'Sin ciudad',
-          "country_code" => "PE",
-          "first_name" => $request['contact']['name'],
-          "last_name" => $request['contact']['lastname'],
-          "phone_number" => $request['contact']['phone'],
-        ],
-        "source_id" => $request['culqi']['id']
-      ];
-
       $charge = $culqi->Charges->create($config);
 
       if (gettype($charge) == 'string') {
@@ -214,32 +50,201 @@ class PaymentController extends Controller
       $response->data = [
         'charge' => $charge,
         'reference_code' => $charge?->reference_code ?? null,
-        'amount' => $totalCost
+        'amount' => $sale->monto,
       ];
 
-      $sale->status_id = 3;
-      $sale->status_message = 'La venta se ha generado y ha sido pagada';
-      $sale->code = $charge?->reference_code ?? null;
+      $this->finalizeSale($sale, $charge?->reference_code ?? null);
+    } catch (\Throwable $th) {
+      dump($th);
+      $response->status = 400;
+      $response->message = $th->getMessage();
+      $this->handleSaleError($sale);
+    } finally {
+      $sale->save();
+      return response($response->toArray(), $response->status);
+    }
+  }
 
-      $indexController = new IndexController();
-      $datacorreo = [
-        'nombre' => $sale->name . ' ' . $sale->lastname,
-        'email' => $sale->email,
-      ];
-      $indexController->envioCorreoCompra($datacorreo);
+  public function pagarConTransferencia(Request $request)
+  {
+    $body = $request->all();
+    $response = new Response();
+
+    $sale = new Ordenes();
+    $sale->codigo_orden = random_int(10000, 99999);
+    $sale->tipo_tarjeta = 'transferencia';
+    $sale->numero_tarjeta = '';
+
+    $this->processSale($body, $sale, $response);
+
+    $response->status = 200;
+    $response->message = "Cargo creado correctamente";
+    $response->data = [
+      'reference_code' => $sale->codigo_orden ?? null,
+      'amount' => $sale->monto,
+    ];
+
+    $this->finalizeSale($sale, $sale->codigo_orden ?? null);
+
+    try {
+      $sale->save();
+      return response($response->toArray(), $response->status);
     } catch (\Throwable $th) {
       $response->status = 400;
       $response->message = $th->getMessage();
-
-      if (!$sale->code) {
-        $sale->code = '000000000000';
-      }
-      $sale->status_id = 2;
-      $sale->status_message = $th->getMessage();
-    } finally {
-
-      $sale->save();
+      $this->handleSaleError($sale);
       return response($response->toArray(), $response->status);
+    }
+  }
+
+  private function processSale($body, $sale, &$response)
+  {
+    
+
+    $products = $body['cart'];
+
+
+    $productsJpa = Products::select(['id', 'imagen', 'producto', 'precio', 'descuento'])
+      ->whereIn('id', array_map(fn($x) => $x['id'], $products))
+      ->get();
+
+    $restPoints = Auth::check() ? Auth::user()->points : 0;
+    $totalCost = 0;
+    $points2discount = 0;
+
+    $details = [];
+
+    foreach ($productsJpa as $productJpa) {
+      $key = array_search($productJpa->id, array_column($body['cart'], 'id'));
+      $finalQuantity = $body['cart'][$key]['quantity'];
+      $finalPrice = $productJpa->descuento > 0 ? $productJpa->descuento :  $productJpa->precio;
+
+      $totalCost += $finalPrice;
+
+      $details[] = [
+        'producto_id' => $productJpa->id,
+        'name' => $productJpa->producto,
+         'imagen' => $body['cart'][$key]['imagen'] ?? '',
+        'cantidad' => $body['cart'][$key]['quantity'],
+        'precio' => $finalPrice,
+        'price_used' => $finalPrice * $finalQuantity,
+
+
+      ];
+    }
+    $precioEnvio = 0 ;
+    $addresFull = ""; 
+    if(isset($body['address']['id'])){
+      $precioEnvioJpa = Price::where('id', $body['address']['id'])->first();
+      $precioEnvio = $precioEnvioJpa->price;
+
+      $addresFull = $body['address']['street'] . ', ' . $body['address']['city'] . ' ' . $body['address']['number'] . ' - ' . $body['address']['description'];
+    }
+
+    
+
+
+    $descuento = 0;
+
+
+    $tipoComprobante = 'N/A';
+    if ($body['tipo_comprobante'] == 'factura') {
+      $tipoComprobante = 'RUC';
+    } else if ($body['tipo_comprobante'] == 'boleta') {
+      $tipoComprobante = 'DNI';
+    }
+
+
+    $sale->usuario_id = Auth::user()?->id ?? null;
+    $sale->status_id = 1;
+    $sale->codigo_orden = '00000000';
+
+    $sale->address_full = $addresFull;
+
+    $sale->address_data = JSON::stringify($body['address']);
+    $sale->precio_envio = $precioEnvio;
+    $sale->monto = $totalCost - $descuento;
+    $sale->billing_type = $tipoComprobante;
+    $sale->billing_document = $tipoComprobante;
+    $sale->billing_name = $body['contact']['name'] . ' ' . $body['contact']['lastname'];
+    $sale->billing_address = $body['contact']['address'] ?? '';
+    $sale->billing_email = $body['contact']['email'];
+    $sale->consumer_phone = $body['contact']['phone'];
+    
+
+
+
+
+    if (isset($body['dedication']['image'])) {
+      try {
+        $sale->dedication_image = $this->saveImage($body['dedication']['image']);
+      } catch (\Throwable $th) {
+        $sale->dedication_image = null;
+      }
+    }
+
+    $sale->save();
+
+    foreach ($details as $detail) {
+      DetalleOrden::create([
+        ...$detail,
+        'orden_id' => $sale->id
+      ]);
+    }
+
+    
+  }
+
+  private function getCulqiConfig($body, $sale)
+  {
+    return [
+      "amount" => round(($sale->monto + $sale->precio_envio) * 100),
+      "capture" => true,
+      "currency_code" => "PEN",
+      "description" => "Compra en " . env('APP_NAME'),
+      "email" => $body['culqi']['email'] ?? $body['billing']['email'],
+      "installments" => 0,
+      "antifraud_details" => [
+        "address" => $body['address']['street'] ?? 'Av. Petit thouars 5356 C.C. Compupalace, 3er Piso' ,
+        "address_city" => $body['address']['district'] ?? 'Lima - Perú',
+        "country_code" => "PE",
+        "first_name" => $body['contact']['name'],
+        "last_name" => $body['contact']['lastname'],
+        "phone_number" => $body['contact']['phone'],
+      ],
+      "source_id" => $body['culqi']['id']
+    ];
+  }
+
+  private function finalizeSale($sale, $referenceCode)
+  {
+    $sale->status_id = 3;
+    $sale->codigo_orden = $referenceCode;
+  }
+
+  private function handleSaleError($sale)
+  {
+    if (!$sale->codigo_orden) {
+      $sale->codigo_orden = '000000000000';
+    }
+    $sale->status_id = 2;
+  }
+
+  public function saveImage($file)
+  {
+    try {
+      [$first, $code] = explode(';base64,', $file);
+      $imageData = base64_decode($code);
+      $routeImg = 'storage/images/dedication/';
+      $ext = File::getExtention(str_replace("data:", '', $first));
+      $nombreImagen = Crypto::randomUUID() . '.' . $ext;
+      if (!file_exists($routeImg)) {
+        mkdir($routeImg, 0777, true);
+      }
+      file_put_contents($routeImg . $nombreImagen, $imageData);
+      return $routeImg . $nombreImagen;
+    } catch (\Throwable $th) {
+      return null;
     }
   }
 }

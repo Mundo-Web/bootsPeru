@@ -244,6 +244,7 @@ class IndexController extends Controller
     //
     $detalleUsuario = [];
     $user = auth()->user();
+    $datosgenerales = General::first();
 
     if (!is_null($user)) {
       $detalleUsuario = UserDetails::where('email', $user->email)->get();
@@ -313,7 +314,7 @@ class IndexController extends Controller
         ->exists();
     }
 
-    return view('public.checkout_pago', compact('url_env', 'districts', 'provinces', 'departments', 'detalleUsuario', 'categorias', 'destacados', 'culqi_public_key', 'addresses', 'hasDefaultAddress'));
+    return view('public.checkout_pago', compact('url_env','datosgenerales' ,  'districts', 'provinces', 'departments', 'detalleUsuario', 'categorias', 'destacados', 'culqi_public_key', 'addresses', 'hasDefaultAddress'));
   }
 
   public function procesarPago(Request $request)

@@ -16,6 +16,8 @@
 </style>
 
 
+
+
 @section('content')
 
   <style>
@@ -319,17 +321,397 @@
                 <p id="itemTotal">S/. 0.00 </p>
               </div>
 
-              <button id="btnPagar"
+              <button id="btnPagar" type="button"
                 class="text-white bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px] inline-block text-center">Pagar</button>
             </div>
           </div>
         </div>
       </div>
+      <input type="file" hidden id='imgTransferencia' name="imagenTransferencia">
     </form>
   </main>
+  <div id="modalTipoCompra" class="modal" style="max-width: 400px !important;width: 100% !important;  ">
+    <!-- Modal body -->
+    <div class="p-4  mb-4">
+      <h1 class="font-Inter_SemiBold">¿Qué método de pago te gustaría usar?</h1>
+      <button type="button" id="paymentButton"
+        class="text-white bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px] inline-block text-center mt-4">
+        Pago con Tarjeta
+      </button>
+      <button type="button" id="btnPagoTransferencia"
+        class="text-white bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px] inline-block text-center mt-4">
+        Pago Por Transferencia
+      </button>
+      <button type="button" id="btnPagoOnEntrega"
+        class="text-white bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px] inline-block text-center mt-4">
+        Pago Contra Entrega / Pago en Tienda
+      </button>
+    </div>
+  </div>
+  <div id="modalTransferencia" class="modal" style="max-width: 400px !important;width: 100% !important;  ">
+    <!-- Modal body -->
+    <div class="p-4  mb-4">
+      <div class="text-center mb-6 flex flex-col justify-center content-center items-center">
+        <img src="/images/svg/LogoBoost2.svg" alt="" class='h-48 w-48 text-center' />
+        <h1 class="text-3xl font-bold text-green-600 mb-2">¡Felicitaciones!</h1>
+
+      </div>
+
+
+
+
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-green-600 mb-2"></h2>
+        <p class="mb-2">¡Estás a un paso de completar tu compra ! Realiza la transferencia/depósito a nuestras
+          cuentas. </p>
+        <p class="mb-2">Luego, simplemente carga la imagen y envíanos la confirmación de pago. ¡Y listo !</p>
+        <p class="mb-2">También puedes enviarnos tu confirmación de pago a través de WhatsApp.</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="col-span-1 flex items-center w-full">
+
+          <img src="{{ asset('images/svg/bcp2.jpg') }}" alt="BCP"
+            class="w-10 rounded-lg object-cover object-center" />
+          <span class="ml-2">0011-0000-000000000</span>
+        </div>
+
+        <div class="col-span-1 flex items-center">
+          <img src="{{ asset('images/svg/scotia2.png') }}" alt="Scotiabank"
+            class="w-10 object-cover object-center rounded-lg" />
+          <span class="ml-2">0011-0000-000000000</span>
+        </div>
+
+        <div class="col-span-1 flex items-center">
+          <img src="{{ asset('images/svg/bbvau.png') }}" alt="BBVA"
+            class="w-10 object-cover object-center rounded-lg" />
+          <span class="ml-2">0011-0000-000000000</span>
+        </div>
+
+        <div class="col-span-1 flex items-center">
+          <img src="{{ asset('images/svg/interb.png') }}" alt="Interbank"
+            class="w-10 object-cover object-center rounded-lg" />
+          <span class="ml-2">0011-0000-000000000</span>
+        </div>
+      </div>
+
+
+      <div class='flex flex-col w-full my-8' id="cart-container">
+
+      </div>
+
+      <div class="space-y-4">
+        <div
+          class=" py-2 px-4 border block text-center text-green-500 rounded-md hover:bg-green-50 transition-colors duration-300 relative">
+          <div class="w-full">
+            <button type="button" {{-- class="overflow-x-hidden w-[308px] px-4"  --}}
+              class="w-full py-2 px-4   block text-center  rounded-full text-white  bg-[#006BF6] transition-colors duration-300"
+              id="fileTransferencia">
+              Cargar Imagen
+            </button>
+
+
+          </div>
+        </div>
+
+        <button data-type="normal" id='btnEnviarTransferencia' type="button"
+          class="w-full py-2 px-4 border  block text-center border-green-500 text-green-500 rounded-full hover:text-white  hover:bg-[#006BF6] transition-colors duration-300">
+          2. Enviar Imagen
+        </button>
+
+
+
+      </div>
+      <p class='mt-4 text-center'> O </p>
+      <div class="mt-4">
+        <button data-type="whatsapp" type="submit" form="formPrincipal" onClick={ProcesarTransferencia} //
+          target="_blanck" href={`https://api.whatsapp.com/send?phone=${telefono}&text=${texto}`}
+          class="w-full py-2 px-4 border  block text-center border-green-500 text-green-500 rounded-full hover:text-white  
+        hover:bg-[#006BF6] transition-colors duration-300">
+          Enviar Pago por WhatsApp
+        </button>
+
+      </div>
+
+    </div>
+  </div>
 
   <script src="https://checkout.culqi.com/js/v4"></script>
+
   <script>
+    $('#paymentButton').on('click', function() {
+      $('#paymentForm').submit();
+    });
+
+    const ProcesarTransferencia = async (e) => {
+      e.preventDefault();
+
+      let esWhataspp = true;
+
+      if (e.target.dataset.type !== 'whatsapp') {
+        esWhataspp = false;
+        const fileInput = document.getElementById('imgTransferencia');
+        if (!fileInput.files.length > 0) {
+          return Swal.fire({
+            icon: 'warning',
+            title: 'Falta la imagen',
+            text: 'Por favor agregue un imagen antes de continuar',
+            showConfirmButton: true,
+            showCancelButton: false,
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#138496'
+          });
+        }
+      }
+
+
+
+      const carrito = Local.get('carrito') ?? [];
+      //const paymentData = Local.get('payment-data') ?? [];
+      let cart = carrito.map((x) => ({
+        id: x.id,
+        imagen: x.imagen,
+        quantity: x.cantidad,
+        usePoints: x.usePoints || false
+      }));
+
+      const formData = new FormData();
+      // formData.append('datosFinales', JSON.stringify(datosFinales));
+      // formData.append('img', fileimg.current);
+      // formData.append('paymentData', JSON.stringify(paymentData));
+      // formData.append('cart', JSON.stringify(cart));
+
+      let body = {
+        cart: carrito.map((x) => ({
+          id: x.id,
+          imagen: x.imagen,
+          quantity: x.cantidad,
+          isCombo: x.isCombo || false
+        })),
+        contact: {
+          name: $('#nombre').val(),
+          lastname: $('#apellidos').val(),
+          email: $('#email').val(),
+          phone: $('#celular').val(),
+          doc_number: $('#DNI').val() || $('#RUC').val(),
+          doc_type: $('#tipo-comprobante').val() ?? 'nota_venta',
+          razon_fact: $('#razonFact').val(),
+          direccion_fact: $('#direccionFact').val(),
+
+
+        },
+        saveAddress: !Boolean($('#addresses').val()),
+        tipo_comprobante: $('#tipo-comprobante').val()
+        //...paymentData,
+        // img: fileimg.current
+      };
+
+      try {
+        const res = await axios.post('/api/payment/pagarConTransferencia', body, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+        });
+
+        let {
+          status,
+          message,
+          data
+        } = res.data;
+        if (status == 200) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Pago realizado con éxito',
+            text: message,
+            showConfirmButton: true,
+            showCancelButton: false,
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#138496'
+          });
+          // Local.delete('carrito');
+          // Local.delete('payment-data');
+
+          setTimeout(() => {
+            let url = esWhataspp ? `/agradecimiento?code=${data.reference_code}&whatsapp=true` :
+              `/agradecimiento?code=${data.reference_code}`;
+            location.href = url;
+          }, 1500);
+        }
+      } catch (error) {
+        console.error('Error al enviar la solicitud:', error);
+      }
+    };
+
+    const renderCart = () => {
+      const cartItems = Local.get('carrito') ?? []
+      const costoEnvio = parseFloat(localStorage.getItem('costoEnvio')) || 0;
+      const historicoCupones = JSON.parse(localStorage.getItem('historicoCupones')) || [];
+      let points = parseFloat(localStorage.getItem('points')) || 0;
+      let userPoints = parseFloat(localStorage.getItem('userPoints')) || 0;
+
+
+
+
+      const cartContainer = document.getElementById('cart-container');
+      cartContainer.innerHTML = `
+          <div class="max-w-sm mx-auto p-2 bg-white text-gray-800 font-sans w-full">
+                <h1 class="text-xl font-semibold mb-4">DETALLE DE COMPRAS</h1>
+
+                <div id="cart-items"></div>
+
+                <div class="space-y-2 text-sm">
+                  <div class="flex justify-between">
+                    <span>Sub Total</span>
+                    <span id="subtotal"></span>
+                  </div>
+                  
+                  <div class="flex justify-between">
+                    <span>Costo de envío</span>
+                    <span id="shipping-cost"></span>
+                  </div>
+                  <div class="flex justify-between font-semibold text-base">
+                    <span>Total</span>
+                    <span id="total"></span>
+                  </div>
+                </div>
+              </div>
+          `;
+
+      const cartItemsContainer = document.getElementById('cart-items');
+
+      cartItems.forEach(item => {
+        let finalQuantity = item.cantidad;
+        for (let i = 0; i < item.cantidad; i++) {
+          if (item.usePoints && userPoints >= item.points) {
+            finalQuantity--;
+            userPoints -= item.points;
+          }
+        }
+        const subtotalf = finalQuantity * item.precio;
+
+        const itemElement = document.createElement('div');
+        itemElement.classList.add('border-b', 'pb-4', 'mb-4');
+        itemElement.innerHTML = `
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <h2 class="font-semibold">${item.producto}</h2>
+              <p class="text-sm text-gray-600">${item.extracto ?? ''}</p>
+              ${item.usePoints ? '<span class="text-orange-500 text-sm">Usando puntos</span>' : ''}
+              ${item.sku ? ` <p class="text-sm text-gray-600">SKU: ${item.sku ?? ''}</p>` : ''}
+             
+            </div>
+            <div class="text-right">
+              <p class="font-semibold">S/ ${subtotalf.toFixed(2)}</p>
+              <p class="text-sm">Cantidad: ${item.cantidad}</p>
+            </div>
+          </div>
+          <button onclick="toggleImage(${item.id})" class="flex items-center text-blue-600 text-sm">
+            <span id="toggle-icon-${item.id}">
+              <svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </span>
+            <span id="toggle-text-${item.id}">Ver imagen</span>
+          </button>
+          <img id="image-${item.id}" src="/${item.imagen}" alt="${item.producto}" class="mt-2 w-24 h-24 object-cover rounded hidden" />
+        `;
+        cartItemsContainer.appendChild(itemElement);
+      });
+
+      // Calcular subtotal
+      let subtotal = cartItems.reduce((carry, item) => {
+        let finalQuantity = item.cantidad;
+        for (let i = 0; i < item.cantidad; i++) {
+          if (item.usePoints && userPoints >= item.points) {
+            finalQuantity--;
+            userPoints -= item.points;
+          }
+        }
+        return carry + finalQuantity * item.precio;
+      }, 0);
+
+      // Calcular descuento
+      let descuento = 0;
+      let cupon = null;
+      if (historicoCupones.length > 0) {
+        cupon = historicoCupones[0].cupon || null;
+        if (cupon) {
+          if (cupon.porcentaje == 1) {
+            descuento = (subtotal * cupon.monto) / 100;
+          } else {
+            descuento = cupon.monto;
+          }
+        }
+      }
+
+      // Calcular total con descuento
+      let totalConDescuento = subtotal + costoEnvio - descuento;
+      let porcentaje = cupon && cupon.porcentaje == 1 ? '%' : 'S/';
+      let cuponMonto = cupon ? porcentaje + ' ' + Number(cupon.monto).toFixed(0) : '';
+
+      // Actualizar el DOM
+      document.getElementById('subtotal').innerText = 'S/ ' + subtotal.toFixed(2);
+      document.getElementById('shipping-cost').innerText = 'S/ ' + costoEnvio.toFixed(2);
+      document.getElementById('total').innerText = 'S/ ' + totalConDescuento.toFixed(2);
+      if (cupon) {
+        document.getElementById('discount').innerText = cuponMonto;
+        document.getElementById('discount-container').classList.remove('hidden');
+      }
+
+
+      // Renderizar los items del carrito
+
+
+    }
+
+    function toggleImage(id) {
+      const image = document.getElementById(`image-${id}`);
+      const icon = document.getElementById(`toggle-icon-${id}`);
+      const text = document.getElementById(`toggle-text-${id}`);
+
+      if (image.classList.contains('hidden')) {
+        image.classList.remove('hidden');
+        icon.innerHTML =
+          '<svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" /></svg>';
+        text.innerText = 'Ocultar imagen';
+      } else {
+        image.classList.add('hidden');
+        icon.innerHTML =
+          '<svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>';
+        text.innerText = 'Ver imagen';
+      }
+    }
+
+    $(document).ready(function() {
+      renderCart()
+
+      $(document).on('click', '#btnPagar', function() {
+
+        const formPrincipal = document.getElementById('paymentForm');
+
+        // Verificar si el formulario es válido
+        if (!formPrincipal.checkValidity()) {
+          // Mostrar mensajes de validación nativos
+          formPrincipal.reportValidity();
+          return;
+        }
+        $('#modalTipoCompra').modal({
+          show: true,
+          fadeDuration: 400,
+
+        })
+      })
+
+      $(document).on('click', '#btnPagoTransferencia', function() {
+        $('#modalTransferencia').modal('hide');
+        // $('#paymentForm').submit();
+      })
+
+      $(document).on('click', '#btnEnviarTransferencia', ProcesarTransferencia)
+    })
+    $(document).on('click', '#fileTransferencia', function() {
+      $('#imgTransferencia').click()
+    })
     $('#direccionContainer').fadeOut(0)
 
     const hasDefaultAddress = {{ $hasDefaultAddress ? 'true' : 'false' }};
@@ -567,7 +949,8 @@
         }
       })
       Culqi.open();
-    })
+    }) // fin culqi
+
 
     $('[name="envio"]').on('click', () => {
       const value = $('[name="envio"]:checked').val()
@@ -838,6 +1221,7 @@
       Local.set("carrito", articulosCarrito)
       limpiarHTML()
       PintarCarrito()
+      renderCart()
 
 
     }
@@ -857,6 +1241,7 @@
       // localStorage.setItem('carrito', JSON.stringify(articulosCarrito));
       limpiarHTML()
       PintarCarrito()
+      renderCart()
 
 
     }
@@ -867,13 +1252,15 @@
       Local.set("carrito", articulosCarrito)
       limpiarHTML()
       PintarCarrito()
+      renderCart()
     }
 
     var appUrl = <?php echo json_encode($url_env); ?>;
     $(document).ready(function() {
       articulosCarrito = Local.get('carrito') || [];
-
+      limpiarHTML()
       PintarCarrito();
+      renderCart()
     });
 
     function limpiarHTML() {
