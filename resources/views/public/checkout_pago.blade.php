@@ -13,6 +13,10 @@
     border-bottom: 1.5px solid white;
     /* padding: 16px 0; */
   }
+
+  .jquery-modal.blocker.current {
+    z-index: 50 !important;
+  }
 </style>
 
 
@@ -152,13 +156,20 @@
                                   class="text-red-500">*</span></label>
                               <div class="w-full">
                                 <div class="dropdown w-full">
+
+
                                   <select id="addresses"
                                     class="mt-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 select2-hidden-accessible"
                                     data-address>
                                     <option value>Agregar una nueva direccion</option>
                                     @foreach ($addresses as $address)
-                                      <option value="{{ $address->id }}" data="{{ $address }}"
-                                        @if ($address->isDefault) selected @endif></option>
+                                      <option value="{{ $address->id }}" data-id="{{ $address->id }}"
+                                        data-street="{{ $address->street }}" data-number="{{ $address->number }}"
+                                        data-description="{{ $address->description }}"
+                                        data-price="{{ json_encode($address->price) }}"
+                                        @if ($address->isDefault) selected @endif>
+                                        {{ $address->street }} #{{ $address->number }}
+                                      </option>
                                     @endforeach
                                   </select>
                                 </div>
@@ -446,6 +457,7 @@
     const ProcesarTransferencia = async (e) => {
       e.preventDefault();
 
+
       let esWhataspp = true;
 
       if (e.target.dataset.type !== 'whatsapp') {
@@ -472,7 +484,7 @@
         id: x.id,
         imagen: x.imagen,
         quantity: x.cantidad,
-        usePoints: x.usePoints || false
+        usePoints: !!(x.isCombo || false)
       }));
 
       const formData = new FormData();
@@ -486,7 +498,7 @@
           id: x.id,
           imagen: x.imagen,
           quantity: x.cantidad,
-          isCombo: x.isCombo || false
+          isCombo: !!(x.isCombo || false)
         })),
         contact: {
           name: $('#nombre').val(),
@@ -501,10 +513,22 @@
 
         },
         saveAddress: !Boolean($('#addresses').val()),
-        tipo_comprobante: $('#tipo-comprobante').val()
+        tipo_comprobante: $('#tipo-comprobante').val(),
+
+        addressExist: $('#recoger-option').is(':checked') ? 0 : $('#addressExist').val(),
+
         //...paymentData,
         // img: fileimg.current
       };
+      if ($('[name="envio"]:checked').val() == 'express') {
+        body.address = {
+          id: $('#distrito_id option:selected').attr('price-id'),
+          city: $('#distrito_id option:selected').text(),
+          street: $('#nombre_calle').val(),
+          number: $('#numero_calle').val(),
+          description: $('#direccion').val()
+        }
+      }
 
       try {
         const res = await axios.post('/api/payment/pagarConTransferencia', body, {
@@ -521,7 +545,7 @@
         if (status == 200) {
           Swal.fire({
             icon: 'success',
-            title: 'Pago realizado con éxito',
+            title: 'Orden de compra generada correctamente , en breve validaremos tu pago',
             text: message,
             showConfirmButton: true,
             showCancelButton: false,
@@ -535,7 +559,7 @@
             let url = esWhataspp ? `/agradecimiento?code=${data.reference_code}&whatsapp=true` :
               `/agradecimiento?code=${data.reference_code}`;
             location.href = url;
-          }, 1500);
+          }, 3500);
         }
       } catch (error) {
         console.error('Error al enviar la solicitud:', error);
@@ -544,12 +568,13 @@
 
     const renderCart = () => {
       const cartItems = Local.get('carrito') ?? []
-      const costoEnvio = parseFloat(localStorage.getItem('costoEnvio')) || 0;
+      // const costoEnvio = parseFloat(localStorage.getItem('costoEnvio')) || 0;
       const historicoCupones = JSON.parse(localStorage.getItem('historicoCupones')) || [];
       let points = parseFloat(localStorage.getItem('points')) || 0;
       let userPoints = parseFloat(localStorage.getItem('userPoints')) || 0;
 
-
+      const costoEnvio = getCostoEnvio()
+      console.log('costoEnvio', costoEnvio)
 
 
       const cartContainer = document.getElementById('cart-container');
@@ -685,6 +710,7 @@
     $(document).ready(function() {
       renderCart()
 
+
       $(document).on('click', '#btnPagar', function() {
 
         const formPrincipal = document.getElementById('paymentForm');
@@ -795,6 +821,8 @@
 
 
     $(document).on('change', '#tipo-comprobante', function() {
+
+
       console.log('cambio', $(this).val())
 
       let tipoComrobante = $(this).val()
@@ -805,19 +833,19 @@
         $('#ElementosFacturacion').html(`
           <div class="col-span-2 mb-2">
             <label for="nombre" class="font-medium text-[12px] text-[#6C7275]">DNI<span class="text-red-500">*</span></label>
-            <input maxlength="8" id="DNI" type="number"  placeholder="DNI" name="DNI" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" >
+            <input maxlength="8" id="DNI" type="number"  placeholder="DNI" name="DNI" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" required>
 
             
           </div>
           <div class="col-span-4 mb-2">
             <label for="nombre" class="font-medium text-[12px] text-[#6C7275]">Razon Social<span class="text-red-500">*</span></label>
-            <input  id="razonFact" type="text"  placeholder="Razon Social" name="razon_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" >
+            <input  id="razonFact" type="text"  placeholder="Razon Social" name="razon_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" required>
 
             
           </div>
           <div class="col-span-4 mb-2">
             <label for="nombre" class="font-medium text-[12px] text-[#6C7275]">Direccion Facturacion<span class="text-red-500">*</span></label>
-            <input  id="direccionFact" type="text"  placeholder="Direccion Boleta" name="direccion_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" >
+            <input  id="direccionFact" type="text"  placeholder="Direccion Boleta" name="direccion_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" required>
 
             
           </div>
@@ -827,17 +855,17 @@
         $('#ElementosFacturacion').html(`
           <div class="col-span-2 mb-2">
             <label for="ruc" class="font-medium text-[12px] text-[#6C7275]">RUC <span class="text-red-500">*</span></label>
-            <input maxlength="11" id="RUC" type="number" placeholder="RUC" name="RUC" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" >
+            <input maxlength="11" id="RUC" type="number" placeholder="RUC" name="RUC" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" required pattern="\d{11}" title="El RUC debe tener exactamente 11 dígitos">
           </div>
           <div class="col-span-4 mb-2">
             <label for="nombre" class="font-medium text-[12px] text-[#6C7275]">Razon Social<span class="text-red-500">*</span></label>
-            <input  id="razonFact" type="text"  placeholder="Ingrese Razon Social" name="razon_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" >
+            <input  id="razonFact" type="text"  placeholder="Ingrese Razon Social" name="razon_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" required>
 
             
           </div>
           <div class="col-span-4 mb-2">
             <label for="nombre" class="font-medium text-[12px] text-[#6C7275]">Direccion Facturacion<span class="text-red-500">*</span></label>
-            <input  id="direccionFact" type="text"  placeholder="Direccion Facturacion" name="direccion_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" >
+            <input  id="direccionFact" type="text"  placeholder="Direccion Facturacion" name="direccion_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" required>
 
             
           </div>
@@ -846,6 +874,14 @@
       } else {
         $("#ElementosFacturacion").html('')
       }
+      const numberInputs = document.querySelectorAll('input[type=number]');
+      numberInputs.forEach(function(input) {
+        input.addEventListener('wheel', function(event) {
+          event.preventDefault();
+        });
+      });
+
+
 
 
     })
@@ -883,9 +919,9 @@
       if (ExisteDni) {
         if ($('#tipo-comprobante').val() == 'boleta' && ($('#DNI').val() == '' || $('#DNI').val().length !== 8)) {
           Swal.fire({
-            title: `Error!!`,
+            title: `Espere!!`,
             text: 'Ingrese su DNI Completo',
-            icon: "error",
+            icon: 'info',
           });
           return
         }
@@ -894,9 +930,9 @@
       if (existeRuc) {
         if ($('#tipo-comprobante').val() == 'factura' && ($('#RUC').val() == '' || $('#RUC').val().length !== 11)) {
           Swal.fire({
-            title: `Error!!`,
+            title: `Espere!!`,
             text: 'Ingrese su Ruc Completo',
-            icon: "error",
+            icon: 'info',
           });
           return
         }
@@ -906,9 +942,9 @@
       if (razonFact) {
         if ($('#razonFact').val() == '') {
           Swal.fire({
-            title: `Error!!`,
+            title: `Espere!!`,
             text: 'Ingrese su Razon Social',
-            icon: "error",
+            icon: 'info',
           });
           return
         }
@@ -917,9 +953,9 @@
       if (direccionFact) {
         if ($('#direccionFact').val() == '') {
           Swal.fire({
-            title: `Error!!`,
+            title: `Espere!!`,
             text: 'Ingrese su Direccion de Facturacion',
-            icon: "error",
+            icon: 'info',
           });
           return
         }
@@ -983,7 +1019,15 @@
     }) => {
       if (!id) return text
 
-      const data = JSON.parse(element.getAttribute('data'))
+      const data = {
+        id: element.getAttribute('data-id'),
+        street: element.getAttribute('data-street'),
+        number: element.getAttribute('data-number'),
+        description: element.getAttribute('data-description'),
+        price: JSON.parse(element.getAttribute('data-price'))
+      };
+      // const data = element.getAttribute('data')
+      console.log(data)
       let price = 'Gratis'
       let className = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
       if (data.price.price > 0) {
@@ -1025,7 +1069,15 @@
         $('#direccion').val(null)
         return
       }
-      const data = JSON.parse($(this).find('option:selected').attr('data'))
+      const selectedOption = $(this).find('option:selected');
+      const data = {
+        id: selectedOption.attr('data-id'),
+        street: selectedOption.attr('data-street'),
+        number: selectedOption.attr('data-number'),
+        description: selectedOption.attr('data-description'),
+        price: JSON.parse(selectedOption.attr('data-price'))
+      };
+
       $('[data-show="new"]').fadeOut()
       $('#departamento_id')
         .val(data.price.district.province.department.id)

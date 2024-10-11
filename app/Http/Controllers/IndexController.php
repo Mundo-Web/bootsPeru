@@ -271,6 +271,7 @@ class IndexController extends Controller
       ->join('districts', 'districts.id', 'prices.distrito_id')
       ->join('provinces', 'provinces.id', 'districts.province_id')
       ->where('provinces.active', 1)
+      ->where('status', 1)
       ->groupBy('id', 'description', 'department_id')
       ->get();
 
@@ -283,6 +284,7 @@ class IndexController extends Controller
     ])
       ->join('districts', 'districts.id', 'prices.distrito_id')
       ->where('districts.active', 1)
+      ->where('status', 1)
       ->groupBy('id', 'description', 'province_id', 'price', 'price_id')
       ->get();
 
@@ -313,6 +315,7 @@ class IndexController extends Controller
         ->where('isDefault', true)
         ->exists();
     }
+    // dump($addresses->toArray());
 
     return view('public.checkout_pago', compact('url_env','datosgenerales' ,  'districts', 'provinces', 'departments', 'detalleUsuario', 'categorias', 'destacados', 'culqi_public_key', 'addresses', 'hasDefaultAddress'));
   }
@@ -479,6 +482,8 @@ class IndexController extends Controller
 
   public function actualizarPerfil(Request $request)
   {
+
+    dump($request->all());
 
     $name = $request->name;
     $lastname = $request->lastname;
