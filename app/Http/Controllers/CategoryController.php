@@ -185,9 +185,6 @@ class CategoryController extends Controller
         $cantidad = $this->contarCategoriasDestacadas();
 
 
-        if ($cantidad >= 4 && $request->status == 1) {
-            return response()->json(['message' => 'Solo puedes destacar 4 categorias'], 409);
-        }
 
 
         $id = $request->id;
