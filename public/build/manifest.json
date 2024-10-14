@@ -15,8 +15,8 @@
   "_JSEncrypt-jwo8Dr6z.js": {
     "file": "assets/JSEncrypt-jwo8Dr6z.js"
   },
-  "_ProductCard-utdV_eFi.js": {
-    "file": "assets/ProductCard-utdV_eFi.js",
+  "_ProductCard-wNmq0RPd.js": {
+    "file": "assets/ProductCard-wNmq0RPd.js",
     "imports": [
       "resources/js/components/DataGrid.jsx",
       "_arrayJoin-QZyv0n10.js",
@@ -52,7 +52,7 @@
     "file": "assets/moment-UpGjyhjE.js"
   },
   "resources/css/app.css": {
-    "file": "assets/app-dnRvNhe1.css",
+    "file": "assets/app-Y6O7Ic2k.css",
     "isEntry": true,
     "src": "resources/css/app.css"
   },
@@ -94,12 +94,12 @@
     "src": "resources/js/Admin/Transactions.jsx"
   },
   "resources/js/Catalogo.jsx": {
-    "file": "assets/Catalogo--JyLOuMd.js",
+    "file": "assets/Catalogo-YxoqECAX.js",
     "imports": [
       "resources/js/components/DataGrid.jsx",
       "resources/js/Utils/ReactAppend.jsx",
       "_CreateReactScript-PevQqOAi.js",
-      "_ProductCard-utdV_eFi.js",
+      "_ProductCard-wNmq0RPd.js",
       "resources/js/components/form/SelectAPIFormGroup.jsx",
       "_arrayJoin-QZyv0n10.js",
       "_axios-_sX4vCAy.js",
@@ -146,12 +146,12 @@
     "src": "resources/js/Login.jsx"
   },
   "resources/js/Ofertas.jsx": {
-    "file": "assets/Ofertas-4ZTmnSDf.js",
+    "file": "assets/Ofertas-RHhsGh1w.js",
     "imports": [
       "resources/js/components/DataGrid.jsx",
       "resources/js/Utils/ReactAppend.jsx",
       "_CreateReactScript-PevQqOAi.js",
-      "_ProductCard-utdV_eFi.js",
+      "_ProductCard-wNmq0RPd.js",
       "resources/js/components/form/SelectAPIFormGroup.jsx",
       "_arrayJoin-QZyv0n10.js",
       "__commonjsHelpers-4gQjN7DL.js",

@@ -43,5 +43,11 @@ class StatusSeeder extends Seeder
             'name' => 'Pagado - Conforme',
             'color' => '#009431'
         ]);
+        Status::updateOrCreate([
+            'name' => 'Pagado - Por Validar' 
+        ], [
+            'name' => 'Pagado - Por Validar',
+            'color' => '#000000'
+        ]);
     }
 }

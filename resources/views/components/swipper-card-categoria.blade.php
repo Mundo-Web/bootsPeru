@@ -51,11 +51,11 @@
         slidesPerView: 1.1,
       },
       768: {
-        slidesPerView: 2.1,
+        slidesPerView: 3.1,
         spaceBetween: 20,
       },
       1024: {
-        slidesPerView: 2.1,
+        slidesPerView: 3.1,
         spaceBetween: 20,
       },
     },

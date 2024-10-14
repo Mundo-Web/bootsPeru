@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react'
 import FilterItem from './FilterItem'
 import FilterItemSelect2 from './FilterItemSelect2'
 
-const FilterContainer = ({ minPrice, setFilter, filter, maxPrice, categories = [], tags = [], brands = [], sizes = [], colors = [], attribute_values, tag_id, selected_category }) => {
+const FilterContainer = ({ priceOrder, setPriceOrder, minPrice, setFilter, filter, maxPrice, categories = [], tags = [], brands = [], sizes = [], colors = [], attribute_values, tag_id, selected_category }) => {
   const categoryRef = useRef()
 
   const [openCategories, setOpenCategories] = useState({});
@@ -39,10 +39,83 @@ const FilterContainer = ({ minPrice, setFilter, filter, maxPrice, categories = [
     setFilter(newFilter)
   }
 
+
+  const [isListVisible, setIsListVisible] = useState(false);
+  const labelRefs = useRef({});
+  const dropdownRef3 = useRef(null);
+  const toggleListVisibility = () => {
+    setIsListVisible(!isListVisible);
+  };
+  const handleOptionChange = (event) => {
+
+
+    setIsListVisible(!isListVisible);
+
+    let inputId = event.target.id;
+    let spanContent = labelRefs.current[inputId].querySelector('span').textContent;
+
+    // Obtener el contenido del span dentro del label
+
+
+    //movil?
+    setPriceOrder((prevFilter) => {
+      return event.target.value
+    })
+
+
+  };
+  const limpiarFiltro = () => {
+    setPriceOrder(null)
+
+  }
+
+  let selectedoption = 'Ordenar por'
+  if (priceOrder == 'price_high') {
+    selectedoption = 'Precio más alto'
+  } else if (priceOrder == 'price_low') {
+    selectedoption = 'Precio más bajo'
+  }
+
+
+
   return (<>
-    <button className="w-full h-12 text-[17px] bg-[#006BF6] text-white text-center font-semibold rounded-full" type="reset">
+    <button className="w-full h-12 text-[17px] bg-[#006BF6] text-white text-center font-semibold rounded-full" type="reset" onClick={limpiarFiltro}>
       Limpiar filtros
     </button>
+    <div className="dropdown w-full" ref={dropdownRef3}>
+      <div
+        className="input-box focus:outline-none font-bold text-text16 md:text-text20 mr-20 shadow-md px-4 py-6 bg-[#F5F5F5]"
+        onClick={toggleListVisibility}
+      >
+
+        {priceOrder == null ? 'Ordenar por' : selectedoption}
+      </div>
+      {isListVisible && (
+        <div className="list z-[100] animate-fade-down animate-duration-[2000ms]" style={{ maxHeight: '150px', boxShadow: 'rgba(0, 0, 0, 0.15) 0px 1px 2px 0px, rgba(0, 0, 0, 0.1) 0px 1px 3px 1px' }}>
+          <div className="w-full">
+            <input
+              type="radio" name="drop1" id="id11" className="radio" value="price_high" onChange={handleOptionChange} />
+            <label
+              ref={(el) => (labelRefs.current['id11'] = el)}
+              htmlFor="id11"
+              className="font-regularDisplay text-text20 hover:font-bold md:duration-100 hover:text-white ordenar"
+            >
+              <span className="name inline-block w-full">Precio más alto</span>
+            </label>
+          </div>
+          <div className="w-full">
+            <input type="radio" name="drop1" id="id12" className="radio" value="price_low" onChange={handleOptionChange} />
+            <label
+              ref={(el) => (labelRefs.current['id12'] = el)}
+              htmlFor="id12"
+              className="font-regularDisplay text-text20 hover:font-bold md:duration-100 hover:text-white ordenar"
+            >
+              <span className="name inline-block w-full">Precio más bajo</span>
+            </label>
+          </div>
+        </div>
+      )}
+    </div>
 
     <FilterItem title="Precio" className="flex flex-row gap-4 w-full">
       <input type="number" className="w-28 rounded-md border" placeholder="Desde" min={minPrice} max={maxPrice} step={0.01} onChange={setMinPrice} />

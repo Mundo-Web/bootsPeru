@@ -172,7 +172,7 @@
     language: "es",
     dataSource: {
       load: async (params) => {
-        const res = await fetch("{{ route('products.paginate') }}", {
+        const res = await fetch("{{ route('products.paginateAdmin', 'admin') }}", {
           method: 'POST',
           headers: {
             'Accept': 'application/json',

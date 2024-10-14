@@ -46,7 +46,7 @@ class ProductsController extends Controller
     ])->rootView('admin');
   }
 
-  public function paginate(Request $request)
+  public function paginate(Request $request, $flag = null)
   {
     //validar el rol del usuario logueado 
     // $user = Auth::user();
@@ -54,6 +54,7 @@ class ProductsController extends Controller
 
     $user = false;
    
+
 
     
     
@@ -66,8 +67,13 @@ class ProductsController extends Controller
         ->leftJoin('attribute_product_values AS apv', 'products.id', 'apv.product_id')
         ->leftJoin('attributes AS a', 'apv.attribute_id', 'a.id')
         ->leftJoin('tags_xproducts AS txp', 'txp.producto_id', 'products.id')
-        ->leftJoin('categories', 'categories.id', 'products.categoria_id') 
-        ->where('categories.visible', 1);    
+        ->leftJoin('categories', 'categories.id', 'products.categoria_id') ;    
+        if ($flag !== 'admin') {
+          $instance->where('categories.visible', 1)
+          ->where('categories.status', 1)
+          ->where('products.visible', 1)
+          ->where('products.status', 1);
+        }
         
         if(Auth::check()){
           $user = Auth::user();
@@ -396,6 +402,14 @@ class ProductsController extends Controller
 
       $this->GuardarEspecificaciones($producto->id, $especificaciones);
       $producto->tags()->sync($tagsSeleccionados);
+
+      $precioFiltro = 0 ;
+      if ($producto['descuento'] == 0 || is_null($producto['descuento'])) {
+        $precioFiltro = $producto['precio'];
+      } else {
+        $precioFiltro = $producto['descuento'];
+      }
+      $producto->update(['preciofiltro' => $precioFiltro]);
 
       Galerie::where('product_id', $producto->id)->delete();
       if ($request->galery) {

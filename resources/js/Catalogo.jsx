@@ -23,6 +23,7 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
   const [showModal, setShowModal] = useState(false);
   const is_proveedor = useRef(false);
   const cancelTokenSource = useRef(null);
+  const [priceOrder, setPriceOrder] = useState('')
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -128,6 +129,27 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
         ]);
       }
     }
+    let sort = [];
+
+
+    if (priceOrder) {
+      if (priceOrder === 'price_high') {
+        sort.push({
+          selector: 'products.preciofiltro',
+          desc: true
+        });
+      } else if (priceOrder === 'price_low') {
+        sort.push({
+          selector: 'products.preciofiltro',
+          desc: false
+        });
+      } else {
+        sort.push({
+          selector: 'products.created_at',
+          desc: true
+        });
+      }
+    }
 
     if (filter['txp.tag_id'] && filter['txp.tag_id'].length > 0) {
       const tagsFilter = [];
@@ -189,7 +211,8 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
         requireTotalCount: true,
         filter: arrayJoin([...filterBody, ['products.visible', '=', true]], 'and'),
         take,
-        skip: take * (currentPage - 1)
+        skip: take * (currentPage - 1),
+        sort
       }, {
         headers: {
           'Content-Type': 'application/json'
@@ -210,6 +233,10 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
       }
     }
   };
+  useEffect(() => {
+    setCurrentPage(1)
+    getItems()
+  }, [priceOrder])
 
   const attributes = attribute_values.reduce((acc, item) => {
     // If the attribute_id does not exist in the accumulator, create a new array for it
@@ -227,7 +254,19 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
     </style>
     <form className="flex flex-col md:flex-row gap-6  mx-auto font-poppins bg-[#F1F1F1] w-full" style={{ padding: '40px' }}>
       <section className="hidden md:flex md:flex-col gap-4 md:basis-3/12 bg-white p-6 rounded-lg h-max md:sticky top-2">
-        <FilterContainer setFilter={setFilter} filter={filter} minPrice={minPrice ?? 0} maxPrice={maxPrice ?? 0} categories={categories} tags={tags} attribute_values={Object.values(attributes)} selected_category={selected_category} tag_id={tag_id} />
+        <FilterContainer
+          setFilter={setFilter}
+          filter={filter}
+          minPrice={minPrice ?? 0}
+          maxPrice={maxPrice ?? 0}
+          categories={categories}
+          tags={tags}
+          attribute_values={Object.values(attributes)}
+          selected_category={selected_category}
+          tag_id={tag_id}
+          setPriceOrder={setPriceOrder}
+          priceOrder={priceOrder}
+        />
       </section>
       <section className="flex flex-col gap-6 md:basis-9/12">
         <div className="w-full bg-white rounded-lg font-medium flex flex-row justify-between items-center px-2 py-3">
@@ -255,7 +294,9 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
         </div>
 
         <div className='flex flex-col gap-4 md:basis-3/12 bg-white p-6 rounded-lg top-2 overflow-y-auto mt-10' style={{ maxHeight: '90vh', maxWidth: "85vh" }}>
-          <FilterContainer setFilter={setFilter} filter={filter} minPrice={minPrice ?? 0} maxPrice={maxPrice ?? 0} categories={categories} tags={tags} attribute_values={Object.values(attributes)} selected_category={selected_category} tag_id={tag_id} />
+          <FilterContainer
+            priceOrder={priceOrder}
+            setPriceOrder={setPriceOrder} setFilter={setFilter} filter={filter} minPrice={minPrice ?? 0} maxPrice={maxPrice ?? 0} categories={categories} tags={tags} attribute_values={Object.values(attributes)} selected_category={selected_category} tag_id={tag_id} />
         </div>
 
       </div>)}

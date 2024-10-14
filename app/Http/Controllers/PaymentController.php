@@ -57,6 +57,7 @@ class PaymentController extends Controller
       ];
 
       $this->finalizeSale($sale, $charge?->reference_code ?? null);
+      $this->sendEmail($sale);
     } catch (\Throwable $th) {
       
       $sale->status_id=2;
@@ -76,8 +77,9 @@ class PaymentController extends Controller
 
     $sale = new Sale();
 
-    dump($body);
-    return;
+    
+
+
 
     // $sale->tipo_tarjeta = 'transferencia';
     // $sale->numero_tarjeta = '';
@@ -90,9 +92,14 @@ class PaymentController extends Controller
         $body['cart'][$key]['isCombo'] = $item['isCombo'] == 'true' ? true : false;
       }
       
-      dump($body);
+      
    
       $this->processSale($body, $sale, $response);
+      
+      if(isset($body['img'])){
+        $this->saveImage($body['img']);
+        $sale->status_id = 10;
+      }
       $sale->code = random_int(100000000000, 999999999999);
 
       $response->status = 200;
@@ -104,10 +111,11 @@ class PaymentController extends Controller
 
       // $this->finalizeSale($sale, $sale->code ?? null);
 
-      // dump($sale);
+      
       // return ; 
       
 
+      $this->sendEmail($sale);
       $sale->save();
       return response($response->toArray(), $response->status);
     } catch (\Throwable $th) {
@@ -121,13 +129,13 @@ class PaymentController extends Controller
 
   private function processSale($body, $sale, &$response)
   {
-    dump($body['cart']);
+    
 
     $products = array_filter($body['cart'], fn($x) => !(isset($x['isCombo']) && $x['isCombo'] == true));
     $offers = array_filter($body['cart'], fn($x) => isset($x['isCombo']) && $x['isCombo'] == true);
 
 
-    dump($products);
+    
 
     $productsJpa = [];
 
@@ -280,6 +288,15 @@ class PaymentController extends Controller
     }
   }
 
+  private function sendEmail($sale){
+    $indexController = new IndexController();
+      $datacorreo = [
+        'nombre' => $sale->name . ' ' . $sale->lastname,
+        'email' => $sale->email,
+      ];
+      $indexController->envioCorreoCompra($datacorreo);
+  }
+
   private function getCulqiConfig($body, $sale)
   {
     return [
@@ -322,7 +339,7 @@ class PaymentController extends Controller
     try {
       [$first, $code] = explode(';base64,', $file);
       $imageData = base64_decode($code);
-      $routeImg = 'storage/images/dedication/';
+      $routeImg = 'storage/images/transference/';
       $ext = File::getExtention(str_replace("data:", '', $first));
       $nombreImagen = Crypto::randomUUID() . '.' . $ext;
       if (!file_exists($routeImg)) {

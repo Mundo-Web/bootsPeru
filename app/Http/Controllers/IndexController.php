@@ -309,7 +309,9 @@ class IndexController extends Controller
         'price.district.province',
         'price.district.province.department'
       ])
+      ->join('prices', 'prices.id', 'addresses.price_id')
         ->where('email', $user->email)
+        ->where('prices.status', 1)
         ->get();
       $hasDefaultAddress = Address::where('email', $user->email)
         ->where('isDefault', true)
@@ -579,6 +581,8 @@ class IndexController extends Controller
       'price.district.province',
       'price.district.province.department'
     ])
+    ->join('prices', 'prices.id', 'addresses.price_id')
+    ->where('prices.status', 1)
       ->where('email', $user->email)
       ->get();
 
@@ -640,6 +644,9 @@ class IndexController extends Controller
     // $productos = Products::where('id', '=', $id)->first();
     // $especificaciones = Specifications::where('product_id', '=', $id)->get();
     $product = Products::findOrFail($id);
+    if($product->status == 0 || $product->visible == 0){
+      return redirect()->route('Catalogo.jsx');
+    }
     $especificaciones = Specifications::where('product_id', '=', $id)
       ->where(function ($query) {
         $query->whereNotNull('tittle')
@@ -1157,8 +1164,10 @@ class IndexController extends Controller
         </body>
       </html>
       ';
-      $mail->addBCC('atencionalcliente@boostperu.com.pe', 'Atencion al cliente', );
-      $mail->addBCC('jefecomercial@boostperu.com.pe', 'Jefe Comercial', );
+      /* $mail->addBCC('atencionalcliente@boostperu.com.pe', 'Atencion al cliente', );
+      $mail->addBCC('jefecomercial@boostperu.com.pe', 'Jefe Comercial', ); */
+
+      $mail->addBCC('carlosecolina89@gmail.com', 'Carlos Colina', );
       $mail->isHTML(true);
       $mail->send();
     } catch (\Throwable $th) {

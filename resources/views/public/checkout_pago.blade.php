@@ -353,9 +353,9 @@
         class="text-white bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px] inline-block text-center mt-4">
         Pago Por Transferencia
       </button>
-      <button type="button" id="btnPagoOnEntrega"
+      <button type="button" id="btnPagoOnEntrega" data-type="contraEntrega"
         class="text-white bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px] inline-block text-center mt-4">
-        Pago Contra Entrega / Pago en Tienda
+        Pago Contra Entrega
       </button>
     </div>
   </div>
@@ -427,7 +427,7 @@
 
         <button data-type="normal" id='btnEnviarTransferencia' type="button"
           class="w-full py-2 px-4 border  block text-center border-green-500 text-green-500 rounded-full hover:text-white  hover:bg-[#006BF6] transition-colors duration-300">
-          2. Enviar Imagen
+          Enviar Imagen
         </button>
 
 
@@ -435,8 +435,8 @@
       </div>
       <p class='mt-4 text-center'> O </p>
       <div class="mt-4">
-        <button data-type="whatsapp" type="submit" form="formPrincipal" onClick={ProcesarTransferencia} //
-          target="_blanck" href={`https://api.whatsapp.com/send?phone=${telefono}&text=${texto}`}
+        <button data-type="whatsapp" id='btnEnviarTransferencia2' type="button" target="_blanck"
+          href={`https://api.whatsapp.com/send?phone=${telefono}&text=${texto}`}
           class="w-full py-2 px-4 border  block text-center border-green-500 text-green-500 rounded-full hover:text-white  
         hover:bg-[#006BF6] transition-colors duration-300">
           Enviar Pago por WhatsApp
@@ -453,16 +453,41 @@
     $('#paymentButton').on('click', function() {
       $('#paymentForm').submit();
     });
+    $(document).on('click', '#btnPagoOnEntrega', function(e) {
+      ProcesarTransferencia(e)
+    })
+    document.getElementById('imgTransferencia').addEventListener('change', function(e) {
+      const fileInput = e.target;
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+          const base64String = event.target.result;
+          console.log('Base64 String:', base64String);
+          e.target.dataset.base64 = base64String;
+          // Aquí puedes usar la cadena base64 como necesites
+        };
+
+        reader.readAsDataURL(file);
+      }
+    });
 
     const ProcesarTransferencia = async (e) => {
       e.preventDefault();
 
 
+
       let esWhataspp = true;
 
-      if (e.target.dataset.type !== 'whatsapp') {
+      let fileInput = document.getElementById('imgTransferencia');
+      let tipoCompra = e.target.dataset.type
+
+      console.log(tipoCompra)
+
+      if (tipoCompra !== 'whatsapp' && tipoCompra !== 'contraEntrega') {
         esWhataspp = false;
-        const fileInput = document.getElementById('imgTransferencia');
+
         if (!fileInput.files.length > 0) {
           return Swal.fire({
             icon: 'warning',
@@ -487,9 +512,9 @@
         usePoints: !!(x.isCombo || false)
       }));
 
-      const formData = new FormData();
+      // const formData = new FormData();
       // formData.append('datosFinales', JSON.stringify(datosFinales));
-      // formData.append('img', fileimg.current);
+      // formData.append('img', fileInput[0]);
       // formData.append('paymentData', JSON.stringify(paymentData));
       // formData.append('cart', JSON.stringify(cart));
 
@@ -516,7 +541,8 @@
         tipo_comprobante: $('#tipo-comprobante').val(),
 
         addressExist: $('#recoger-option').is(':checked') ? 0 : $('#addressExist').val(),
-
+        img: $(fileInput).attr('data-base64'),
+        tipo_compra: tipoCompra
         //...paymentData,
         // img: fileimg.current
       };
@@ -574,7 +600,7 @@
       let userPoints = parseFloat(localStorage.getItem('userPoints')) || 0;
 
       const costoEnvio = getCostoEnvio()
-      console.log('costoEnvio', costoEnvio)
+
 
 
       const cartContainer = document.getElementById('cart-container');
@@ -612,7 +638,9 @@
             userPoints -= item.points;
           }
         }
-        const subtotalf = finalQuantity * item.precio;
+        console.log(item)
+        let itemPrice = item.descuento > 0 ? item.descuento : item.precio;
+        const subtotalf = finalQuantity * itemPrice;
 
         const itemElement = document.createElement('div');
         itemElement.classList.add('border-b', 'pb-4', 'mb-4');
@@ -652,7 +680,8 @@
             userPoints -= item.points;
           }
         }
-        return carry + finalQuantity * item.precio;
+        let itemPrice = item.descuento > 0 ? item.descuento : item.precio;
+        return carry + finalQuantity * itemPrice;
       }, 0);
 
       // Calcular descuento
@@ -729,11 +758,35 @@
       })
 
       $(document).on('click', '#btnPagoTransferencia', function() {
+        renderCart()
         $('#modalTransferencia').modal('hide');
         // $('#paymentForm').submit();
       })
 
       $(document).on('click', '#btnEnviarTransferencia', ProcesarTransferencia)
+      $(document).on('click', '#btnEnviarTransferencia2', function(e) {
+        Swal.fire({
+          title: '¿Estás seguro?',
+          text: "¿Deseas continuar con la transferencia?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Sí, continuar',
+          cancelButtonText: 'No, cancelar'
+        }).then((result) => {
+          console.log(result)
+          if (result.isConfirmed) {
+            console.log('Procesando Transferencia');
+
+            ProcesarTransferencia(e);
+          } else {
+            return;
+          }
+        });
+
+
+      })
     })
     $(document).on('click', '#fileTransferencia', function() {
       $('#imgTransferencia').click()
@@ -803,7 +856,7 @@
 
         } else if (Culqi.order) { // ¡Objeto Order creado exitosamente!
           const order = Culqi.order;
-          console.log('Se ha creado el objeto Order: ', order);
+
 
         } else {
           // Mostramos JSON de objeto error en consola
@@ -823,7 +876,7 @@
     $(document).on('change', '#tipo-comprobante', function() {
 
 
-      console.log('cambio', $(this).val())
+
 
       let tipoComrobante = $(this).val()
 
@@ -838,8 +891,8 @@
             
           </div>
           <div class="col-span-4 mb-2">
-            <label for="nombre" class="font-medium text-[12px] text-[#6C7275]">Razon Social<span class="text-red-500">*</span></label>
-            <input  id="razonFact" type="text"  placeholder="Razon Social" name="razon_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" required>
+            <label for="nombre" class="font-medium text-[12px] text-[#6C7275]">Nombre / Apellido<span class="text-red-500">*</span></label>
+            <input  id="razonFact" type="text"  placeholder="Nombre / Apellido" name="razon_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" required>
 
             
           </div>
@@ -895,7 +948,7 @@
       if (e.key === '.' || e.key === ',') {
         e.preventDefault();
       }
-      console.log($(this.id))
+
       if (this.id == 'DNI' && $(this).val().length > 7) {
         e.preventDefault();
       } else if (this.id == 'RUC' && $(this).val().length > 10) {
@@ -1027,7 +1080,7 @@
         price: JSON.parse(element.getAttribute('data-price'))
       };
       // const data = element.getAttribute('data')
-      console.log(data)
+
       let price = 'Gratis'
       let className = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
       if (data.price.price > 0) {
@@ -1059,6 +1112,7 @@
 
     $('#addresses').on('change', function() {
       const address = $(this).val()
+
       if (!address) {
         $('[data-show="new"]').fadeIn()
         $('#departamento_id')
@@ -1070,6 +1124,7 @@
         return
       }
       const selectedOption = $(this).find('option:selected');
+
       const data = {
         id: selectedOption.attr('data-id'),
         street: selectedOption.attr('data-street'),
@@ -1077,7 +1132,7 @@
         description: selectedOption.attr('data-description'),
         price: JSON.parse(selectedOption.attr('data-price'))
       };
-
+      console.log('183', data)
       $('[data-show="new"]').fadeOut()
       $('#departamento_id')
         .val(data.price.district.province.department.id)
@@ -1108,7 +1163,7 @@
       calcularTotal()
     })
     $(document).on('change', '#addresses', function() {
-      console.log('change', $(this).val())
+
     })
 
     $('#provincia_id').on('change', function() {
@@ -1129,6 +1184,7 @@
 
     $('#distrito_id').on('change', function() {
       const priceStr = $('#distrito_id option:selected').attr('data-price')
+      console.log('1135', priceStr)
       const price = Number(priceStr) || 0
       if (price == 0) {
         $('#precioEnvio').text('Gratis')
@@ -1149,6 +1205,8 @@
       const precioEnvio = getCostoEnvio()
       const total = precioProductos + precioEnvio
 
+
+
       $('#itemTotal').text(`S/. ${total.toFixed(2)} `)
       $('#itemsTotal').text(`S/. ${total.toFixed(2)} `)
     }
@@ -1166,7 +1224,7 @@
     }
 
     const getCostoEnvio = () => {
-      console.log('getcostoEnvio', $('[name="envio"]:checked').val());
+
 
       if ($('[name="envio"]:checked').val() == 'recoger') return 0
       const priceStr = $('#distrito_id option:selected').attr('data-price')
@@ -1216,17 +1274,17 @@
   </script>
   <script>
     $('#pagarProductos').on('click', function(e) {
-      console.log('pagando servicio');
+
       e.preventDefault()
       let formDataArray = $('#formHome').serializeArray();
-      console.log(formDataArray)
+
 
       $.ajax({
         url: '{{ route('procesar.pago') }}',
         method: 'POST',
         data: $('#formHome').serialize(),
         success: function(response) {
-          console.log(response)
+
           Swal.close();
           Swal.fire({
             title: `Exito!!`,
@@ -1240,7 +1298,7 @@
           }, 3000);
         },
         error: function(response) {
-          console.log(response)
+
           const customMessages = response.responseJSON.message.validator.customMessages;
           const messages = Object.keys(customMessages).map(key => customMessages[key]);
           Swal.close();
@@ -1259,7 +1317,7 @@
 
 
     function deleteOnCarBtn(id, operacion) {
-      console.log('Elimino un elemento del cvarrio');
+
       const prodRepetido = articulosCarrito.map(item => {
         if (item.id === id && item.cantidad > 0) {
           item.cantidad -= Number(1);
