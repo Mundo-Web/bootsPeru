@@ -583,6 +583,12 @@
       return elemento
     }
     $('document').ready(function() {
+
+      let valorActual = $('#categoria_id').val();
+
+      // Desencadenar el evento change con el valor actual
+      $('#categoria_id').val(valorActual).change();
+
       let valorInput = $('[id="specifications"]').length / 2
 
       // tinymce.init({
