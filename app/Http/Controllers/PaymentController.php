@@ -97,7 +97,7 @@ class PaymentController extends Controller
       $this->processSale($body, $sale, $response);
       
       if(isset($body['img'])){
-        $this->saveImage($body['img']);
+        $sale->img_transferencia = $this->saveImage($body['img']);
         $sale->status_id = 10;
       }
       $sale->code = random_int(100000000000, 999999999999);

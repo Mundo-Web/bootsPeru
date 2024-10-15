@@ -27,6 +27,9 @@
     <span> Direccion Fiscal:</span>
     <span id="dirFact"></span>
   </p>
+  <div id="containerTRansferencia">
+
+  </div>
 
   @if ($isAdmin)
     <div class="mb-2 flex gap-2 items-center">
@@ -64,6 +67,7 @@
       <div
         class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
       </div>
+
       <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
         @if (!$isAdmin)
           Productos entregados
@@ -105,6 +109,8 @@
     const isFree = !Boolean(Number(data.address_price))
     const envio = data.address_price
 
+    console.log(data)
+
     $('#invoice-id').val(data.id)
     $('#address-tipo-comprobante').text(data.tipo_comprobante.toUpperCase())
     $('#n_document').text(data.doc_number)
@@ -145,6 +151,21 @@
         <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-8"></div>
       </td>
     </tr>`)
+    if (data.img_transferencia) {
+      var enlace = document.createElement('a');
+      let extencion = data.img_transferencia.split('.').pop();
+      console.log(extencion)
+      enlace.className = 'underline pb-6';
+      enlace.href = `/${data.img_transferencia}`;
+      enlace.download = `transferencia.${extencion}`;
+      enlace.target = '_blank';
+      enlace.textContent = 'Img Transferencia';
+
+      // Insertar el enlace dentro del div con el ID containerTRansferencia
+      document.getElementById('containerTRansferencia').appendChild(enlace);
+    }
+
+
     fetch(`/api/saledetails/${data.id}`)
       .then(res => res.json())
       .then(data => {

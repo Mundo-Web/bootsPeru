@@ -464,7 +464,7 @@
 
         reader.onload = function(event) {
           const base64String = event.target.result;
-          console.log('Base64 String:', base64String);
+
           e.target.dataset.base64 = base64String;
           // Aquí puedes usar la cadena base64 como necesites
         };

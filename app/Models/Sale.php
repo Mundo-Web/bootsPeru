@@ -27,7 +27,9 @@ class Sale extends Model
         'status_message',
         'doc_number',
         'razon_fact',
-        'direccion_fact'
+        'direccion_fact',
+        'img_transferencia'
+
     ];
 
     public function status()
