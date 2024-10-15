@@ -567,6 +567,8 @@ class IndexController extends Controller
       ->where('producto', 'like', "%$query%")
       ->join('categories', 'categories.id', 'products.categoria_id')
       ->where('categories.visible', 1)
+      ->where('products.status', true)
+      ->where('products.visible', true)
       ->get();
 
 
