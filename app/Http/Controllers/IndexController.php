@@ -170,10 +170,11 @@ class IndexController extends Controller
       'id_cat' => $id_cat
     ])->rootView('app');
   }
-  public function nosotros(){
+  public function nosotros()
+  {
     $nosotros = AboutUs::all();
     $benefit = Strength::where('status', '=', 1)->take(4)->get();
-    return view('public.nosotros' , compact('nosotros','benefit'));
+    return view('public.nosotros', compact('nosotros', 'benefit'));
   }
 
 
@@ -309,7 +310,7 @@ class IndexController extends Controller
         'price.district.province',
         'price.district.province.department'
       ])
-      ->join('prices', 'prices.id', 'addresses.price_id')
+        ->join('prices', 'prices.id', 'addresses.price_id')
         ->where('email', $user->email)
         ->where('prices.status', 1)
         ->get();
@@ -319,7 +320,7 @@ class IndexController extends Controller
     }
     // dump($addresses->toArray());
 
-    return view('public.checkout_pago', compact('url_env','datosgenerales' ,  'districts', 'provinces', 'departments', 'detalleUsuario', 'categorias', 'destacados', 'culqi_public_key', 'addresses', 'hasDefaultAddress'));
+    return view('public.checkout_pago', compact('url_env', 'datosgenerales',  'districts', 'provinces', 'departments', 'detalleUsuario', 'categorias', 'destacados', 'culqi_public_key', 'addresses', 'hasDefaultAddress'));
   }
 
   public function procesarPago(Request $request)
@@ -581,8 +582,8 @@ class IndexController extends Controller
       'price.district.province',
       'price.district.province.department'
     ])
-    ->join('prices', 'prices.id', 'addresses.price_id')
-    ->where('prices.status', 1)
+      ->join('prices', 'prices.id', 'addresses.price_id')
+      ->where('prices.status', 1)
       ->where('email', $user->email)
       ->get();
 
@@ -633,18 +634,17 @@ class IndexController extends Controller
   public function producto(string $id)
   {
 
-    
-    $is_reseller = false; 
-    if(Auth::check()){
-     $user = Auth::user();
-     $is_reseller = $user->hasRole('Reseller');
-     
-   }
+
+    $is_reseller = false;
+    if (Auth::check()) {
+      $user = Auth::user();
+      $is_reseller = $user->hasRole('Reseller');
+    }
 
     // $productos = Products::where('id', '=', $id)->first();
     // $especificaciones = Specifications::where('product_id', '=', $id)->get();
     $product = Products::findOrFail($id);
-    if($product->status == 0 || $product->visible == 0){
+    if ($product->status == 0 || $product->visible == 0) {
       return redirect()->route('Catalogo.jsx');
     }
     $especificaciones = Specifications::where('product_id', '=', $id)
@@ -995,8 +995,8 @@ class IndexController extends Controller
         </body>
       </html>
       ';
-      $mail->addBCC('atencionalcliente@boostperu.com.pe', 'Atencion al cliente', );
-      $mail->addBCC('jefecomercial@boostperu.com.pe', 'Jefe Comercial', );
+      $mail->addBCC('atencionalcliente@boostperu.com.pe', 'Atencion al cliente',);
+      $mail->addBCC('jefecomercial@boostperu.com.pe', 'Jefe Comercial',);
       $mail->isHTML(true);
       $mail->send();
     } catch (\Throwable $th) {
@@ -1167,7 +1167,12 @@ class IndexController extends Controller
       /* $mail->addBCC('atencionalcliente@boostperu.com.pe', 'Atencion al cliente', );
       $mail->addBCC('jefecomercial@boostperu.com.pe', 'Jefe Comercial', ); */
 
-      $mail->addBCC('carlosecolina89@gmail.com', 'Carlos Colina', );
+      $bccs = explode(',', env('MAIL_DEFAULT_BCC', ''));
+      foreach ($bccs as $bcc) {
+        $mail->addBCC($bcc);
+      }
+
+      // $mail->addBCC('carlosecolina89@gmail.com');
       $mail->isHTML(true);
       $mail->send();
     } catch (\Throwable $th) {
