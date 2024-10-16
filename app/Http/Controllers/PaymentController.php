@@ -124,7 +124,7 @@ class PaymentController extends Controller
       // $this->finalizeSale($sale, $charge?->reference_code ?? null);
       // $this->sendEmail($sale);
     } catch (\Throwable $th) {
-      dump($th);
+      
       $sale->status_id = 2;
       $response->status = 400;
       $response->message = $th->getMessage();
