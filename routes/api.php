@@ -38,6 +38,7 @@ Route::get('/offers/{id}', [OfferController::class, 'get'])->name('offers.get');
 Route::post('login-rev-api', [AuthController::class, 'login']);
 Route::post('signup', [AuthController::class, 'signup']);
 Route::middleware('web')->post('/payment/pagarConTransferencia', [PaymentController::class, 'pagarConTransferencia'])->name('payment.pagarConTransferencia');
+Route::middleware('web')->post('/payment/generateOrder', [PaymentController::class, 'culqiOrder'])->name('payment.generarOrden');
 
 Route::middleware(['web', 'auth:sanctum', 'verified'])->group(function () {
 

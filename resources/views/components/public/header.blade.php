@@ -854,7 +854,7 @@
           icon: '/images/svg/Boost.svg',
           title: 'Producto agregado',
           body: 'El producto se agregó correctamente al carrito',
-          type: 'success',
+          type: 'primary',
         })
 
         /* Swal.fire({

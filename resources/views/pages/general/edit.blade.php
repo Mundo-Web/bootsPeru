@@ -437,12 +437,15 @@
 
 
 
-                          <!-- <div class="md:col-span-5">
-                                            <div class="inline-flex items-center">
-                                            <input type="checkbox" name="billing_same" id="billing_same" class="form-checkbox" />
-                                            <label for="billing_same" class="ml-2">My billing address is different than above.</label>
-                                            </div>
-                                        </div> -->
+                          <div class="md:col-span-5">
+                            <div class="inline-flex items-center">
+                              <input type="checkbox" name="pago_contra_entrega" id="pago_contra_entrega"
+                                class="form-checkbox" @if ($general->pago_contra_entrega) checked @endif />
+
+
+                              <label for="billing_same" class="ml-2">Pago contra Entrega</label>
+                            </div>
+                          </div>
 
                           <div class="md:col-span-5 text-right mt-6">
                             <div class="inline-flex items-end">

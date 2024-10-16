@@ -345,21 +345,28 @@
     <!-- Modal body -->
     <div class="p-4  mb-4">
       <h1 class="font-Inter_SemiBold">¿Qué método de pago te gustaría usar?</h1>
+      <button type="button" id="procesarPago"
+        class="text-white  bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px] inline-block text-center mt-4">
+        Procesar Pago
+      </button>
       <button type="button" id="paymentButton"
-        class="text-white bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px] inline-block text-center mt-4">
+        class="hidden text-white bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px]  text-center mt-4">
         Pago con Tarjeta
       </button>
       <button type="button" id="btnPagoTransferencia"
         class="text-white bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px] inline-block text-center mt-4">
         Pago Por Transferencia
       </button>
-      <button type="button" id="btnPagoOnEntrega" data-type="contraEntrega"
-        class="text-white bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px] inline-block text-center mt-4">
-        Pago Contra Entrega
-      </button>
+      @if ($datosgenerales->pago_contra_entrega)
+        <button type="button" id="btnPagoOnEntrega" data-type="contraEntrega"
+          class="text-white bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px] inline-block text-center mt-4">
+          Pago Contra Entrega
+        </button>
+      @endif
+
     </div>
   </div>
-  <div id="modalTransferencia" class="modal" style="max-width: 400px !important;width: 100% !important;  ">
+  <div id="modalTransferencia" class="modal" style="max-width: 700px !important;width: 100% !important;  ">
     <!-- Modal body -->
     <div class="p-4  mb-4">
       <div class="text-center mb-6 flex flex-col justify-center content-center items-center">
@@ -380,7 +387,7 @@
         <p class="mb-2">También puedes enviarnos tu confirmación de pago a través de WhatsApp.</p>
       </div>
 
-      <div class="grid grid-cols-2 gap-4 mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
 
 
         <div class="col-span-1 flex items-center">
@@ -450,6 +457,98 @@
   <script src="https://checkout.culqi.com/js/v4"></script>
 
   <script>
+    let NumOrder = null
+    $(document).on('click', '#procesarPago', async function(e) {
+      e.preventDefault();
+
+      $(this).addClass('disabled opacity-50 cursor-not-allowed').attr('disabled', true);
+      let esWhataspp = true;
+
+      const carrito = Local.get('carrito') ?? [];
+      //const paymentData = Local.get('payment-data') ?? [];
+      let cart = carrito.map((x) => ({
+        id: x.id,
+        imagen: x.imagen,
+        quantity: x.cantidad,
+        usePoints: !!(x.isCombo || false)
+      }));
+
+      // const formData = new FormData();
+      // formData.append('datosFinales', JSON.stringify(datosFinales));
+      // formData.append('img', fileInput[0]);
+      // formData.append('paymentData', JSON.stringify(paymentData));
+      // formData.append('cart', JSON.stringify(cart));
+
+      let body = {
+        cart: carrito.map((x) => ({
+          id: x.id,
+          imagen: x.imagen,
+          quantity: x.cantidad,
+          isCombo: !!(x.isCombo || false)
+        })),
+        contact: {
+          name: $('#nombre').val(),
+          lastname: $('#apellidos').val(),
+          email: $('#email').val(),
+          phone: $('#celular').val(),
+          doc_number: $('#DNI').val() || $('#RUC').val(),
+          doc_type: $('#tipo-comprobante').val() ?? 'nota_venta',
+          razon_fact: $('#razonFact').val(),
+          direccion_fact: $('#direccionFact').val(),
+
+
+        },
+        saveAddress: !Boolean($('#addresses').val()),
+        tipo_comprobante: $('#tipo-comprobante').val(),
+
+        addressExist: $('#recoger-option').is(':checked') ? 0 : $('#addressExist').val(),
+        // img: $(fileInput).attr('data-base64'),
+        // tipo_compra: tarjeta
+        //...paymentData,
+        // img: fileimg.current
+      };
+      if ($('[name="envio"]:checked').val() == 'express') {
+        body.address = {
+          id: $('#distrito_id option:selected').attr('price-id'),
+          city: $('#distrito_id option:selected').text(),
+          street: $('#nombre_calle').val(),
+          number: $('#numero_calle').val(),
+          description: $('#direccion').val()
+        }
+      }
+      try {
+        const res = await axios.post('/api/payment/generateOrder', body, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+        });
+
+        let {
+          status,
+          message,
+          data
+        } = res.data;
+        if (status == 200) {
+
+          $(this).removeClass('disabled opacity-50 cursor-not-allowed').attr('disabled', false);
+          // Local.delete('carrito');
+          // Local.delete('payment-data');
+          NumOrder = data.charge.id
+          $('#paymentButton').click()
+
+          console.log(data)
+          /* setTimeout(() => {
+            let url = esWhataspp ? `/agradecimiento?code=${data.reference_code}&whatsapp=true` :
+              `/agradecimiento?code=${data.reference_code}`;
+            location.href = url;
+          }, 3500); */
+        }
+      } catch (error) {
+        $(this).removeClass('disabled opacity-50 cursor-not-allowed').attr('disabled', false);
+        console.error('Error al enviar la solicitud:', error);
+      }
+    });
+
     $('#paymentButton').on('click', function() {
       $('#paymentForm').submit();
     });
@@ -605,7 +704,7 @@
 
       const cartContainer = document.getElementById('cart-container');
       cartContainer.innerHTML = `
-          <div class="max-w-sm mx-auto p-2 bg-white text-gray-800 font-sans w-full">
+          <div class=" mx-auto p-2 bg-white text-gray-800 font-sans w-full">
                 <h1 class="text-xl font-semibold mb-4">DETALLE DE COMPRAS</h1>
 
                 <div id="cart-items"></div>
@@ -666,7 +765,8 @@
             </span>
             <span id="toggle-text-${item.id}">Ver imagen</span>
           </button>
-          <img id="image-${item.id}" src="/${item.imagen}" alt="${item.producto}" class="mt-2 w-24 h-24 object-cover rounded hidden" />
+          <img id="image-${item.id}" src="/${item.imagen}" alt="${item.producto}" class="mt-2 w-24 h-24 object-cover rounded hidden" 
+          onerror="this.onerror=null;this.src='/images/img/noimagen.jpg';" />
         `;
         cartItemsContainer.appendChild(itemElement);
       });
@@ -796,6 +896,8 @@
     const hasDefaultAddress = {{ $hasDefaultAddress ? 'true' : 'false' }};
     Culqi.publicKey = "{{ $culqi_public_key }}";
 
+
+
     const culqi = async () => {
       try {
         const carrito = Local.get('carrito') ?? []
@@ -856,10 +958,11 @@
 
         } else if (Culqi.order) { // ¡Objeto Order creado exitosamente!
           const order = Culqi.order;
-
+          console.log('entrando en order')
 
         } else {
           // Mostramos JSON de objeto error en consola
+          console.log('entro error culqui');
           console.log('Error : ', Culqi.error);
           throw new Error(Culqi.error.message);
         }
@@ -960,6 +1063,7 @@
     $('#paymentForm').on('submit', function(e) {
       e.preventDefault();
 
+      console.log(NumOrder)
       const precioProductos = getTotalPrice()
       const precioEnvio = getCostoEnvio()
 
@@ -1027,6 +1131,8 @@
         title: 'Boost .its more',
         currency: 'PEN',
         amount: Math.round((precioProductos + precioEnvio) * 100),
+        order: NumOrder
+
       });
       Culqi.options({
         paymentMethods: paymentMethods,
@@ -1039,6 +1145,10 @@
       })
       Culqi.open();
     }) // fin culqi
+
+    $(document).on('click', "#clq .btn-green", function(e) {
+      console.log('click', e.target.textContent)
+    })
 
 
     $('[name="envio"]').on('click', () => {
@@ -1311,6 +1421,9 @@
       });
     })
   </script>
+  {{-- <script src="/js/culqi/main.js" type="module"></script> --}}
+  <script></script>
+
   <script>
     // let articulosCarrito = [];
     let checkedRadio = false

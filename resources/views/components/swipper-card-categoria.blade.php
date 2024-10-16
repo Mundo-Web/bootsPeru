@@ -14,8 +14,8 @@
             </a>
           </div>
 
-          <div class="h-72 relative z-10 -mt-10 flex flex-col items-end justify-end">
-            <img class="block h-full object-contain object-bottom"
+          <div class="h-64 relative z-10 -mt-10 flex flex-col items-end justify-end">
+            <img class="block h-full object-contain object-bottom p-4"
               src="{{ asset($item->url_image . $item->name_image) }}" alt="">
           </div>
         </div>
@@ -55,7 +55,7 @@
         spaceBetween: 20,
       },
       1024: {
-        slidesPerView: 3.1,
+        slidesPerView: 4.1,
         spaceBetween: 20,
       },
     },
