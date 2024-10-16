@@ -17,6 +17,8 @@
   <p id="invoice-client" class="font-bold mb-2"></p>
   <span>Direccion Envio:</span>
   <p id="invoice-address" class="text-gray-700 mb-2"></p>
+  <span>Telefono: </span>
+  <p id="invoice-telefono" class="text-gray-700 mb-2"></p>
 
   <p class="font-bold"> Datos Facturacion: </p>
   <p class=" ">
@@ -104,6 +106,10 @@
 </div>
 
 <script>
+  // $(document).on('click', '#invoice-modal .close-modal', function() {
+  //   console.log('close')
+  //   $('#invoice-modal').modal('close')
+  // })
   const isAdmin = {{ $isAdmin }};
   const openSaleModal = (data) => {
     const isFree = !Boolean(Number(data.address_price))
@@ -118,6 +124,7 @@
     $('#dirFact').text(data.direccion_fact)
     let totalInvoice = Number(data.total) + Number(envio)
     $('#invoice-price').text(totalInvoice)
+    $('#invoice-telefono').text(data.phone ?? '')
     /* $('#invoice-address-price').text(isFree ? 'Envio gratis' :
       `S/. ${Number(data.address_price).toFixed(2)}`) */
     if (isFree) $('#invoice-address-price')

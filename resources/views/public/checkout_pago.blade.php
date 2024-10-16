@@ -375,34 +375,34 @@
         <h2 class="text-2xl font-bold text-green-600 mb-2"></h2>
         <p class="mb-2">¡Estás a un paso de completar tu compra ! Realiza la transferencia/depósito a nuestras
           cuentas. </p>
-        <p class="mb-2">Luego, simplemente carga la imagen y envíanos la confirmación de pago. ¡Y listo !</p>
+        <p class="mb-2">RUC: 20612977985</p>
+        <p class="mb-2">TIENDAS B PERU SOCIEDAD ANONIMA CERRADA</p>
         <p class="mb-2">También puedes enviarnos tu confirmación de pago a través de WhatsApp.</p>
       </div>
 
       <div class="grid grid-cols-2 gap-4 mb-6">
-        <div class="col-span-1 flex items-center w-full">
 
-          <img src="{{ asset('images/svg/bcp2.jpg') }}" alt="BCP"
-            class="w-10 rounded-lg object-cover object-center" />
-          <span class="ml-2">0011-0000-000000000</span>
-        </div>
-
-        <div class="col-span-1 flex items-center">
-          <img src="{{ asset('images/svg/scotia2.png') }}" alt="Scotiabank"
-            class="w-10 object-cover object-center rounded-lg" />
-          <span class="ml-2">0011-0000-000000000</span>
-        </div>
 
         <div class="col-span-1 flex items-center">
           <img src="{{ asset('images/svg/bbvau.png') }}" alt="BBVA"
             class="w-10 object-cover object-center rounded-lg" />
-          <span class="ml-2">0011-0000-000000000</span>
+          <span class="ml-2">0011-0616-0100026049</span>
+        </div>
+        <div class="col-span-1 flex items-center">
+          <img src="{{ asset('images/svg/bbvau.png') }}" alt="BBVA"
+            class="w-10 object-cover object-center rounded-lg" />
+          <span class="ml-2">(CCI) 011-616-000100026049-05</span>
         </div>
 
         <div class="col-span-1 flex items-center">
           <img src="{{ asset('images/svg/interb.png') }}" alt="Interbank"
             class="w-10 object-cover object-center rounded-lg" />
-          <span class="ml-2">0011-0000-000000000</span>
+          <span class="ml-2">200-3006405264</span>
+        </div>
+        <div class="col-span-1 flex items-center">
+          <img src="{{ asset('images/svg/interb.png') }}" alt="Interbank"
+            class="w-10 object-cover object-center rounded-lg" />
+          <span class="ml-2">(CCI) 003-200-003006405264-37</span>
         </div>
       </div>
 
