@@ -393,7 +393,7 @@
         <div class="col-span-1 flex items-center">
           <img src="{{ asset('images/svg/bbvau.png') }}" alt="BBVA"
             class="w-10 object-cover object-center rounded-lg" />
-          <span class="ml-2">0011-0616-0100026049</span>
+          <span class="ml-2">Corriente Soles 0011-0616-0100026049</span>
         </div>
         <div class="col-span-1 flex items-center">
           <img src="{{ asset('images/svg/bbvau.png') }}" alt="BBVA"
@@ -404,7 +404,7 @@
         <div class="col-span-1 flex items-center">
           <img src="{{ asset('images/svg/interb.png') }}" alt="Interbank"
             class="w-10 object-cover object-center rounded-lg" />
-          <span class="ml-2">200-3006405264</span>
+          <span class="ml-2">Corriente Soles 200-3006405264</span>
         </div>
         <div class="col-span-1 flex items-center">
           <img src="{{ asset('images/svg/interb.png') }}" alt="Interbank"
