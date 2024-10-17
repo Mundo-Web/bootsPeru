@@ -73,7 +73,7 @@ class GeneralController extends Controller
 
             // Actualizar los campos del registro con los datos del formulario
            $data = $request->all();
-            dump($request->all());
+            
             if($request->has('pago_contra_entrega')){
                 $general->pago_contra_entrega = true;
                 $data['pago_contra_entrega'] = true;
