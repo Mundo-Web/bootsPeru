@@ -486,7 +486,7 @@ class IndexController extends Controller
   public function actualizarPerfil(Request $request)
   {
 
-    dump($request->all());
+    
 
     $name = $request->name;
     $lastname = $request->lastname;
