@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Province extends Model
 {
     use HasFactory;
+    public $incrementing = false;
+    protected $keyType = 'string';
     
     protected $fillable = [        
         'department_id',
