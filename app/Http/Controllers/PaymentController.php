@@ -221,6 +221,8 @@ class PaymentController extends Controller
         'products.id',
         'products.imagen',
         'products.producto',
+        'products.sku',
+
         'products.color',
         'products.precio',
         'products.descuento',
@@ -319,7 +321,7 @@ class PaymentController extends Controller
         'sale_id' => $sale->id,
         'category' => $productJpa->category,
         'product_image' => $productJpa->imagen,
-        'product_name' => $productJpa->producto,
+        'product_name' => $productJpa->sku ?? '' . ' ' .$productJpa->producto ,
         'product_color' => $productJpa->color,
         'quantity' => $quantity,
         'price' => $price

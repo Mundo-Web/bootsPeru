@@ -185,10 +185,11 @@
           </tr>`)
           return
         }
+        console.log(data)
         data.forEach(item => {
           $('#invoice-products').append(`<tr class="bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-              ${item.product_name}
+              ${item.product_name} 
             </th>
             <td class="px-6 py-4">
               S/. ${Number(item.price).toFixed(2)}
