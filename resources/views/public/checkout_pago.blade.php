@@ -347,7 +347,11 @@
       <h1 class="font-Inter_SemiBold">¿Qué método de pago te gustaría usar?</h1>
       <button type="button" id="procesarPago"
         class="text-white  bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px] inline-block text-center mt-4">
-        Procesar Pago
+        Pago con Tarjeta
+      </button>
+      <button type="button" id="yape"
+        class=" text-white bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px]  text-center mt-4">
+        Yape / Plin
       </button>
       <button type="button" id="paymentButton"
         class="hidden text-white bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px]  text-center mt-4">
@@ -414,7 +418,74 @@
       </div>
 
 
-      <div class='flex flex-col w-full my-8' id="cart-container">
+      <div class='flex flex-col w-full my-8 cartItemsContainer' id="cart-container">
+
+      </div>
+
+      <div class="space-y-4">
+        <div
+          class=" py-2 px-4 border block text-center text-green-500 rounded-md hover:bg-green-50 transition-colors duration-300 relative">
+          <div class="w-full">
+            <button type="button" {{-- class="overflow-x-hidden w-[308px] px-4"  --}}
+              class="w-full py-2 px-4   block text-center  rounded-full text-white  bg-[#006BF6] transition-colors duration-300"
+              id="fileTransferencia">
+              Cargar Imagen
+            </button>
+
+
+          </div>
+        </div>
+
+        <button data-type="normal" id='btnEnviarTransferencia' type="button"
+          class="w-full py-2 px-4 border  block text-center border-green-500 text-green-500 rounded-full hover:text-white  hover:bg-[#006BF6] transition-colors duration-300">
+          Enviar Imagen
+        </button>
+
+
+
+      </div>
+      <p class='mt-4 text-center'> O </p>
+      <div class="mt-4">
+        <button data-type="whatsapp" id='btnEnviarTransferencia2' type="button" target="_blanck"
+          href={`https://api.whatsapp.com/send?phone=${telefono}&text=${texto}`}
+          class="w-full py-2 px-4 border  block text-center border-green-500 text-green-500 rounded-full hover:text-white  
+        hover:bg-[#006BF6] transition-colors duration-300">
+          Enviar Pago por WhatsApp
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+  <div id="modalPlin" class="modal" style="max-width: 700px !important;width: 100% !important;  ">
+    <!-- Modal body -->
+    <div class="p-4  mb-4">
+      <div class="text-center mb-6 flex flex-col justify-center content-center items-center">
+        <img src="/images/svg/LogoBoost2.svg" alt="" class='h-48 w-48 text-center' />
+        <h1 class="text-3xl font-bold text-green-600 mb-2">¡Felicitaciones!</h1>
+
+      </div>
+
+
+
+
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-green-600 mb-2"></h2>
+        <p class="mb-2">¡Estás a un paso de completar tu compra ! Escanea el codigo y continua con la compra </p>
+        <p class="mb-2">RUC: 20612977985</p>
+        <p class="mb-2">TIENDAS B PERU SAC</p>
+        <p class="mb-2">También puedes enviarnos tu confirmación de pago a través de WhatsApp.</p>
+      </div>
+
+      <div class="flex object-center justify-center items-center gap-4 mb-6 w-full">
+
+        <img src="{{ asset('images/svg/codeQr.jpg') }}" class="object-fit h-[200px] w-[200px]">
+
+
+      </div>
+
+
+      <div class='flex flex-col w-full my-8 cartItemsContainer' id="cart-container">
 
       </div>
 
@@ -461,92 +532,99 @@
     $(document).on('click', '#procesarPago', async function(e) {
       e.preventDefault();
 
-      $(this).addClass('disabled opacity-50 cursor-not-allowed').attr('disabled', true);
-      let esWhataspp = true;
+      monto = $('#itemTotal').text().replace('S/.', '').trim()
+      console.log(monto)
 
-      const carrito = Local.get('carrito') ?? [];
-      //const paymentData = Local.get('payment-data') ?? [];
-      let cart = carrito.map((x) => ({
-        id: x.id,
-        imagen: x.imagen,
-        quantity: x.cantidad,
-        usePoints: !!(x.isCombo || false)
-      }));
+      if (monto > 6) {
+        $(this).addClass('disabled opacity-50 cursor-not-allowed').attr('disabled', true);
+        let esWhataspp = true;
 
-      // const formData = new FormData();
-      // formData.append('datosFinales', JSON.stringify(datosFinales));
-      // formData.append('img', fileInput[0]);
-      // formData.append('paymentData', JSON.stringify(paymentData));
-      // formData.append('cart', JSON.stringify(cart));
+        const carrito = Local.get('carrito') ?? [];
 
-      let body = {
-        cart: carrito.map((x) => ({
+        let cart = carrito.map((x) => ({
           id: x.id,
           imagen: x.imagen,
           quantity: x.cantidad,
-          isCombo: !!(x.isCombo || false)
-        })),
-        contact: {
-          name: $('#nombre').val(),
-          lastname: $('#apellidos').val(),
-          email: $('#email').val(),
-          phone: $('#celular').val(),
-          doc_number: $('#DNI').val() || $('#RUC').val(),
-          doc_type: $('#tipo-comprobante').val() ?? 'nota_venta',
-          razon_fact: $('#razonFact').val(),
-          direccion_fact: $('#direccionFact').val(),
+          usePoints: !!(x.isCombo || false)
+        }));
 
 
-        },
-        saveAddress: !Boolean($('#addresses').val()),
-        tipo_comprobante: $('#tipo-comprobante').val(),
 
-        addressExist: $('#recoger-option').is(':checked') ? 0 : $('#addressExist').val(),
-        // img: $(fileInput).attr('data-base64'),
-        // tipo_compra: tarjeta
-        //...paymentData,
-        // img: fileimg.current
-      };
-      if ($('[name="envio"]:checked').val() == 'express') {
-        body.address = {
-          id: $('#distrito_id option:selected').attr('price-id'),
-          city: $('#distrito_id option:selected').text(),
-          street: $('#nombre_calle').val(),
-          number: $('#numero_calle').val(),
-          description: $('#direccion').val()
-        }
-      }
-      try {
-        const res = await axios.post('/api/payment/generateOrder', body, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
+        let body = {
+          cart: carrito.map((x) => ({
+            id: x.id,
+            imagen: x.imagen,
+            quantity: x.cantidad,
+            isCombo: !!(x.isCombo || false)
+          })),
+          contact: {
+            name: $('#nombre').val(),
+            lastname: $('#apellidos').val(),
+            email: $('#email').val(),
+            phone: $('#celular').val(),
+            doc_number: $('#DNI').val() || $('#RUC').val(),
+            doc_type: $('#tipo-comprobante').val() ?? 'nota_venta',
+            razon_fact: $('#razonFact').val(),
+            direccion_fact: $('#direccionFact').val(),
+
+
+          },
+          saveAddress: !Boolean($('#addresses').val()),
+          tipo_comprobante: $('#tipo-comprobante').val(),
+
+          addressExist: $('#recoger-option').is(':checked') ? 0 : $('#addressExist').val(),
+          // img: $(fileInput).attr('data-base64'),
+          // tipo_compra: tarjeta
+          //...paymentData,
+          // img: fileimg.current
+        };
+        if ($('[name="envio"]:checked').val() == 'express') {
+          body.address = {
+            id: $('#distrito_id option:selected').attr('price-id'),
+            city: $('#distrito_id option:selected').text(),
+            street: $('#nombre_calle').val(),
+            number: $('#numero_calle').val(),
+            description: $('#direccion').val()
           }
-        });
-
-        let {
-          status,
-          message,
-          data
-        } = res.data;
-        if (status == 200) {
-
-          $(this).removeClass('disabled opacity-50 cursor-not-allowed').attr('disabled', false);
-          // Local.delete('carrito');
-          // Local.delete('payment-data');
-          NumOrder = data.charge.id
-          $('#paymentButton').click()
-
-          console.log(data)
-          /* setTimeout(() => {
-            let url = esWhataspp ? `/agradecimiento?code=${data.reference_code}&whatsapp=true` :
-              `/agradecimiento?code=${data.reference_code}`;
-            location.href = url;
-          }, 3500); */
         }
-      } catch (error) {
-        $(this).removeClass('disabled opacity-50 cursor-not-allowed').attr('disabled', false);
-        console.error('Error al enviar la solicitud:', error);
+        try {
+          const res = await axios.post('/api/payment/generateOrder', body, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            }
+          });
+
+          let {
+            status,
+            message,
+            data
+          } = res.data;
+          if (status == 200) {
+
+            $(this).removeClass('disabled opacity-50 cursor-not-allowed').attr('disabled', false);
+            // Local.delete('carrito');
+            // Local.delete('payment-data');
+            NumOrder = data.charge.id
+            $('#paymentButton').click()
+
+            console.log(data)
+            /* setTimeout(() => {
+              let url = esWhataspp ? `/agradecimiento?code=${data.reference_code}&whatsapp=true` :
+                `/agradecimiento?code=${data.reference_code}`;
+              location.href = url;
+            }, 3500); */
+          }
+        } catch (error) {
+          $(this).removeClass('disabled opacity-50 cursor-not-allowed').attr('disabled', false);
+          console.error('Error al enviar la solicitud:', error);
+        }
+
+      } else {
+        $('#paymentButton').click()
+
       }
+      1
+
     });
 
     $('#paymentButton').on('click', function() {
@@ -702,73 +780,83 @@
 
 
 
-      const cartContainer = document.getElementById('cart-container');
-      cartContainer.innerHTML = `
-          <div class=" mx-auto p-2 bg-white text-gray-800 font-sans w-full">
-                <h1 class="text-xl font-semibold mb-4">DETALLE DE COMPRAS</h1>
+      // const cartContainer = document.getElementById('cart-container');
+      console.log('renderizando carrito')
+      const itemscarts = document.querySelectorAll('.cartItemsContainer');
+      itemscarts.forEach((el, i) => {
+        el.innerHTML = `
+        <div class="mx-auto p-2 bg-white text-gray-800 font-sans w-full">
+            <h1 class="text-xl font-semibold mb-4">DETALLE DE COMPRAS</h1>
 
-                <div id="cart-items"></div>
+            <div id="cart-items-${i}"></div>
 
-                <div class="space-y-2 text-sm">
-                  <div class="flex justify-between">
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
                     <span>Sub Total</span>
-                    <span id="subtotal"></span>
-                  </div>
-                  
-                  <div class="flex justify-between">
-                    <span>Costo de envío</span>
-                    <span id="shipping-cost"></span>
-                  </div>
-                  <div class="flex justify-between font-semibold text-base">
-                    <span>Total</span>
-                    <span id="total"></span>
-                  </div>
+                    <span id="subtotal-${i}"></span>
                 </div>
-              </div>
-          `;
+                
+                <div class="flex justify-between">
+                    <span>Costo de envío</span>
+                    <span id="shipping-cost-${i}"></span>
+                </div>
+                <div class="flex justify-between font-semibold text-base">
+                    <span>Total</span>
+                    <span id="total-${i}"></span>
+                </div>
+            </div>
+        </div>
+    `;
+      });
 
-      const cartItemsContainer = document.getElementById('cart-items');
 
-      cartItems.forEach(item => {
-        let finalQuantity = item.cantidad;
-        for (let i = 0; i < item.cantidad; i++) {
-          if (item.usePoints && userPoints >= item.points) {
-            finalQuantity--;
-            userPoints -= item.points;
+      const cartItemsContainer = document.querySelectorAll('[id^="cart-items-"]');
+      // document.querySelectorAll('[id^="cart-items-"]');
+
+
+
+
+      cartItemsContainer.forEach(container => {
+        cartItems.forEach(item => {
+          let finalQuantity = item.cantidad;
+          for (let i = 0; i < item.cantidad; i++) {
+            if (item.usePoints && userPoints >= item.points) {
+              finalQuantity--;
+              userPoints -= item.points;
+            }
           }
-        }
-        console.log(item)
-        let itemPrice = item.descuento > 0 ? item.descuento : item.precio;
-        const subtotalf = finalQuantity * itemPrice;
+          console.log(item);
+          let itemPrice = item.descuento > 0 ? item.descuento : item.precio;
+          const subtotalf = finalQuantity * itemPrice;
 
-        const itemElement = document.createElement('div');
-        itemElement.classList.add('border-b', 'pb-4', 'mb-4');
-        itemElement.innerHTML = `
-          <div class="flex justify-between items-start mb-2">
-            <div>
-              <h2 class="font-semibold">${item.producto}</h2>
-              <p class="text-sm text-gray-600">${item.extracto ?? ''}</p>
-              ${item.usePoints ? '<span class="text-orange-500 text-sm">Usando puntos</span>' : ''}
-              ${item.sku ? ` <p class="text-sm text-gray-600">SKU: ${item.sku ?? ''}</p>` : ''}
-             
+          const itemElement = document.createElement('div');
+          itemElement.classList.add('border-b', 'pb-4', 'mb-4');
+          itemElement.innerHTML = `
+            <div class="flex justify-between items-start mb-2">
+                <div>
+                    <h2 class="font-semibold">${item.producto}</h2>
+                    <p class="text-sm text-gray-600">${item.extracto ?? ''}</p>
+                    ${item.usePoints ? '<span class="text-orange-500 text-sm">Usando puntos</span>' : ''}
+                    ${item.sku ? ` <p class="text-sm text-gray-600">SKU: ${item.sku ?? ''}</p>` : ''}
+                </div>
+                <div class="text-right">
+                    <p class="font-semibold">S/ ${subtotalf.toFixed(2)}</p>
+                    <p class="text-sm">Cantidad: ${item.cantidad}</p>
+                </div>
             </div>
-            <div class="text-right">
-              <p class="font-semibold">S/ ${subtotalf.toFixed(2)}</p>
-              <p class="text-sm">Cantidad: ${item.cantidad}</p>
-            </div>
-          </div>
-          <button onclick="toggleImage(${item.id})" class="flex items-center text-blue-600 text-sm">
-            <span id="toggle-icon-${item.id}">
-              <svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </span>
-            <span id="toggle-text-${item.id}">Ver imagen</span>
-          </button>
-          <img id="image-${item.id}" src="/${item.imagen}" alt="${item.producto}" class="mt-2 w-24 h-24 object-cover rounded hidden" 
-          onerror="this.onerror=null;this.src='/images/img/noimagen.jpg';" />
+            <button onclick="toggleImage(${item.id})" class="flex items-center text-blue-600 text-sm">
+                <span id="toggle-icon-${item.id}">
+                    <svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </span>
+                <span id="toggle-text-${item.id}">Ver imagen</span>
+            </button>
+            <img id="image-${item.id}" src="/${item.imagen}" alt="${item.producto}" class="mt-2 w-24 h-24 object-cover rounded hidden" 
+            onerror="this.onerror=null;this.src='/images/img/noimagen.jpg';" />
         `;
-        cartItemsContainer.appendChild(itemElement);
+          container.appendChild(itemElement);
+        });
       });
 
       // Calcular subtotal
@@ -804,9 +892,27 @@
       let cuponMonto = cupon ? porcentaje + ' ' + Number(cupon.monto).toFixed(0) : '';
 
       // Actualizar el DOM
-      document.getElementById('subtotal').innerText = 'S/ ' + subtotal.toFixed(2);
-      document.getElementById('shipping-cost').innerText = 'S/ ' + costoEnvio.toFixed(2);
-      document.getElementById('total').innerText = 'S/ ' + totalConDescuento.toFixed(2);
+      // document.getElementById('subtotal-').innerText = 'S/ ' + subtotal.toFixed(2);
+      // document.getElementById('shipping-cost-').innerText = 'S/ ' + costoEnvio.toFixed(2);
+      // document.getElementById('total-').innerText = 'S/ ' + totalConDescuento.toFixed(2);
+
+      const subtotalElements = document.querySelectorAll('[id^="subtotal-"]');
+      subtotalElements.forEach(element => {
+        element.innerHTML = 'S/ ' + subtotal.toFixed(2); // Actualiza con el nuevo valor
+      });
+
+      // Actualizar elementos que comiencen con 'shipping-cost-'
+      const shippingCostElements = document.querySelectorAll('[id^="shipping-cost-"]');
+      shippingCostElements.forEach(element => {
+        element.innerHTML = 'S/ ' + costoEnvio.toFixed(2); // Actualiza con el nuevo valor
+      });
+
+      // Actualizar elementos que comiencen con 'total-'
+      const totalElements = document.querySelectorAll('[id^="total-"]');
+      totalElements.forEach(element => {
+        element.innerHTML = 'S/ ' + totalConDescuento.toFixed(2); // Actualiza con el nuevo valor
+      });
+
       if (cupon) {
         document.getElementById('discount').innerText = cuponMonto;
         document.getElementById('discount-container').classList.remove('hidden');
@@ -860,6 +966,14 @@
       $(document).on('click', '#btnPagoTransferencia', function() {
         renderCart()
         $('#modalTransferencia').modal('hide');
+
+        // $('#paymentForm').submit();
+      })
+
+      $(document).on('click', '#yape', function() {
+        renderCart()
+        $('#modalPlin').modal('hide');
+        console.log('abriendo modal yape')
         // $('#paymentForm').submit();
       })
 
@@ -867,7 +981,7 @@
       $(document).on('click', '#btnEnviarTransferencia2', function(e) {
         Swal.fire({
           title: '¿Estás seguro?',
-          text: "¿Deseas continuar con la transferencia?",
+          text: "¿Ya has escaneado el Qr y realizado el abono?",
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
@@ -1119,21 +1233,29 @@
       }
       const paymentMethods = { // las opciones se ordenan según se configuren
         tarjeta: true,
-        yape: true,
-        billetera: true,
+        yape: false,
+        billetera: false,
         bancaMovil: true,
         agente: true,
         cuotealo: true,
       }
+      let monto = $('#itemTotal').text().replace('S/.', '').trim()
 
-
-      Culqi.settings({
+      let settingsCul = {
         title: 'Boost .its more',
         currency: 'PEN',
         amount: Math.round((precioProductos + precioEnvio) * 100),
-        order: NumOrder
 
-      });
+
+      };
+      if (monto > 6) {
+        settingsCul.order = NumOrder
+      }
+
+
+
+
+      Culqi.settings(settingsCul);
       Culqi.options({
         paymentMethods: paymentMethods,
         paymentMethodsSort: Object.keys(paymentMethods),
