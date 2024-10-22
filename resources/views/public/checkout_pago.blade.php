@@ -186,13 +186,15 @@
                               <div>
                                 <!-- combo -->
                                 <div class="dropdown w-full">
+
                                   <select name="departamento_id" id="departamento_id"
                                     class="selectpicker mt-1 h-4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 select2-hidden-accessible"
                                     data-address>
                                     <option value="" data-select2-id="select2-data-2-4o85">Seleccione un
                                       departamento</option>
                                     @foreach ($departments as $department)
-                                      <option value="{{ $department->id }}">{{ $department->description }}</option>
+                                      <option value="{{ str_pad($department->id, 2, '0', STR_PAD_LEFT) }}">
+                                        {{ $department->description }}</option>
                                     @endforeach
                                   </select>
                                 </div>
@@ -533,7 +535,7 @@
       e.preventDefault();
 
       monto = $('#itemTotal').text().replace('S/.', '').trim()
-      console.log(monto)
+
 
       if (monto > 6) {
         $(this).addClass('disabled opacity-50 cursor-not-allowed').attr('disabled', true);
@@ -602,12 +604,12 @@
           if (status == 200) {
 
             $(this).removeClass('disabled opacity-50 cursor-not-allowed').attr('disabled', false);
-            // Local.delete('carrito');
-            // Local.delete('payment-data');
+            Local.delete('carrito');
+            Local.delete('payment-data');
             NumOrder = data.charge.id
             $('#paymentButton').click()
 
-            console.log(data)
+
             /* setTimeout(() => {
               let url = esWhataspp ? `/agradecimiento?code=${data.reference_code}&whatsapp=true` :
                 `/agradecimiento?code=${data.reference_code}`;
@@ -660,7 +662,7 @@
       let fileInput = document.getElementById('imgTransferencia');
       let tipoCompra = e.target.dataset.type
 
-      console.log(tipoCompra)
+
 
       if (tipoCompra !== 'whatsapp' && tipoCompra !== 'contraEntrega') {
         esWhataspp = false;
@@ -755,8 +757,8 @@
             confirmButtonText: 'Aceptar',
             confirmButtonColor: '#138496'
           });
-          // Local.delete('carrito');
-          // Local.delete('payment-data');
+          Local.delete('carrito');
+          Local.delete('payment-data');
 
           setTimeout(() => {
             let url = esWhataspp ? `/agradecimiento?code=${data.reference_code}&whatsapp=true` :
@@ -781,7 +783,7 @@
 
 
       // const cartContainer = document.getElementById('cart-container');
-      console.log('renderizando carrito')
+
       const itemscarts = document.querySelectorAll('.cartItemsContainer');
       itemscarts.forEach((el, i) => {
         el.innerHTML = `
@@ -825,7 +827,7 @@
               userPoints -= item.points;
             }
           }
-          console.log(item);
+
           let itemPrice = item.descuento > 0 ? item.descuento : item.precio;
           const subtotalf = finalQuantity * itemPrice;
 
@@ -973,7 +975,7 @@
       $(document).on('click', '#yape', function() {
         renderCart()
         $('#modalPlin').modal('hide');
-        console.log('abriendo modal yape')
+
         // $('#paymentForm').submit();
       })
 
@@ -989,9 +991,9 @@
           confirmButtonText: 'Sí, continuar',
           cancelButtonText: 'No, cancelar'
         }).then((result) => {
-          console.log(result)
+
           if (result.isConfirmed) {
-            console.log('Procesando Transferencia');
+
 
             ProcesarTransferencia(e);
           } else {
@@ -1072,7 +1074,7 @@
 
         } else if (Culqi.order) { // ¡Objeto Order creado exitosamente!
           const order = Culqi.order;
-          console.log('entrando en order')
+
 
         } else {
           // Mostramos JSON de objeto error en consola
@@ -1177,7 +1179,7 @@
     $('#paymentForm').on('submit', function(e) {
       e.preventDefault();
 
-      console.log(NumOrder)
+
       const precioProductos = getTotalPrice()
       const precioEnvio = getCostoEnvio()
 
@@ -1364,10 +1366,10 @@
         description: selectedOption.attr('data-description'),
         price: JSON.parse(selectedOption.attr('data-price'))
       };
-      console.log('183', data)
+
       $('[data-show="new"]').fadeOut()
       $('#departamento_id')
-        .val(data.price.district.province.department.id)
+        .val(`${data.price.district.province.department.id}`)
         .trigger('change')
       $('#provincia_id')
         .val(data.price.district.province.id)
@@ -1384,6 +1386,7 @@
       $('#provincia_id').html('<option value>Seleccione una provincia</option>')
       $('#distrito_id').html('<option value>Seleccione un distrito</option>')
       $('#precioEnvio').text(`Evaluando`)
+
       provinces.filter(x => x.department_id == this.value).forEach((province) => {
         const option = $('<option>', {
           value: province.id,
@@ -1401,7 +1404,16 @@
     $('#provincia_id').on('change', function() {
       $('#distrito_id').html('<option value>Seleccione un distrito</option>')
       $('#precioEnvio').text(`Evaluando`)
-      districts.filter(x => x.province_id == this.value).forEach((district) => {
+
+
+
+      let value = this.value
+      if (this.value.length == 3) {
+        value = '0' + this.value
+      }
+
+
+      districts.filter(x => x.province_id == value).forEach((district) => {
         const option = $('<option>', {
           value: district.id,
           text: district.description,
@@ -1416,7 +1428,7 @@
 
     $('#distrito_id').on('change', function() {
       const priceStr = $('#distrito_id option:selected').attr('data-price')
-      console.log('1135', priceStr)
+
       const price = Number(priceStr) || 0
       if (price == 0) {
         $('#precioEnvio').text('Gratis')

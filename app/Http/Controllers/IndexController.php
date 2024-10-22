@@ -256,26 +256,34 @@ class IndexController extends Controller
       'departments.id AS id',
       'departments.description AS description',
     ])
-      ->join('districts', 'districts.id', 'prices.distrito_id')
-      ->join('provinces', 'provinces.id', 'districts.province_id')
+      ->join('districts', 'districts.id','=',  'prices.distrito_id')
+      ->join('provinces', 'provinces.id','=',  'districts.province_id')
       ->join('departments', 'departments.id', 'provinces.department_id')
       ->where('departments.active', 1)
       ->where('status', 1)
       ->groupBy('id', 'description')
       ->get();
 
+      $departments = $departments->map(function ($item) {
+        $item->id = (string) $item->id;
+        return $item;
+    });
+    
+    
+
     $provinces = Price::select([
       'provinces.id AS id',
       'provinces.description AS description',
       'provinces.department_id AS department_id'
     ])
-      ->join('districts', 'districts.id', 'prices.distrito_id')
-      ->join('provinces', 'provinces.id', 'districts.province_id')
+      ->join('districts', 'districts.id','=', 'prices.distrito_id')
+      ->join('provinces', 'provinces.id','=', 'districts.province_id')
       ->where('provinces.active', 1)
       ->where('status', 1)
       ->groupBy('id', 'description', 'department_id')
       ->get();
-
+      
+     
     $districts = Price::select([
       'districts.id AS id',
       'districts.description AS description',
@@ -318,7 +326,7 @@ class IndexController extends Controller
         ->where('isDefault', true)
         ->exists();
     }
-    // dump($addresses->toArray());
+    
 
     return view('public.checkout_pago', compact('url_env', 'datosgenerales',  'districts', 'provinces', 'departments', 'detalleUsuario', 'categorias', 'destacados', 'culqi_public_key', 'addresses', 'hasDefaultAddress'));
   }
