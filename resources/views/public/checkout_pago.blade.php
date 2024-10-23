@@ -604,8 +604,8 @@
           if (status == 200) {
 
             $(this).removeClass('disabled opacity-50 cursor-not-allowed').attr('disabled', false);
-            Local.delete('carrito');
-            Local.delete('payment-data');
+            // Local.delete('carrito');
+            // Local.delete('payment-data');
             NumOrder = data.charge.id
             $('#paymentButton').click()
 
