@@ -85,7 +85,7 @@ class PaymentController extends Controller
     $sale = new Sale();
     $this->processSale($body, $sale, $response);
     $monto = round(($sale->total + $sale->precio_envio) * 100);
-   
+
 
     $config = [
       "amount" => $monto, //minimo de 6 soles
@@ -105,12 +105,12 @@ class PaymentController extends Controller
 
     try {
       $charge = $culqi->Orders->create($config);
-      
+
       if (gettype($charge) == 'string') {
         $res = JSON::parse($charge);
         throw new Exception($res['user_message']);
       }
-      
+
       $sale->code = $charge->order_number;
 
       $response->status = 200;
@@ -124,7 +124,7 @@ class PaymentController extends Controller
       // $this->finalizeSale($sale, $charge?->reference_code ?? null);
       // $this->sendEmail($sale);
     } catch (\Throwable $th) {
-      
+
       $sale->status_id = 2;
       $response->status = 400;
       $response->message = $th->getMessage();
@@ -321,7 +321,8 @@ class PaymentController extends Controller
         'sale_id' => $sale->id,
         'category' => $productJpa->category,
         'product_image' => $productJpa->imagen,
-        'product_name' => $productJpa->sku ?? '' . ' ' .$productJpa->producto ,
+        // 'product_name' => $productJpa->sku ?  $productJpa->sku . ' ' .$productJpa->producto : $productJpa->producto ,
+        'product_name' => trim(($productJpa->sku ?? '') . " " . $productJpa->producto),
         'product_color' => $productJpa->color,
         'quantity' => $quantity,
         'price' => $price
