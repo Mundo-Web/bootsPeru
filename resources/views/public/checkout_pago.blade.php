@@ -543,12 +543,12 @@
 
         const carrito = Local.get('carrito') ?? [];
 
-        let cart = carrito.map((x) => ({
+        /* let cart = carrito.map((x) => ({
           id: x.id,
           imagen: x.imagen,
           quantity: x.cantidad,
           usePoints: !!(x.isCombo || false)
-        }));
+        })); */
 
 
 
@@ -1068,7 +1068,7 @@
             icon: "success",
           }); */
 
-          Local.delete('carrito')
+
 
           location.href = `/agradecimiento?code=${data.data.reference_code}`
 
