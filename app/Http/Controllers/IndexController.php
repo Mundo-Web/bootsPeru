@@ -571,8 +571,17 @@ class IndexController extends Controller
   public function searchProduct(Request $request)
   {
     $query = $request->input('query');
+  /*   $instance->where(function ($query) use ($request) {
+      dxDataGrid::filter($query, $request->filter ?? []);
+    }); */
     $resultados = Products::select('products.*')
-      ->where('producto', 'like', "%$query%")
+      ->where(function ($sql) use ($query) {
+        $words = explode(' ', $query);
+        foreach ($words as $word) {
+          $sql->where('producto', 'like', '%' . $word . '%');
+        }
+        
+      })
       ->join('categories', 'categories.id', 'products.categoria_id')
       ->where('categories.visible', 1)
       ->where('products.status', true)
