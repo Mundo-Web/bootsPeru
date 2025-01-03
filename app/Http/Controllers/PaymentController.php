@@ -273,7 +273,7 @@ class PaymentController extends Controller
     $sale->razon_fact = $body['contact']['razon_fact'] ?? null;
     $sale->direccion_fact = $body['contact']['direccion_fact'] ?? null;
     $sale->code = '000000000000';
-    $sale->tipo_pago = $body['tipo_pago'];
+    $sale->tipo_pago = $body['tipo_pago'] ?? 'Por definir';
 
     if (isset($body['address'])) {
       $price = Price::with([
