@@ -28,8 +28,8 @@ class Sale extends Model
         'doc_number',
         'razon_fact',
         'direccion_fact',
-        'img_transferencia'
-
+        'img_transferencia',
+        'tipo_pago'
     ];
 
     public function status()

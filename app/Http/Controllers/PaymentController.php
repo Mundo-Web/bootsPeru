@@ -32,6 +32,7 @@ class PaymentController extends Controller
     $body = $request->all();
     $response = new Response();
     $culqi = new Culqi(['api_key' => env('CULQI_PRIVATE_KEY')]);
+    $body['tipo_pago'] = 'culqi';
 
     $sale = new Sale();
     $this->processSale($body, $sale, $response);
@@ -272,6 +273,7 @@ class PaymentController extends Controller
     $sale->razon_fact = $body['contact']['razon_fact'] ?? null;
     $sale->direccion_fact = $body['contact']['direccion_fact'] ?? null;
     $sale->code = '000000000000';
+    $sale->tipo_pago = $body['tipo_pago'];
 
     if (isset($body['address'])) {
       $price = Price::with([

@@ -438,7 +438,7 @@
           </div>
         </div>
 
-        <button data-type="normal" id='btnEnviarTransferencia' type="button"
+        <button data-type="normal" id='btnEnviarTransferencia' type="button" value="transferencia"
           class="w-full py-2 px-4 border  block text-center border-green-500 text-green-500 rounded-full hover:text-white  hover:bg-[#006BF6] transition-colors duration-300">
           Enviar Imagen
         </button>
@@ -448,8 +448,8 @@
       </div>
       <p class='mt-4 text-center'> O </p>
       <div class="mt-4">
-        <button data-type="whatsapp" id='btnEnviarTransferencia2' type="button" target="_blanck"
-          href={`https://api.whatsapp.com/send?phone=${telefono}&text=${texto}`}
+        <button data-type="whatsapp" id='btnEnviarTransferencia2' type="button" value="transferencia"
+          target="_blanck" href={`https://api.whatsapp.com/send?phone=${telefono}&text=${texto}`}
           class="w-full py-2 px-4 border  block text-center border-green-500 text-green-500 rounded-full hover:text-white  
         hover:bg-[#006BF6] transition-colors duration-300">
           Enviar Pago por WhatsApp
@@ -505,7 +505,7 @@
           </div>
         </div>
 
-        <button data-type="normal" id='btnEnviarTransferencia' type="button"
+        <button data-type="normal" id='btnEnviarTransferencia' type="button" value="billetera"
           class="w-full py-2 px-4 border  block text-center border-green-500 text-green-500 rounded-full hover:text-white  hover:bg-[#006BF6] transition-colors duration-300">
           Enviar Imagen
         </button>
@@ -515,7 +515,7 @@
       </div>
       <p class='mt-4 text-center'> O </p>
       <div class="mt-4">
-        <button data-type="whatsapp" id='btnEnviarTransferencia2' type="button" target="_blanck"
+        <button data-type="whatsapp" id='btnEnviarTransferencia2' type="button" value="billetera" target="_blanck"
           href={`https://api.whatsapp.com/send?phone=${telefono}&text=${texto}`}
           class="w-full py-2 px-4 border  block text-center border-green-500 text-green-500 rounded-full hover:text-white  
         hover:bg-[#006BF6] transition-colors duration-300">
@@ -656,6 +656,7 @@
       e.preventDefault();
 
 
+      let tipo_pago = e.target.value
 
       let esWhataspp = true;
 
@@ -704,6 +705,7 @@
           quantity: x.cantidad,
           isCombo: !!(x.isCombo || false)
         })),
+        tipo_pago,
         contact: {
           name: $('#nombre').val(),
           lastname: $('#apellidos').val(),
