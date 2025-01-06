@@ -120,7 +120,7 @@ class BlogController extends Controller
                 height: 1050px;
                 margin: 0 auto;
                 text-align: center;
-                background-image:url(' . $appUrl . 'images/Ellipse_18.png),  url(' . $appUrl . 'images/Tabpanel.png);
+                background-image:url(' . $appUrl . '/images/Ellipse_18.png),  url(' . $appUrl . '/images/Tabpanel.png);
                 background-repeat: no-repeat, no-repeat;
                 background-position: center bottom , center bottom;;
                 background-size: fit , fit;
@@ -138,7 +138,7 @@ class BlogController extends Controller
                       margin: 40px;
                     "
                   >
-                    <img src="' . $appUrl . 'images/Group1.png" alt="mundo web"  style="
+                    <img src="' . $appUrl . '/images/Group1.png" alt="Boost_Peru"  style="
                     margin: auto;
                   "/>
                   </th>
@@ -191,8 +191,8 @@ class BlogController extends Controller
                      Acaba de ser publicado 
                       <span ></span>
                     </p>
-                    <img src="'. $appUrl . $post->url_image . $post->name_image.'" alt="mundo web"  style="
-                    margin: auto;
+                    <img src="'. $appUrl .'/'. $post->url_image . $post->name_image.'" alt="Boost_Peru"  style="
+                    margin: auto; width: 500px; height: 300px; object-fit: cover; border-radius: 10px; margin-top: 20px; margin-bottom: 20px;
                   "/>
                   </td>
                 </tr>

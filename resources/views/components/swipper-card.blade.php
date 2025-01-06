@@ -3,7 +3,7 @@
 @endphp
 
 <div id="{{ $sliderId }}" class="swiper header-slider">
-  <div class="swiper-wrapper">
+  <div class="swiper-wrapper !h-max">
     @foreach ($items as $item)
       <div class="swiper-slide">
         <x-content-slider :item="$item" />

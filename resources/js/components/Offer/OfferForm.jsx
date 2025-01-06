@@ -80,7 +80,12 @@ const OfferForm = ({ data, setData, refreshOffers }) => {
     controller.abort('Nothing')
 
     const filter = [
-      ['products.producto', 'contains', searchRef.current.value],
+      [
+        arrayJoin([
+          ['products.producto', 'contains', searchRef.current.value],
+          ['products.sku', 'contains', searchRef.current.value]
+        ], 'or')
+      ],
     ]
     if (items.length > 0) filter.push('and', [
       '!',

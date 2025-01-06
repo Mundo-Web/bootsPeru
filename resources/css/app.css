@@ -9,6 +9,18 @@
 @import 'tailwindcss/utilities';
 
 
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Ocultar flechas en campos de entrada de tipo number en Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+
 @layer components{
 
     #tabladatos_wrapper .dt-length select{
@@ -20,6 +32,8 @@
     }
   
 }
+
+
 
 .fixedWhastapp {
   right: 2vw ;

@@ -72,8 +72,17 @@ class GeneralController extends Controller
             $general = General::findOrfail($id); 
 
             // Actualizar los campos del registro con los datos del formulario
-            $general->update($request->all());
+           $data = $request->all();
+            
+            if($request->has('pago_contra_entrega')){
+                $general->pago_contra_entrega = true;
+                $data['pago_contra_entrega'] = true;
+            }else{
+                $general->pago_contra_entrega = false;
+                $data['pago_contra_entrega'] = false;
+            }
 
+            $general->update($data);
             // Guardar 
             $general->save();  
 

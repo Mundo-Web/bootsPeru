@@ -34,6 +34,7 @@ class PriceController extends Controller
     public function save(Request $request, $priceId = 0)
     {
         $price = Price::with(['district', 'district.province', 'district.province.department'])->find($priceId);
+       
         if (!$price) {
             $price = new Price();
             $price->district = new District();
@@ -94,25 +95,35 @@ class PriceController extends Controller
         $request->validate([
             'price' => 'required'
         ]);
-        $price = new Price();
 
-        $price->distrito_id = $request->distrito_id;
-        $price->price = $request->price;
-        $price->status = 1;
-        $price->visble = 1;
+        if($request->id){
+            $price = Price::find($request->id);
+            $price->price = $request->price;
+            $price->save();
+            return redirect()->route('prices.index')->with('success', 'Servicio actualizado exitosamente.');
+        }else{
+            $price = new Price();
 
-        //preguntamos si es lima o no ID=15
-        if ($request->departamento_id == 15) {
-            if ($request->provincia_id == 1501) {
-                $price->local = 1;
-            } else {
-                $price->local = 0;
+            $price->distrito_id = $request->distrito_id;
+            $price->price = $request->price;
+            $price->status = 1;
+            $price->visble = 1;
+    
+            //preguntamos si es lima o no ID=15
+            if ($request->departamento_id == 15) {
+                if ($request->provincia_id == 1501) {
+                    $price->local = 1;
+                } else {
+                    $price->local = 0;
+                }
             }
+    
+            $price->save();
+            return redirect()->route('prices.index')->with('success', 'Servicio creado exitosamente.');
         }
+       
 
-        $price->save();
-
-        return redirect()->route('prices.index')->with('success', 'Servicio creado exitosamente.');
+        
     }
 
     /**

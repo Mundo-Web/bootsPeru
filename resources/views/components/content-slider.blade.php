@@ -22,7 +22,7 @@
 
   </div>
 
-  <div class="h-72 lg:h-96 relative z-10 max-w-6xl mx-auto -mt-20 flex flex-col items-end justify-end">
+  <div class="h-72 lg:h-96 relative z-10 max-w-6xl mx-auto  flex flex-col items-end justify-end">
     <img class="block h-full  mx-auto object-contain object-bottom"
       src="{{ asset($item->url_image . $item->name_image) }}" alt="">
   </div>

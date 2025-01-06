@@ -13,7 +13,13 @@
     border-bottom: 1.5px solid white;
     /* padding: 16px 0; */
   }
+
+  .jquery-modal.blocker.current {
+    z-index: 50 !important;
+  }
 </style>
+
+
 
 
 @section('content')
@@ -135,7 +141,7 @@
                               </path>
                             </svg>
 
-                            <div class="w-full text-lg font-semibold">Envio express</div>
+                            <div class="w-full text-lg font-semibold">Delivery</div>
                             <div class="w-full text-sm">Sujeto a evaluacion</div>
                           </div>
                         </label>
@@ -150,13 +156,20 @@
                                   class="text-red-500">*</span></label>
                               <div class="w-full">
                                 <div class="dropdown w-full">
+
+
                                   <select id="addresses"
                                     class="mt-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 select2-hidden-accessible"
                                     data-address>
                                     <option value>Agregar una nueva direccion</option>
                                     @foreach ($addresses as $address)
-                                      <option value="{{ $address->id }}" data="{{ $address }}"
-                                        @if ($address->isDefault) selected @endif></option>
+                                      <option value="{{ $address->id }}" data-id="{{ $address->id }}"
+                                        data-street="{{ $address->street }}" data-number="{{ $address->number }}"
+                                        data-description="{{ $address->description }}"
+                                        data-price="{{ json_encode($address->price) }}"
+                                        @if ($address->isDefault) selected @endif>
+                                        {{ $address->street }} #{{ $address->number }}
+                                      </option>
                                     @endforeach
                                   </select>
                                 </div>
@@ -173,13 +186,15 @@
                               <div>
                                 <!-- combo -->
                                 <div class="dropdown w-full">
+
                                   <select name="departamento_id" id="departamento_id"
                                     class="selectpicker mt-1 h-4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 select2-hidden-accessible"
                                     data-address>
                                     <option value="" data-select2-id="select2-data-2-4o85">Seleccione un
                                       departamento</option>
                                     @foreach ($departments as $department)
-                                      <option value="{{ $department->id }}">{{ $department->description }}</option>
+                                      <option value="{{ str_pad($department->id, 2, '0', STR_PAD_LEFT) }}">
+                                        {{ $department->description }}</option>
                                     @endforeach
                                   </select>
                                 </div>
@@ -319,21 +334,687 @@
                 <p id="itemTotal">S/. 0.00 </p>
               </div>
 
-              <button id="btnPagar"
+              <button id="btnPagar" type="button"
                 class="text-white bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px] inline-block text-center">Pagar</button>
             </div>
           </div>
         </div>
       </div>
+      <input type="file" hidden id='imgTransferencia' name="imagenTransferencia">
     </form>
   </main>
+  <div id="modalTipoCompra" class="modal" style="max-width: 400px !important;width: 100% !important;  ">
+    <!-- Modal body -->
+    <div class="p-4  mb-4">
+      <h1 class="font-Inter_SemiBold">¿Qué método de pago te gustaría usar?</h1>
+      <button type="button" id="procesarPago"
+        class="text-white  bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px] inline-block text-center mt-4">
+        Pago con Tarjeta
+      </button>
+      <button type="button" id="yape"
+        class=" text-white bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px]  text-center mt-4">
+        Yape / Plin
+      </button>
+      <button type="button" id="paymentButton"
+        class="hidden text-white bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px]  text-center mt-4">
+        Pago con Tarjeta
+      </button>
+      <button type="button" id="btnPagoTransferencia"
+        class="text-white bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px] inline-block text-center mt-4">
+        Pago Por Transferencia
+      </button>
+      @if ($datosgenerales->pago_contra_entrega)
+        <button type="button" id="btnPagoOnEntrega" data-type="contraEntrega"
+          class="text-white bg-[#006BF6] w-full py-4 rounded-3xl cursor-pointer font-semibold text-[16px] inline-block text-center mt-4">
+          Pago Contra Entrega
+        </button>
+      @endif
+
+    </div>
+  </div>
+  <div id="modalTransferencia" class="modal" style="max-width: 700px !important;width: 100% !important;  ">
+    <!-- Modal body -->
+    <div class="p-4  mb-4">
+      <div class="text-center mb-6 flex flex-col justify-center content-center items-center">
+        <img src="/images/svg/LogoBoost2.svg" alt="" class='h-48 w-48 text-center' />
+        <h1 class="text-3xl font-bold text-green-600 mb-2">¡Felicitaciones!</h1>
+
+      </div>
+
+
+
+
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-green-600 mb-2"></h2>
+        <p class="mb-2">¡Estás a un paso de completar tu compra ! Realiza la transferencia/depósito a nuestras
+          cuentas. </p>
+        <p class="mb-2">RUC: 20612977985</p>
+        <p class="mb-2">TIENDAS B PERU SOCIEDAD ANONIMA CERRADA</p>
+        <p class="mb-2">También puedes enviarnos tu confirmación de pago a través de WhatsApp.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+
+
+        <div class="col-span-1 flex items-center">
+          <img src="{{ asset('images/svg/bbvau.png') }}" alt="BBVA"
+            class="w-10 object-cover object-center rounded-lg" />
+          <span class="ml-2">Corriente Soles 0011-0616-0100026049</span>
+        </div>
+        <div class="col-span-1 flex items-center">
+          <img src="{{ asset('images/svg/bbvau.png') }}" alt="BBVA"
+            class="w-10 object-cover object-center rounded-lg" />
+          <span class="ml-2">(CCI) 011-616-000100026049-05</span>
+        </div>
+
+        <div class="col-span-1 flex items-center">
+          <img src="{{ asset('images/svg/interb.png') }}" alt="Interbank"
+            class="w-10 object-cover object-center rounded-lg" />
+          <span class="ml-2">Corriente Soles 200-3006405264</span>
+        </div>
+        <div class="col-span-1 flex items-center">
+          <img src="{{ asset('images/svg/interb.png') }}" alt="Interbank"
+            class="w-10 object-cover object-center rounded-lg" />
+          <span class="ml-2">(CCI) 003-200-003006405264-37</span>
+        </div>
+      </div>
+
+
+      <div class='flex flex-col w-full my-8 cartItemsContainer' id="cart-container">
+
+      </div>
+
+      <div class="space-y-4">
+        <div
+          class=" py-2 px-4 border block text-center text-green-500 rounded-md hover:bg-green-50 transition-colors duration-300 relative">
+          <div class="w-full">
+            <button type="button" {{-- class="overflow-x-hidden w-[308px] px-4"  --}}
+              class="w-full py-2 px-4   block text-center  rounded-full text-white  bg-[#006BF6] transition-colors duration-300"
+              id="fileTransferencia">
+              Cargar Imagen
+            </button>
+
+
+          </div>
+        </div>
+
+        <button data-type="normal" id='btnEnviarTransferencia' type="button" value="transferencia"
+          class="w-full py-2 px-4 border  block text-center border-green-500 text-green-500 rounded-full hover:text-white  hover:bg-[#006BF6] transition-colors duration-300">
+          Enviar Imagen
+        </button>
+
+
+
+      </div>
+      <p class='mt-4 text-center'> O </p>
+      <div class="mt-4">
+        <button data-type="whatsapp" id='btnEnviarTransferencia2' type="button" value="transferencia"
+          target="_blanck" href={`https://api.whatsapp.com/send?phone=${telefono}&text=${texto}`}
+          class="w-full py-2 px-4 border  block text-center border-green-500 text-green-500 rounded-full hover:text-white  
+        hover:bg-[#006BF6] transition-colors duration-300">
+          Enviar Pago por WhatsApp
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+  <div id="modalPlin" class="modal" style="max-width: 700px !important;width: 100% !important;  ">
+    <!-- Modal body -->
+    <div class="p-4  mb-4">
+      <div class="text-center mb-6 flex flex-col justify-center content-center items-center">
+        <img src="/images/svg/LogoBoost2.svg" alt="" class='h-48 w-48 text-center' />
+        <h1 class="text-3xl font-bold text-green-600 mb-2">¡Felicitaciones!</h1>
+
+      </div>
+
+
+
+
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-green-600 mb-2"></h2>
+        <p class="mb-2">¡Estás a un paso de completar tu compra ! Escanea el codigo y continua con la compra </p>
+        <p class="mb-2">RUC: 20612977985</p>
+        <p class="mb-2">TIENDAS B PERU SAC</p>
+        <p class="mb-2">También puedes enviarnos tu confirmación de pago a través de WhatsApp.</p>
+      </div>
+
+      <div class="flex object-center justify-center items-center gap-4 mb-6 w-full">
+
+        <img src="{{ asset('images/svg/codeQr.jpg') }}" class="object-fit h-[200px] w-[200px]">
+
+
+      </div>
+
+
+      <div class='flex flex-col w-full my-8 cartItemsContainer' id="cart-container">
+
+      </div>
+
+      <div class="space-y-4">
+        <div
+          class=" py-2 px-4 border block text-center text-green-500 rounded-md hover:bg-green-50 transition-colors duration-300 relative">
+          <div class="w-full">
+            <button type="button" {{-- class="overflow-x-hidden w-[308px] px-4"  --}}
+              class="w-full py-2 px-4   block text-center  rounded-full text-white  bg-[#006BF6] transition-colors duration-300"
+              id="fileTransferencia">
+              Cargar Imagen
+            </button>
+
+
+          </div>
+        </div>
+
+        <button data-type="normal" id='btnEnviarTransferencia' type="button" value="billetera"
+          class="w-full py-2 px-4 border  block text-center border-green-500 text-green-500 rounded-full hover:text-white  hover:bg-[#006BF6] transition-colors duration-300">
+          Enviar Imagen
+        </button>
+
+
+
+      </div>
+      <p class='mt-4 text-center'> O </p>
+      <div class="mt-4">
+        <button data-type="whatsapp" id='btnEnviarTransferencia2' type="button" value="billetera" target="_blanck"
+          href={`https://api.whatsapp.com/send?phone=${telefono}&text=${texto}`}
+          class="w-full py-2 px-4 border  block text-center border-green-500 text-green-500 rounded-full hover:text-white  
+        hover:bg-[#006BF6] transition-colors duration-300">
+          Enviar Pago por WhatsApp
+        </button>
+
+      </div>
+
+    </div>
+  </div>
 
   <script src="https://checkout.culqi.com/js/v4"></script>
+
   <script>
+    let NumOrder = null
+    $(document).on('click', '#procesarPago', async function(e) {
+      e.preventDefault();
+
+      monto = $('#itemTotal').text().replace('S/.', '').trim()
+
+
+      if (monto > 6) {
+        $(this).addClass('disabled opacity-50 cursor-not-allowed').attr('disabled', true);
+        let esWhataspp = true;
+
+        const carrito = Local.get('carrito') ?? [];
+
+        /* let cart = carrito.map((x) => ({
+          id: x.id,
+          imagen: x.imagen,
+          quantity: x.cantidad,
+          usePoints: !!(x.isCombo || false)
+        })); */
+
+
+
+        let body = {
+          cart: carrito.map((x) => ({
+            id: x.id,
+            imagen: x.imagen,
+            quantity: x.cantidad,
+            isCombo: !!(x.isCombo || false)
+          })),
+          contact: {
+            name: $('#nombre').val(),
+            lastname: $('#apellidos').val(),
+            email: $('#email').val(),
+            phone: $('#celular').val(),
+            doc_number: $('#DNI').val() || $('#RUC').val(),
+            doc_type: $('#tipo-comprobante').val() ?? 'nota_venta',
+            razon_fact: $('#razonFact').val(),
+            direccion_fact: $('#direccionFact').val(),
+
+
+          },
+          saveAddress: !Boolean($('#addresses').val()),
+          tipo_comprobante: $('#tipo-comprobante').val(),
+
+          addressExist: $('#recoger-option').is(':checked') ? 0 : $('#addressExist').val(),
+          // img: $(fileInput).attr('data-base64'),
+          // tipo_compra: tarjeta
+          //...paymentData,
+          // img: fileimg.current
+        };
+        if ($('[name="envio"]:checked').val() == 'express') {
+          body.address = {
+            id: $('#distrito_id option:selected').attr('price-id'),
+            city: $('#distrito_id option:selected').text(),
+            street: $('#nombre_calle').val(),
+            number: $('#numero_calle').val(),
+            description: $('#direccion').val()
+          }
+        }
+        try {
+          const res = await axios.post('/api/payment/generateOrder', body, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            }
+          });
+
+          let {
+            status,
+            message,
+            data
+          } = res.data;
+          if (status == 200) {
+
+            $(this).removeClass('disabled opacity-50 cursor-not-allowed').attr('disabled', false);
+            // Local.delete('carrito');
+            // Local.delete('payment-data');
+            NumOrder = data.charge.id
+            $('#paymentButton').click()
+
+
+            /* setTimeout(() => {
+              let url = esWhataspp ? `/agradecimiento?code=${data.reference_code}&whatsapp=true` :
+                `/agradecimiento?code=${data.reference_code}`;
+              location.href = url;
+            }, 3500); */
+          }
+        } catch (error) {
+          $(this).removeClass('disabled opacity-50 cursor-not-allowed').attr('disabled', false);
+          console.error('Error al enviar la solicitud:', error);
+        }
+
+      } else {
+        $('#paymentButton').click()
+
+      }
+      1
+
+    });
+
+    $('#paymentButton').on('click', function() {
+      $('#paymentForm').submit();
+    });
+    $(document).on('click', '#btnPagoOnEntrega', function(e) {
+      ProcesarTransferencia(e)
+    })
+    document.getElementById('imgTransferencia').addEventListener('change', function(e) {
+      const fileInput = e.target;
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+          const base64String = event.target.result;
+
+          e.target.dataset.base64 = base64String;
+          // Aquí puedes usar la cadena base64 como necesites
+        };
+
+        reader.readAsDataURL(file);
+      }
+    });
+
+    const ProcesarTransferencia = async (e) => {
+      e.preventDefault();
+
+
+      let tipo_pago = e.target.value
+
+      let esWhataspp = true;
+
+      let fileInput = document.getElementById('imgTransferencia');
+      let tipoCompra = e.target.dataset.type
+
+
+
+      if (tipoCompra !== 'whatsapp' && tipoCompra !== 'contraEntrega') {
+        esWhataspp = false;
+
+        if (!fileInput.files.length > 0) {
+          return Swal.fire({
+            icon: 'warning',
+            title: 'Falta la imagen',
+            text: 'Por favor agregue un imagen antes de continuar',
+            showConfirmButton: true,
+            showCancelButton: false,
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#138496'
+          });
+        }
+      }
+
+
+
+      const carrito = Local.get('carrito') ?? [];
+      //const paymentData = Local.get('payment-data') ?? [];
+      let cart = carrito.map((x) => ({
+        id: x.id,
+        imagen: x.imagen,
+        quantity: x.cantidad,
+        usePoints: !!(x.isCombo || false)
+      }));
+
+      // const formData = new FormData();
+      // formData.append('datosFinales', JSON.stringify(datosFinales));
+      // formData.append('img', fileInput[0]);
+      // formData.append('paymentData', JSON.stringify(paymentData));
+      // formData.append('cart', JSON.stringify(cart));
+
+      let body = {
+        cart: carrito.map((x) => ({
+          id: x.id,
+          imagen: x.imagen,
+          quantity: x.cantidad,
+          isCombo: !!(x.isCombo || false)
+        })),
+        tipo_pago,
+        contact: {
+          name: $('#nombre').val(),
+          lastname: $('#apellidos').val(),
+          email: $('#email').val(),
+          phone: $('#celular').val(),
+          doc_number: $('#DNI').val() || $('#RUC').val(),
+          doc_type: $('#tipo-comprobante').val() ?? 'nota_venta',
+          razon_fact: $('#razonFact').val(),
+          direccion_fact: $('#direccionFact').val(),
+
+
+        },
+        saveAddress: !Boolean($('#addresses').val()),
+        tipo_comprobante: $('#tipo-comprobante').val(),
+
+        addressExist: $('#recoger-option').is(':checked') ? 0 : $('#addressExist').val(),
+        img: $(fileInput).attr('data-base64'),
+        tipo_compra: tipoCompra
+        //...paymentData,
+        // img: fileimg.current
+      };
+      if ($('[name="envio"]:checked').val() == 'express') {
+        body.address = {
+          id: $('#distrito_id option:selected').attr('price-id'),
+          city: $('#distrito_id option:selected').text(),
+          street: $('#nombre_calle').val(),
+          number: $('#numero_calle').val(),
+          description: $('#direccion').val()
+        }
+      }
+
+      try {
+        const res = await axios.post('/api/payment/pagarConTransferencia', body, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+        });
+
+        let {
+          status,
+          message,
+          data
+        } = res.data;
+        if (status == 200) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Orden de compra generada correctamente , en breve validaremos tu pago',
+            text: message,
+            showConfirmButton: true,
+            showCancelButton: false,
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#138496'
+          });
+          Local.delete('carrito');
+          Local.delete('payment-data');
+
+          setTimeout(() => {
+            let url = esWhataspp ? `/agradecimiento?code=${data.reference_code}&whatsapp=true` :
+              `/agradecimiento?code=${data.reference_code}`;
+            location.href = url;
+          }, 3500);
+        }
+      } catch (error) {
+        console.error('Error al enviar la solicitud:', error);
+      }
+    };
+
+    const renderCart = () => {
+      const cartItems = Local.get('carrito') ?? []
+      // const costoEnvio = parseFloat(localStorage.getItem('costoEnvio')) || 0;
+      const historicoCupones = JSON.parse(localStorage.getItem('historicoCupones')) || [];
+      let points = parseFloat(localStorage.getItem('points')) || 0;
+      let userPoints = parseFloat(localStorage.getItem('userPoints')) || 0;
+
+      const costoEnvio = getCostoEnvio()
+
+
+
+      // const cartContainer = document.getElementById('cart-container');
+
+      const itemscarts = document.querySelectorAll('.cartItemsContainer');
+      itemscarts.forEach((el, i) => {
+        el.innerHTML = `
+        <div class="mx-auto p-2 bg-white text-gray-800 font-sans w-full">
+            <h1 class="text-xl font-semibold mb-4">DETALLE DE COMPRAS</h1>
+
+            <div id="cart-items-${i}"></div>
+
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                    <span>Sub Total</span>
+                    <span id="subtotal-${i}"></span>
+                </div>
+                
+                <div class="flex justify-between">
+                    <span>Costo de envío</span>
+                    <span id="shipping-cost-${i}"></span>
+                </div>
+                <div class="flex justify-between font-semibold text-base">
+                    <span>Total</span>
+                    <span id="total-${i}"></span>
+                </div>
+            </div>
+        </div>
+    `;
+      });
+
+
+      const cartItemsContainer = document.querySelectorAll('[id^="cart-items-"]');
+      // document.querySelectorAll('[id^="cart-items-"]');
+
+
+
+
+      cartItemsContainer.forEach(container => {
+        cartItems.forEach(item => {
+          let finalQuantity = item.cantidad;
+          for (let i = 0; i < item.cantidad; i++) {
+            if (item.usePoints && userPoints >= item.points) {
+              finalQuantity--;
+              userPoints -= item.points;
+            }
+          }
+
+          let itemPrice = item.descuento > 0 ? item.descuento : item.precio;
+          const subtotalf = finalQuantity * itemPrice;
+
+          const itemElement = document.createElement('div');
+          itemElement.classList.add('border-b', 'pb-4', 'mb-4');
+          itemElement.innerHTML = `
+            <div class="flex justify-between items-start mb-2">
+                <div>
+                    <h2 class="font-semibold">${item.producto}</h2>
+                    <p class="text-sm text-gray-600">${item.extracto ?? ''}</p>
+                    ${item.usePoints ? '<span class="text-orange-500 text-sm">Usando puntos</span>' : ''}
+                    ${item.sku ? ` <p class="text-sm text-gray-600">SKU: ${item.sku ?? ''}</p>` : ''}
+                </div>
+                <div class="text-right">
+                    <p class="font-semibold">S/ ${subtotalf.toFixed(2)}</p>
+                    <p class="text-sm">Cantidad: ${item.cantidad}</p>
+                </div>
+            </div>
+            <button onclick="toggleImage(${item.id})" class="flex items-center text-blue-600 text-sm">
+                <span id="toggle-icon-${item.id}">
+                    <svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </span>
+                <span id="toggle-text-${item.id}">Ver imagen</span>
+            </button>
+            <img id="image-${item.id}" src="/${item.imagen}" alt="${item.producto}" class="mt-2 w-24 h-24 object-cover rounded hidden" 
+            onerror="this.onerror=null;this.src='/images/img/noimagen.jpg';" />
+        `;
+          container.appendChild(itemElement);
+        });
+      });
+
+      // Calcular subtotal
+      let subtotal = cartItems.reduce((carry, item) => {
+        let finalQuantity = item.cantidad;
+        for (let i = 0; i < item.cantidad; i++) {
+          if (item.usePoints && userPoints >= item.points) {
+            finalQuantity--;
+            userPoints -= item.points;
+          }
+        }
+        let itemPrice = item.descuento > 0 ? item.descuento : item.precio;
+        return carry + finalQuantity * itemPrice;
+      }, 0);
+
+      // Calcular descuento
+      let descuento = 0;
+      let cupon = null;
+      if (historicoCupones.length > 0) {
+        cupon = historicoCupones[0].cupon || null;
+        if (cupon) {
+          if (cupon.porcentaje == 1) {
+            descuento = (subtotal * cupon.monto) / 100;
+          } else {
+            descuento = cupon.monto;
+          }
+        }
+      }
+
+      // Calcular total con descuento
+      let totalConDescuento = subtotal + costoEnvio - descuento;
+      let porcentaje = cupon && cupon.porcentaje == 1 ? '%' : 'S/';
+      let cuponMonto = cupon ? porcentaje + ' ' + Number(cupon.monto).toFixed(0) : '';
+
+      // Actualizar el DOM
+      // document.getElementById('subtotal-').innerText = 'S/ ' + subtotal.toFixed(2);
+      // document.getElementById('shipping-cost-').innerText = 'S/ ' + costoEnvio.toFixed(2);
+      // document.getElementById('total-').innerText = 'S/ ' + totalConDescuento.toFixed(2);
+
+      const subtotalElements = document.querySelectorAll('[id^="subtotal-"]');
+      subtotalElements.forEach(element => {
+        element.innerHTML = 'S/ ' + subtotal.toFixed(2); // Actualiza con el nuevo valor
+      });
+
+      // Actualizar elementos que comiencen con 'shipping-cost-'
+      const shippingCostElements = document.querySelectorAll('[id^="shipping-cost-"]');
+      shippingCostElements.forEach(element => {
+        element.innerHTML = 'S/ ' + costoEnvio.toFixed(2); // Actualiza con el nuevo valor
+      });
+
+      // Actualizar elementos que comiencen con 'total-'
+      const totalElements = document.querySelectorAll('[id^="total-"]');
+      totalElements.forEach(element => {
+        element.innerHTML = 'S/ ' + totalConDescuento.toFixed(2); // Actualiza con el nuevo valor
+      });
+
+      if (cupon) {
+        document.getElementById('discount').innerText = cuponMonto;
+        document.getElementById('discount-container').classList.remove('hidden');
+      }
+
+
+      // Renderizar los items del carrito
+
+
+    }
+
+    function toggleImage(id) {
+      const image = document.getElementById(`image-${id}`);
+      const icon = document.getElementById(`toggle-icon-${id}`);
+      const text = document.getElementById(`toggle-text-${id}`);
+
+      if (image.classList.contains('hidden')) {
+        image.classList.remove('hidden');
+        icon.innerHTML =
+          '<svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" /></svg>';
+        text.innerText = 'Ocultar imagen';
+      } else {
+        image.classList.add('hidden');
+        icon.innerHTML =
+          '<svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>';
+        text.innerText = 'Ver imagen';
+      }
+    }
+
+    $(document).ready(function() {
+      renderCart()
+
+
+      $(document).on('click', '#btnPagar', function() {
+
+        const formPrincipal = document.getElementById('paymentForm');
+
+        // Verificar si el formulario es válido
+        if (!formPrincipal.checkValidity()) {
+          // Mostrar mensajes de validación nativos
+          formPrincipal.reportValidity();
+          return;
+        }
+        $('#modalTipoCompra').modal({
+          show: true,
+          fadeDuration: 400,
+
+        })
+      })
+
+      $(document).on('click', '#btnPagoTransferencia', function() {
+        renderCart()
+        $('#modalTransferencia').modal('hide');
+
+        // $('#paymentForm').submit();
+      })
+
+      $(document).on('click', '#yape', function() {
+        renderCart()
+        $('#modalPlin').modal('hide');
+
+        // $('#paymentForm').submit();
+      })
+
+      $(document).on('click', '#btnEnviarTransferencia', ProcesarTransferencia)
+      $(document).on('click', '#btnEnviarTransferencia2', function(e) {
+        Swal.fire({
+          title: '¿Estás seguro?',
+          text: "¿Ya has escaneado el Qr y realizado el abono?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Sí, continuar',
+          cancelButtonText: 'No, cancelar'
+        }).then((result) => {
+
+          if (result.isConfirmed) {
+
+
+            ProcesarTransferencia(e);
+          } else {
+            return;
+          }
+        });
+
+
+      })
+    })
+    $(document).on('click', '#fileTransferencia', function() {
+      $('#imgTransferencia').click()
+    })
     $('#direccionContainer').fadeOut(0)
 
     const hasDefaultAddress = {{ $hasDefaultAddress ? 'true' : 'false' }};
     Culqi.publicKey = "{{ $culqi_public_key }}";
+
+
 
     const culqi = async () => {
       try {
@@ -383,22 +1064,23 @@
           const data = await res.json()
           if (!res.ok) throw new Error(data?.message ?? 'Ocurrio un error inesperado al generar el cargo')
 
-          Swal.fire({
+          /* Swal.fire({
             title: `Bien!!`,
             text: `Se ha generado el cargo por S/. ${data.data.amount.toFixed(2)}`,
             icon: "success",
-          });
+          }); */
 
-          Local.delete('carrito')
+
 
           location.href = `/agradecimiento?code=${data.data.reference_code}`
 
         } else if (Culqi.order) { // ¡Objeto Order creado exitosamente!
           const order = Culqi.order;
-          console.log('Se ha creado el objeto Order: ', order);
+
 
         } else {
           // Mostramos JSON de objeto error en consola
+          console.log('entro error culqui');
           console.log('Error : ', Culqi.error);
           throw new Error(Culqi.error.message);
         }
@@ -413,7 +1095,9 @@
 
 
     $(document).on('change', '#tipo-comprobante', function() {
-      console.log('cambio', $(this).val())
+
+
+
 
       let tipoComrobante = $(this).val()
 
@@ -423,19 +1107,19 @@
         $('#ElementosFacturacion').html(`
           <div class="col-span-2 mb-2">
             <label for="nombre" class="font-medium text-[12px] text-[#6C7275]">DNI<span class="text-red-500">*</span></label>
-            <input maxlength="8" id="DNI" type="number"  placeholder="DNI" name="DNI" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" >
+            <input maxlength="8" id="DNI" type="number"  placeholder="DNI" name="DNI" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" required>
 
             
           </div>
           <div class="col-span-4 mb-2">
-            <label for="nombre" class="font-medium text-[12px] text-[#6C7275]">Razon Social<span class="text-red-500">*</span></label>
-            <input  id="razonFact" type="text"  placeholder="Razon Social" name="razon_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" >
+            <label for="nombre" class="font-medium text-[12px] text-[#6C7275]">Nombre / Apellido<span class="text-red-500">*</span></label>
+            <input  id="razonFact" type="text"  placeholder="Nombre / Apellido" name="razon_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" required>
 
             
           </div>
           <div class="col-span-4 mb-2">
             <label for="nombre" class="font-medium text-[12px] text-[#6C7275]">Direccion Facturacion<span class="text-red-500">*</span></label>
-            <input  id="direccionFact" type="text"  placeholder="Direccion Boleta" name="direccion_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" >
+            <input  id="direccionFact" type="text"  placeholder="Direccion Boleta" name="direccion_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" required>
 
             
           </div>
@@ -445,17 +1129,17 @@
         $('#ElementosFacturacion').html(`
           <div class="col-span-2 mb-2">
             <label for="ruc" class="font-medium text-[12px] text-[#6C7275]">RUC <span class="text-red-500">*</span></label>
-            <input maxlength="11" id="RUC" type="number" placeholder="RUC" name="RUC" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" >
+            <input maxlength="11" id="RUC" type="number" placeholder="RUC" name="RUC" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" required pattern="\d{11}" title="El RUC debe tener exactamente 11 dígitos">
           </div>
           <div class="col-span-4 mb-2">
             <label for="nombre" class="font-medium text-[12px] text-[#6C7275]">Razon Social<span class="text-red-500">*</span></label>
-            <input  id="razonFact" type="text"  placeholder="Ingrese Razon Social" name="razon_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" >
+            <input  id="razonFact" type="text"  placeholder="Ingrese Razon Social" name="razon_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" required>
 
             
           </div>
           <div class="col-span-4 mb-2">
             <label for="nombre" class="font-medium text-[12px] text-[#6C7275]">Direccion Facturacion<span class="text-red-500">*</span></label>
-            <input  id="direccionFact" type="text"  placeholder="Direccion Facturacion" name="direccion_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" >
+            <input  id="direccionFact" type="text"  placeholder="Direccion Facturacion" name="direccion_fact" value="" class="w-full py-2 px-4 focus:outline-none placeholder-gray-400 font-normal text-[16px] border-[1.5px] border-gray-200 rounded-xl text-[#6C7275]" required>
 
             
           </div>
@@ -464,6 +1148,14 @@
       } else {
         $("#ElementosFacturacion").html('')
       }
+      const numberInputs = document.querySelectorAll('input[type=number]');
+      numberInputs.forEach(function(input) {
+        input.addEventListener('wheel', function(event) {
+          event.preventDefault();
+        });
+      });
+
+
 
 
     })
@@ -477,7 +1169,7 @@
       if (e.key === '.' || e.key === ',') {
         e.preventDefault();
       }
-      console.log($(this.id))
+
       if (this.id == 'DNI' && $(this).val().length > 7) {
         e.preventDefault();
       } else if (this.id == 'RUC' && $(this).val().length > 10) {
@@ -488,6 +1180,7 @@
 
     $('#paymentForm').on('submit', function(e) {
       e.preventDefault();
+
 
       const precioProductos = getTotalPrice()
       const precioEnvio = getCostoEnvio()
@@ -501,9 +1194,9 @@
       if (ExisteDni) {
         if ($('#tipo-comprobante').val() == 'boleta' && ($('#DNI').val() == '' || $('#DNI').val().length !== 8)) {
           Swal.fire({
-            title: `Error!!`,
+            title: `Espere!!`,
             text: 'Ingrese su DNI Completo',
-            icon: "error",
+            icon: 'info',
           });
           return
         }
@@ -512,9 +1205,9 @@
       if (existeRuc) {
         if ($('#tipo-comprobante').val() == 'factura' && ($('#RUC').val() == '' || $('#RUC').val().length !== 11)) {
           Swal.fire({
-            title: `Error!!`,
+            title: `Espere!!`,
             text: 'Ingrese su Ruc Completo',
-            icon: "error",
+            icon: 'info',
           });
           return
         }
@@ -524,9 +1217,9 @@
       if (razonFact) {
         if ($('#razonFact').val() == '') {
           Swal.fire({
-            title: `Error!!`,
+            title: `Espere!!`,
             text: 'Ingrese su Razon Social',
-            icon: "error",
+            icon: 'info',
           });
           return
         }
@@ -535,28 +1228,38 @@
       if (direccionFact) {
         if ($('#direccionFact').val() == '') {
           Swal.fire({
-            title: `Error!!`,
+            title: `Espere!!`,
             text: 'Ingrese su Direccion de Facturacion',
-            icon: "error",
+            icon: 'info',
           });
           return
         }
       }
       const paymentMethods = { // las opciones se ordenan según se configuren
         tarjeta: true,
-        yape: true,
-        billetera: true,
+        yape: false,
+        billetera: false,
         bancaMovil: true,
         agente: true,
         cuotealo: true,
       }
+      let monto = $('#itemTotal').text().replace('S/.', '').trim()
 
-
-      Culqi.settings({
+      let settingsCul = {
         title: 'Boost .its more',
         currency: 'PEN',
         amount: Math.round((precioProductos + precioEnvio) * 100),
-      });
+
+
+      };
+      if (monto > 6) {
+        settingsCul.order = NumOrder
+      }
+
+
+
+
+      Culqi.settings(settingsCul);
       Culqi.options({
         paymentMethods: paymentMethods,
         paymentMethodsSort: Object.keys(paymentMethods),
@@ -567,7 +1270,12 @@
         }
       })
       Culqi.open();
+    }) // fin culqi
+
+    $(document).on('click', "#clq .btn-green", function(e) {
+      console.log('click', e.target.textContent)
     })
+
 
     $('[name="envio"]').on('click', () => {
       const value = $('[name="envio"]:checked').val()
@@ -579,12 +1287,13 @@
           $('#precioEnvio').text(`Evaluando`)
         }
         $('[data-address]').prop('required', true)
+        // $('#addresses').prop('required', false)
+        $('#addresses').removeAttr('required');
       } else {
         $('#direccionContainer').fadeOut(125)
         $('#precioEnvio').text('Gratis')
         $('[data-address]').prop('required', false)
-        console.log("costo Envio", getCostoEnvio())
-        console.log(value)
+
       }
       calcularTotal()
     })
@@ -599,7 +1308,15 @@
     }) => {
       if (!id) return text
 
-      const data = JSON.parse(element.getAttribute('data'))
+      const data = {
+        id: element.getAttribute('data-id'),
+        street: element.getAttribute('data-street'),
+        number: element.getAttribute('data-number'),
+        description: element.getAttribute('data-description'),
+        price: JSON.parse(element.getAttribute('data-price'))
+      };
+      // const data = element.getAttribute('data')
+
       let price = 'Gratis'
       let className = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
       if (data.price.price > 0) {
@@ -631,6 +1348,7 @@
 
     $('#addresses').on('change', function() {
       const address = $(this).val()
+
       if (!address) {
         $('[data-show="new"]').fadeIn()
         $('#departamento_id')
@@ -641,10 +1359,19 @@
         $('#direccion').val(null)
         return
       }
-      const data = JSON.parse($(this).find('option:selected').attr('data'))
+      const selectedOption = $(this).find('option:selected');
+
+      const data = {
+        id: selectedOption.attr('data-id'),
+        street: selectedOption.attr('data-street'),
+        number: selectedOption.attr('data-number'),
+        description: selectedOption.attr('data-description'),
+        price: JSON.parse(selectedOption.attr('data-price'))
+      };
+
       $('[data-show="new"]').fadeOut()
       $('#departamento_id')
-        .val(data.price.district.province.department.id)
+        .val(`${data.price.district.province.department.id}`)
         .trigger('change')
       $('#provincia_id')
         .val(data.price.district.province.id)
@@ -661,6 +1388,7 @@
       $('#provincia_id').html('<option value>Seleccione una provincia</option>')
       $('#distrito_id').html('<option value>Seleccione un distrito</option>')
       $('#precioEnvio').text(`Evaluando`)
+
       provinces.filter(x => x.department_id == this.value).forEach((province) => {
         const option = $('<option>', {
           value: province.id,
@@ -671,11 +1399,23 @@
       $('#provincia_id').select2()
       calcularTotal()
     })
+    $(document).on('change', '#addresses', function() {
+
+    })
 
     $('#provincia_id').on('change', function() {
       $('#distrito_id').html('<option value>Seleccione un distrito</option>')
       $('#precioEnvio').text(`Evaluando`)
-      districts.filter(x => x.province_id == this.value).forEach((district) => {
+
+
+
+      let value = this.value
+      if (this.value.length == 3) {
+        value = '0' + this.value
+      }
+
+
+      districts.filter(x => x.province_id == value).forEach((district) => {
         const option = $('<option>', {
           value: district.id,
           text: district.description,
@@ -690,6 +1430,7 @@
 
     $('#distrito_id').on('change', function() {
       const priceStr = $('#distrito_id option:selected').attr('data-price')
+
       const price = Number(priceStr) || 0
       if (price == 0) {
         $('#precioEnvio').text('Gratis')
@@ -710,6 +1451,8 @@
       const precioEnvio = getCostoEnvio()
       const total = precioProductos + precioEnvio
 
+
+
       $('#itemTotal').text(`S/. ${total.toFixed(2)} `)
       $('#itemsTotal').text(`S/. ${total.toFixed(2)} `)
     }
@@ -727,7 +1470,7 @@
     }
 
     const getCostoEnvio = () => {
-      console.log('getcostoEnvio', $('[name="envio"]:checked').val());
+
 
       if ($('[name="envio"]:checked').val() == 'recoger') return 0
       const priceStr = $('#distrito_id option:selected').attr('data-price')
@@ -777,17 +1520,17 @@
   </script>
   <script>
     $('#pagarProductos').on('click', function(e) {
-      console.log('pagando servicio');
+
       e.preventDefault()
       let formDataArray = $('#formHome').serializeArray();
-      console.log(formDataArray)
+
 
       $.ajax({
         url: '{{ route('procesar.pago') }}',
         method: 'POST',
         data: $('#formHome').serialize(),
         success: function(response) {
-          console.log(response)
+
           Swal.close();
           Swal.fire({
             title: `Exito!!`,
@@ -801,7 +1544,7 @@
           }, 3000);
         },
         error: function(response) {
-          console.log(response)
+
           const customMessages = response.responseJSON.message.validator.customMessages;
           const messages = Object.keys(customMessages).map(key => customMessages[key]);
           Swal.close();
@@ -814,13 +1557,16 @@
       });
     })
   </script>
+  {{-- <script src="/js/culqi/main.js" type="module"></script> --}}
+  <script></script>
+
   <script>
     // let articulosCarrito = [];
     let checkedRadio = false
 
 
     function deleteOnCarBtn(id, operacion) {
-      console.log('Elimino un elemento del cvarrio');
+
       const prodRepetido = articulosCarrito.map(item => {
         if (item.id === id && item.cantidad > 0) {
           item.cantidad -= Number(1);
@@ -834,6 +1580,7 @@
       Local.set("carrito", articulosCarrito)
       limpiarHTML()
       PintarCarrito()
+      renderCart()
 
 
     }
@@ -853,6 +1600,7 @@
       // localStorage.setItem('carrito', JSON.stringify(articulosCarrito));
       limpiarHTML()
       PintarCarrito()
+      renderCart()
 
 
     }
@@ -863,13 +1611,15 @@
       Local.set("carrito", articulosCarrito)
       limpiarHTML()
       PintarCarrito()
+      renderCart()
     }
 
     var appUrl = <?php echo json_encode($url_env); ?>;
     $(document).ready(function() {
       articulosCarrito = Local.get('carrito') || [];
-
+      limpiarHTML()
       PintarCarrito();
+      renderCart()
     });
 
     function limpiarHTML() {

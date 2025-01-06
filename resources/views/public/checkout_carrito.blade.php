@@ -190,51 +190,51 @@
       return price
     }
 
-    function deleteOnCarBtn(id, operacion) {
-      console.log('Elimino un elemento del cvarrio');
-      const prodRepetido = articulosCarrito.map(item => {
-        if (item.id === id && item.cantidad > 0) {
-          item.cantidad -= Number(1);
-          return item; // retorna el objeto actualizado 
-        } else {
-          return item; // retorna los objetos que no son duplicados 
-        }
+    /*  function deleteOnCarBtn(id, operacion) {
+       console.log('Elimino un elemento del cvarrio');
+       const prodRepetido = articulosCarrito.map(item => {
+         if (item.id === id && item.cantidad > 0) {
+           item.cantidad -= Number(1);
+           return item; // retorna el objeto actualizado 
+         } else {
+           return item; // retorna los objetos que no son duplicados 
+         }
 
-      });
+       });
 
-      Local.set("carrito", articulosCarrito)
-      limpiarHTML()
-      PintarCarrito()
-
-
-    }
-
-    function addOnCarBtn(id, operacion) {
-
-      const prodRepetido = articulosCarrito.map(item => {
-        if (item.id === id) {
-          item.cantidad += Number(1);
-          return item; // retorna el objeto actualizado 
-        } else {
-          return item; // retorna los objetos que no son duplicados 
-        }
-
-      });
-      Local.set("carrito", articulosCarrito)
-      // localStorage.setItem('carrito', JSON.stringify(articulosCarrito));
-      limpiarHTML()
-      PintarCarrito()
+       Local.set("carrito", articulosCarrito)
+       limpiarHTML()
+       PintarCarrito()
 
 
-    }
+     } */
 
-    function deleteItem(id) {
-      articulosCarrito = articulosCarrito.filter(objeto => objeto.id !== id);
+    /*  function addOnCarBtn(id, operacion) {
 
-      Local.set("carrito", articulosCarrito)
-      limpiarHTML()
-      PintarCarrito()
-    }
+       const prodRepetido = articulosCarrito.map(item => {
+         if (item.id === id) {
+           item.cantidad += Number(1);
+           return item; // retorna el objeto actualizado 
+         } else {
+           return item; // retorna los objetos que no son duplicados 
+         }
+
+       });
+       Local.set("carrito", articulosCarrito)
+       // localStorage.setItem('carrito', JSON.stringify(articulosCarrito));
+       limpiarHTML()
+       PintarCarrito()
+
+
+     } */
+
+    /*  function deleteItem(id) {
+       articulosCarrito = articulosCarrito.filter(objeto => objeto.id !== id);
+
+       Local.set("carrito", articulosCarrito)
+       limpiarHTML()
+       PintarCarrito()
+     } */
 
     var appUrl = <?php echo json_encode($url_env); ?>;
     $(document).ready(function() {

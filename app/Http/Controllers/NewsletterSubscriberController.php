@@ -436,19 +436,27 @@ class NewsletterSubscriberController extends Controller
   }
 
   public function envioMasivo($plantilla){
-    $subscripciones = NewsletterSubscriber::all();
-    $general = General::all()->first();
-    $appUrl = env('APP_URL');
-    $name = '';
-    $mensaje = env('APP_NAME'). 'Acaba de publicar un nuevo post ';
-    $mail = EmailConfig::config($name, $mensaje);
-    $mail->Subject = 'Nuevo Post Publicado';
-    $mail->Body = $plantilla;
-    $mail->isHTML(true);
-    foreach ($subscripciones as $subscripcion) {
-      $mail->addAddress($subscripcion->email);
+    try {
+      //code...
+      $subscripciones = NewsletterSubscriber::all();
+      $general = General::all()->first();
+      $appUrl = env('APP_URL');
+      $name = '';
+      $mensaje = env('APP_NAME'). 'Acaba de publicar un nuevo post ';
+      $mail = EmailConfig::config($name, $mensaje);
+      $mail->Subject = 'Nuevo Post Publicado';
+      $mail->Body = $plantilla;
+      $mail->isHTML(true);
+      foreach ($subscripciones as $subscripcion) {
+        $mail->addBCC($subscripcion->email);
+        
+      }
       $mail->send();
+      return response()->json(['message' => 'Correo enviado']);
+    } catch (\Throwable $th) {
+      //throw $th;
+      // dump($th);
     }
-    return response()->json(['message' => 'Correo enviado']);
+   
   }
 }

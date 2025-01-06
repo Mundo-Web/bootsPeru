@@ -19,6 +19,12 @@
     margin-bottom: 0 !important;
 
   }
+
+  @media (max-width: 600px) {
+    .fixedWhastapp {
+      right: 116px !important;
+    }
+  }
 </style>
 
 @section('content')
@@ -99,9 +105,9 @@
     <section class="w-full px-[5%] py-7 lg:py-14" data-aos="fade-up" data-aos-offset="150">
       <div class="grid grid-cols-1 md:grid-cols-2 w-full">
         <div class=" flex flex-col md:flex-col  w-full gap-3 px-10">
-          <h1 class="text-[22px] md:text-3xl font-semibold font-Inter_Medium  text-[#006BF6]">Nuestro sello de Garantia
-          </h1>
-          <h1 class="text-[48px] md:text-3xl font-semibold font-Inter_Medium  text-[#333333] mt-3">
+          {{-- <h1 class="text-[22px] md:text-3xl font-semibold font-Inter_Medium  text-[#006BF6]">Nuestro sello de Garantia
+          </h1> --}}
+          <h1 class="text-[48px] md:text-3xl font-semibold font-Inter_Medium  text-[#006BF6] mb-3">
 
             {{ $nosotros[1]->titulo }}
           </h1>
@@ -117,14 +123,16 @@
 
     </section>
 
+    {{ $benefit->count() }}
 
     @if ($benefit->count() > 0)
       <section class="py-10 lg:py-13 bg-[#F8F8F8] w-full px[5%]" data-aos="zoom-out-right">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 ">
+        <div
+          class="grid grid-cols-1 items-start  gap-6 @if ($benefit->count() < 4) md:grid-cols-3 @else md:grid-cols-4 @endif">
           @foreach ($benefit as $item)
             <div class="flex flex-col items-center w-full gap-1 justify-center text-center px-[10%] xl:px-[18%]">
-              <img src="{{ asset($item->icono) }}" alt="">
-              <h4 class="text-xl font-bold font-Inter_Medium"> {{ $item->titulo }} </h4>
+              <img src="{{ asset($item->icono) }}" alt="" class="w-[113px] h-[113px] object-contain">
+              <h4 class="text-xl font-bold font-Inter_Medium h-[56px] line-clamp-2"> {{ $item->titulo }} </h4>
               <div class="text-lg leading-8 text-[#444444] font-Inter_Medium">{!! $item->descripcionshort !!}</div>
             </div>
           @endforeach

@@ -1,5 +1,5 @@
 <div x-data="{ showAmbiente: false }" @mouseenter="showAmbiente = true" @mouseleave="showAmbiente = false"
-  class="flex flex-col relative w-full md:{{ $width }} {{ $bgcolor }}">
+  class="flex flex-col relative w-full md:{{ $width }} {{ $bgcolor }} min-h-[450px]">
   <div class="{{ $bgcolor }} product_container basis-4/5 flex flex-col justify-center relative">
     {{-- @php
       echo json_encode($item->tags);
@@ -21,7 +21,7 @@
 
     </div>
     <div>
-      <div class="relative flex justify-center items-center h-[300px]">
+      <div class="relative flex justify-center items-center h-[300px] shadow-lg">
         @php
           $category = $item->categoria();
         @endphp
@@ -88,17 +88,19 @@
   </div>
   <a href="{{ route('producto', $item->id) }}">
     <h2 id="h2Container"
-      class="text-base mt-4 text-center font-Inter_Medium tracking-tight  cortartexto tippy min-h-12 md:min-h-0"
+      class="text-base  text-center  text-ellipsis  truncate font-Inter_Medium tracking-tight  cortartexto tippy min-h-12 md:min-h-0 "
       title="{{ $item->producto }}">
 
       {{ mb_strimwidth($item->producto, 0, 30, '...') }}
     </h2>
     <div class="flex content-between flex-row gap-4 items-center justify-center font-Inter_Medium pb-4">
       @if ($item->descuento == 0)
-        <span class="text-[#006BF6] text-base font-bold">S/. {{ $item->precio }}</span>
+        <span class="text-[#006BF6] text-base font-bold">Precio Regular: S/. {{ $item->precio }}</span>
       @else
-        <span class="text-[#006BF6] text-base font-bold">S/. {{ $item->descuento }}</span>
-        <span class="text-sm text-[#15294C] opacity-60 line-through">S/. {{ $item->precio }}</span>
+        <div class="flex flex-col gap-2">
+          <span class="text-[#006BF6] text-base font-bold">Precio Promo: S/. {{ $item->descuento }}</span>
+          <span class="text-sm text-[#15294C] opacity-80 line-through">Precio Regular: S/. {{ $item->precio }}</span>
+        </div>
       @endif
     </div>
   </a>

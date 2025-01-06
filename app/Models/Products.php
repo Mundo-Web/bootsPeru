@@ -35,7 +35,8 @@ class Products extends Model
     'slug',
     'sku',
     'max_stock', 
-    'precio_reseller'
+    'precio_reseller',
+    'preciofiltro'
   ];
 
   public function categoria()

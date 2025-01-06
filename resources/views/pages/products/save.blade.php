@@ -132,7 +132,7 @@
                         @endif
                       </div>
                       <div>
-                        <div class="mb-4">
+                        {{-- <div class="mb-4">
                           <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             for="image_texture">Imagen de textura <span
                               class="text-red-500 font-bold">*</span></label>
@@ -144,7 +144,7 @@
                           </label>
                           <input data-id="input_img" class="hidden" id="image_texture" name="image_texture"
                             type="file" accept="image/*">
-                        </div>
+                        </div> --}}
 
                         <div class="mb-4">
                           <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -583,6 +583,12 @@
       return elemento
     }
     $('document').ready(function() {
+
+      let valorActual = $('#categoria_id').val();
+
+      // Desencadenar el evento change con el valor actual
+      $('#categoria_id').val(valorActual).change();
+
       let valorInput = $('[id="specifications"]').length / 2
 
       // tinymce.init({

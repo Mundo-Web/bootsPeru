@@ -22,7 +22,7 @@
     }
 
     .fixedWhastapp {
-      right: 128px !important;
+      right: 2vw !important;
     }
 
     .clase_table td {
@@ -42,6 +42,34 @@
 
     .blocker {
       z-index: 20;
+    }
+
+
+    @media (min-width: 600px) {
+      #offers .swiper-slide {
+        margin-right: 100px !important;
+      }
+
+      #offers .swiper-slide::before {
+        content: '+';
+        display: block;
+        position: absolute;
+        top: 50%;
+        right: -70px;
+        transform: translateY(-50%);
+        font-size: 32px;
+        font-weight: bolder;
+        color: #ffffff;
+        padding: 0px 12px;
+        background-color: #0d2e5e;
+        border-radius: 50%;
+        box-shadow: 0 0 5px rgba(0, 0, 0, .125);
+      }
+
+      #offers .swiper-slide:last-child::before {
+        content: none;
+      }
+
     }
   </style>
 
@@ -127,15 +155,22 @@
               <div class="flex flex-row gap-3 content-center items-center mt-4">
                 @if ($product->descuento == 0)
                   <div class="content-center flex flex-row gap-2 items-center">
-                    <span class="font-Inter_SemiBold text-3xl gap-2 text-[#006BF6]">S/
+                    <span class="font-Inter_SemiBold text-3xl gap-2 text-[#006BF6]">Precio Regular S/
                       {{ $product->precio }}</span>
                   </div>
                 @else
-                  <div class="content-center flex flex-row gap-2 items-center">
-                    <span class="font-Inter_SemiBold text-3xl gap-2 text-[#006BF6]">S/
-                      {{ $product->descuento }}</span>
-                    <span class="text-[#666666] font-Inter_Regular line-through text-sm">S/
-                      {{ $product->precio }}</span>
+                  <div class="content-start flex flex-col gap-2 ">
+                    <div>
+                      <span class="font-Inter_SemiBold text-2xl gap-2 text-[#006BF6]">Precio Promo: S/
+                        {{ $product->descuento }}</span>
+
+                    </div>
+                    <div>
+                      <span>Precio Regular</span>
+                      <span class="text-[#15294C] opacity-80 font-Inter_Regular line-through text-sm"> S/
+                        {{ $product->precio }}</span>
+                    </div>
+
                   </div>
                   @php
                     $descuento = round((($product->precio - $product->descuento) * 100) / $product->precio);
@@ -150,7 +185,7 @@
 
 
 
-            <div class="font-medium text-base font-Inter_Regular w-full mt-4 text-[#444]">
+            <div class="font-medium text-base font-Inter_Regular w-full mt-4 text-[#444] text-justify">
               {!! $product->description !!}
             </div>
           </div>
@@ -206,10 +241,10 @@
               <span class=""> Envio a Domicilio</span>
             </div>
             <div class="flex flex-row gap-2 items-center">
-              <i class="h-5 w-5 inline-block"
-                style="background-image: url('{{ asset('images/img/mail.png') }}'); background-size: contain; background-position: center; background-repeat: no-repeat;"></i>
-              <a href="https://api.whatsapp.com/send?phone={{ $general->whatsapp }}&text=Hola! Quería solicitar informacion para el producto  {{ $product->producto }}."
-                class="">Preguntar sobre este producto</a>
+              <img src="{{ asset('images/img/WhatsApp.png') }}" alt="whatsapp" class="w-8" />
+              <a href="https://api.whatsapp.com/send?phone={{ $general->whatsapp }}&text=Hola! Quería solicitar informacion para el producto  {{ $product->producto }}. 
+                "
+                target="_blank" class="">Preguntar sobre este producto</a>
             </div>
           </div>
 
@@ -228,11 +263,14 @@
                 </div>
               </div>
               <div class="xl:ml-8 flex flex-row gap-5 justify-start items-center">
-                <button id="btnAgregarCarritoPr" data-id="{{ $product->id }}"
-                  class="bg-[#0D2E5E] w-[286px] h-16  text-white text-center rounded-full font-Inter_SemiBold tracking-wide text-lg hover:bg-[#1E8E9E]">
-                  Agregar
-                  al Carrito
-                </button>
+                @if ($product->status == 1 && $product->visible == 1)
+                  <button id="btnAgregarCarritoPr" data-id="{{ $product->id }}"
+                    class="bg-[#0D2E5E] w-[286px] h-16  text-white text-center rounded-full font-Inter_SemiBold tracking-wide text-lg hover:bg-[#1E8E9E]">
+                    Agregar
+                    al Carrito
+                  </button>
+                @endif
+
                 @if (Auth::user() !== null)
                   <button
                     class=" @if ($isWhishList) bg-[#0D2E5E]  @else bg-[#99b9eb] @endif w-12 h-12 rounded-full text-white flex justify-center items-center hover:bg-[#1E8E9E]"
@@ -299,7 +337,7 @@
                 <div class="grid grid-cols-3 gap-3  mb-6">
                   <div class="col-span-3">
                     <div class="swiper productos-relacionados ">
-                      <div class="swiper-wrapper h-full">
+                      <div class="swiper-wrapper h-full" id="offers">
                         @foreach ($combo->products as $item)
                           <div class="swiper-slide w-full h-full col-span-1">
                             <div class="flex flex-col items-center justify-center col-span-1  shadow-lg py-2  pb-5">
@@ -357,21 +395,21 @@
           <h3 class="text-[34.7px] font-Inter_Medium "> ¿Qué dicen los clientes sobre nosotros?</h3>
           <div class="grid grid-cols-3 w-full gap-8 pt-16">
             @foreach ($testimonios->take(3) as $item)
-              <div class="flex flex-col bg-[#F7F7F7] col-span-1 p-12 gap-4">
+              <div class="flex flex-col bg-[#F7F7F7] col-span-1 p-12 gap-4 h-max min-h-[369px]">
                 <div class="flex items-center gap-4 pt-3">
                   <!-- Contenedor Flex para la imagen y el texto -->
                   <p class="font-Inter_Medium text-[24px] flex-1">{{ $item->name }}</p>
                   <!-- flex-1 hace que el texto ocupe el espacio disponible -->
                   <img src="{{ asset('images\svg\icons8-comillas-48.png') }}" alt=""
-                    class="w-10 h-10 rounded-full">
+                    class="w-10 h-10 rounded-full opacity-20">
                 </div>
                 <div class="min-h-[130px]">
-                  <p class="font-Inter_Medium text-[19px] pt-1 leading-8 ">
+                  <p class="font-Inter_Regular text-[19px] pt-1 leading-8  ">
                     {{ $item->testimonie }}
                   </p>
                 </div>
 
-                <div class="font-Inter_Bold text-[24px] w-5">
+                <div class="font-Inter_Bold text-[24px] w-full min-h-[72px]">
                   {{ $item->ocupation }}
                 </div>
                 <p class="text-[16px] font-Inter_Regular">Lima, Peru</p>
@@ -389,7 +427,7 @@
     var headerServices = new Swiper(".productos-relacionados", {
       slidesPerView: 4,
       spaceBetween: 10,
-      loop: true,
+      loop: false,
       centeredSlides: false,
       initialSlide: 0, // Empieza en el cuarto slide (índice 3) */
       /* pagination: {
@@ -408,8 +446,8 @@
       breakpoints: {
         0: {
           slidesPerView: 1,
-          centeredSlides: false,
-          loop: true,
+          centeredSlides: true,
+          loop: false,
         },
         420: {
           slidesPerView: 2,
@@ -458,23 +496,23 @@
   <script>
     // let articulosCarrito = [];
 
+    /* 
+        function deleteOnCarBtn(id, operacion) {
+          const prodRepetido = articulosCarrito.map(item => {
+            if (item.id === id && item.cantidad > 0) {
+              item.cantidad -= Number(1);
+              return item; // retorna el objeto actualizado 
+            } else {
+              return item; // retorna los objetos que no son duplicados 
+            }
 
-    function deleteOnCarBtn(id, operacion) {
-      const prodRepetido = articulosCarrito.map(item => {
-        if (item.id === id && item.cantidad > 0) {
-          item.cantidad -= Number(1);
-          return item; // retorna el objeto actualizado 
-        } else {
-          return item; // retorna los objetos que no son duplicados 
-        }
-
-      });
-      Local.set('carrito', articulosCarrito)
-      limpiarHTML()
-      PintarCarrito()
+          });
+          Local.set('carrito', articulosCarrito)
+          limpiarHTML()
+          PintarCarrito()
 
 
-    }
+        } */
 
     function calcularTotal() {
       let articulos = Local.get('carrito')
@@ -491,36 +529,30 @@
       })
       const suma = total.reduce((total, elemento) => total + elemento, 0);
 
-      $('#itemsTotal').text(`S/. ${suma} `)
+      $('#itemsTotal').text(`S/. ${suma.toFixed(2)} `)
 
     }
 
-    function addOnCarBtn(id, operacion) {
+    /*  function addOnCarBtn(id, operacion) {
 
-      const prodRepetido = articulosCarrito.map(item => {
-        if (item.id === id) {
-          item.cantidad += Number(1);
-          return item; // retorna el objeto actualizado 
-        } else {
-          return item; // retorna los objetos que no son duplicados 
-        }
+       const prodRepetido = articulosCarrito.map(item => {
+         if (item.id === id) {
+           item.cantidad += Number(1);
+           return item; // retorna el objeto actualizado 
+         } else {
+           return item; // retorna los objetos que no son duplicados 
+         }
 
-      });
-      Local.set('carrito', articulosCarrito)
-      // localStorage.setItem('carrito', JSON.stringify(articulosCarrito));
-      limpiarHTML()
-      PintarCarrito()
+       });
+       Local.set('carrito', articulosCarrito)
+       // localStorage.setItem('carrito', JSON.stringify(articulosCarrito));
+       limpiarHTML()
+       PintarCarrito()
 
 
-    }
+     } */
 
-    function deleteItem(id) {
-      articulosCarrito = articulosCarrito.filter(objeto => objeto.id !== id);
 
-      Local.set('carrito', articulosCarrito)
-      limpiarHTML()
-      PintarCarrito()
-    }
 
     var appUrl = <?php echo json_encode($url_env); ?>;
     $(document).ready(function() {
@@ -549,29 +581,38 @@
       })
       nombre += '</ul>'
 
-      let items = Local.get('carrito') ?? []
-      const index = items.findIndex(item => item.id == data.id)
+      let newcarrito
+      articulosCarrito = Local.get('carrito') ?? []
+
+
+      const index = articulosCarrito.findIndex(item => item.id == data.id && item.isCombo)
+
       if (index != -1) {
-        items = items.map(item => {
-          if (item.id == data.id && item.isCombo) {
+
+        articulosCarrito = articulosCarrito.map(item => {
+          if (item.isCombo && item.id == data.id) {
             item.nombre = nombre
             item.cantidad++
           }
           return item
         })
       } else {
-        items.push({
+
+        articulosCarrito = [...articulosCarrito, {
           "id": data.id,
           "isCombo": true,
           "producto": nombre,
           "descuento": data.descuento,
           "precio": data.precio,
-          "imagen": data.imagen ?? '/images/img/noimagen.jpg',
+          "imagen": data.imagen ? `${appUrl}${data.imagen}` : `${appUrl}/images/img/noimagen.jpg`,
           "cantidad": 1,
           "color": null
-        })
+        }]
+
       }
-      Local.set('carrito', items)
+
+
+      Local.set('carrito', articulosCarrito)
 
       limpiarHTML()
       PintarCarrito()
@@ -595,7 +636,7 @@
           product_id: '{{ $product->id }}'
         },
         success: function(response) {
-          console.log(response);
+
           // Cambiar el color del botón
 
           if (response.message === 'Producto agregado a la lista de deseos') {

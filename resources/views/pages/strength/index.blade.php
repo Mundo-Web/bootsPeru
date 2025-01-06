@@ -25,7 +25,7 @@
                 <th>Titulo </th>
                 <th>Descripcion</th>
                 <th>Icono</th>
-                <th>Imagen</th>
+
                 <th>Visible</th>
                 <th>Acciones</th>
               </tr>
@@ -35,10 +35,10 @@
               @foreach ($strength as $item)
                 <tr>
                   <td>{{ $item->titulo }}</td>
-                  <td>{{ $item->descripcion }}</td>
+                  <td>{!! Str::limit($item->descripcion, 100) !!}</td>
                   <td class="px-3 py-2"><img class="w-20" src="{{ asset($item->icono) }}" alt=""></td>
 
-                  <td class="px-3 py-2"><img class="w-20" src="{{ asset($item->imagen) }}" alt=""></td>
+
 
                   <td>
                     <form method="POST" action="">
@@ -82,7 +82,7 @@
                 <th>Titulo </th>
                 <th>Descripcion</th>
                 <th>Icono</th>
-                <th>Imagen</th>
+
                 <th>Visible</th>
                 <th>Acciones</th>
               </tr>
@@ -102,53 +102,53 @@
   $('document').ready(function() {
 
     new DataTable('#tabladatos', {
-            buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
-            layout: {
-                topStart: 'buttons'
-            },
-            language: {
-                "lengthMenu": "Mostrar _MENU_ registros",
-                "zeroRecords": "No se encontraron resultados",
-                "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-                "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-                "infoFiltered": "(filtrado de un total de _MAX_ registros)",
-                "sSearch": "Buscar:",
-                
-                 "sProcessing":"Procesando...",
-            },
-            buttons:[ 
-           
-            {
-                extend:    'excelHtml5',
-                text:      '<i class="fas fa-file-excel"></i> ',
-                titleAttr: 'Exportar a Excel',
-                className: 'btn btn-success',
-            },
-            {
-                extend:    'pdfHtml5',
-                text:      '<i class="fas fa-file-pdf"></i> ',
-                titleAttr: 'Exportar a PDF',
-            },
-            {
-                extend:    'csvHtml5',
-                text:      '<i class="fas fa-file-csv"></i> ',
-                titleAttr: 'Imprimir',
-                className: 'btn btn-info',
-            },
-            {
-                extend:    'print',
-                text:      '<i class="fa fa-print"></i> ',
-                titleAttr: 'Imprimir',
-                className: 'btn btn-info',
-            },
-            {
-                extend:    'copy',
-                text:      '<i class="fas fa-copy"></i> ',
-                titleAttr: 'Copiar',
-                className: 'btn btn-success',
-            },
-        ]
-        });
+      buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+      layout: {
+        topStart: 'buttons'
+      },
+      language: {
+        "lengthMenu": "Mostrar _MENU_ registros",
+        "zeroRecords": "No se encontraron resultados",
+        "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+        "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+        "infoFiltered": "(filtrado de un total de _MAX_ registros)",
+        "sSearch": "Buscar:",
+
+        "sProcessing": "Procesando...",
+      },
+      buttons: [
+
+        {
+          extend: 'excelHtml5',
+          text: '<i class="fas fa-file-excel"></i> ',
+          titleAttr: 'Exportar a Excel',
+          className: 'btn btn-success',
+        },
+        {
+          extend: 'pdfHtml5',
+          text: '<i class="fas fa-file-pdf"></i> ',
+          titleAttr: 'Exportar a PDF',
+        },
+        {
+          extend: 'csvHtml5',
+          text: '<i class="fas fa-file-csv"></i> ',
+          titleAttr: 'Imprimir',
+          className: 'btn btn-info',
+        },
+        {
+          extend: 'print',
+          text: '<i class="fa fa-print"></i> ',
+          titleAttr: 'Imprimir',
+          className: 'btn btn-info',
+        },
+        {
+          extend: 'copy',
+          text: '<i class="fas fa-copy"></i> ',
+          titleAttr: 'Copiar',
+          className: 'btn btn-success',
+        },
+      ]
+    });
 
     $(".btn_swithc").on("change", function() {
 

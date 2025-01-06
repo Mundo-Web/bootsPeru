@@ -79,7 +79,7 @@ class IndexController extends Controller
     $popups = Popup::where('status', '=', 1)->where('visible', '=', 1)->get();
 
     $general = General::all();
-    $benefit = Strength::where('status', '=', 1)->take(3)->get();
+    $benefit = Strength::where('status', '=', 1)->take(4)->get();
     $faqs = Faqs::where('status', '=', 1)->where('visible', '=', 1)->get();
     $testimonie = Testimony::where('status', '=', 1)->where('visible', '=', 1)->get();
     $slider = Slider::where('status', '=', 1)->where('visible', '=', 1)->get();
@@ -170,10 +170,11 @@ class IndexController extends Controller
       'id_cat' => $id_cat
     ])->rootView('app');
   }
-  public function nosotros(){
+  public function nosotros()
+  {
     $nosotros = AboutUs::all();
-    $benefit = Strength::where('status', '=', 1)->take(3)->get();
-    return view('public.nosotros' , compact('nosotros','benefit'));
+    $benefit = Strength::where('status', '=', 1)->take(4)->get();
+    return view('public.nosotros', compact('nosotros', 'benefit'));
   }
 
 
@@ -244,6 +245,7 @@ class IndexController extends Controller
     //
     $detalleUsuario = [];
     $user = auth()->user();
+    $datosgenerales = General::first();
 
     if (!is_null($user)) {
       $detalleUsuario = UserDetails::where('email', $user->email)->get();
@@ -254,25 +256,34 @@ class IndexController extends Controller
       'departments.id AS id',
       'departments.description AS description',
     ])
-      ->join('districts', 'districts.id', 'prices.distrito_id')
-      ->join('provinces', 'provinces.id', 'districts.province_id')
+      ->join('districts', 'districts.id','=',  'prices.distrito_id')
+      ->join('provinces', 'provinces.id','=',  'districts.province_id')
       ->join('departments', 'departments.id', 'provinces.department_id')
       ->where('departments.active', 1)
       ->where('status', 1)
       ->groupBy('id', 'description')
       ->get();
 
+      $departments = $departments->map(function ($item) {
+        $item->id = (string) $item->id;
+        return $item;
+    });
+    
+    
+
     $provinces = Price::select([
       'provinces.id AS id',
       'provinces.description AS description',
       'provinces.department_id AS department_id'
     ])
-      ->join('districts', 'districts.id', 'prices.distrito_id')
-      ->join('provinces', 'provinces.id', 'districts.province_id')
+      ->join('districts', 'districts.id','=', 'prices.distrito_id')
+      ->join('provinces', 'provinces.id','=', 'districts.province_id')
       ->where('provinces.active', 1)
+      ->where('status', 1)
       ->groupBy('id', 'description', 'department_id')
       ->get();
-
+      
+     
     $districts = Price::select([
       'districts.id AS id',
       'districts.description AS description',
@@ -282,6 +293,7 @@ class IndexController extends Controller
     ])
       ->join('districts', 'districts.id', 'prices.distrito_id')
       ->where('districts.active', 1)
+      ->where('status', 1)
       ->groupBy('id', 'description', 'province_id', 'price', 'price_id')
       ->get();
 
@@ -306,14 +318,17 @@ class IndexController extends Controller
         'price.district.province',
         'price.district.province.department'
       ])
+        ->join('prices', 'prices.id', 'addresses.price_id')
         ->where('email', $user->email)
+        ->where('prices.status', 1)
         ->get();
       $hasDefaultAddress = Address::where('email', $user->email)
         ->where('isDefault', true)
         ->exists();
     }
+    
 
-    return view('public.checkout_pago', compact('url_env', 'districts', 'provinces', 'departments', 'detalleUsuario', 'categorias', 'destacados', 'culqi_public_key', 'addresses', 'hasDefaultAddress'));
+    return view('public.checkout_pago', compact('url_env', 'datosgenerales',  'districts', 'provinces', 'departments', 'detalleUsuario', 'categorias', 'destacados', 'culqi_public_key', 'addresses', 'hasDefaultAddress'));
   }
 
   public function procesarPago(Request $request)
@@ -479,6 +494,8 @@ class IndexController extends Controller
   public function actualizarPerfil(Request $request)
   {
 
+    
+
     $name = $request->name;
     $lastname = $request->lastname;
     $email = $request->email;
@@ -554,10 +571,21 @@ class IndexController extends Controller
   public function searchProduct(Request $request)
   {
     $query = $request->input('query');
+  /*   $instance->where(function ($query) use ($request) {
+      dxDataGrid::filter($query, $request->filter ?? []);
+    }); */
     $resultados = Products::select('products.*')
-      ->where('producto', 'like', "%$query%")
+      ->where(function ($sql) use ($query) {
+        $words = explode(' ', $query);
+        foreach ($words as $word) {
+          $sql->where('producto', 'like', '%' . $word . '%');
+        }
+        
+      })
       ->join('categories', 'categories.id', 'products.categoria_id')
       ->where('categories.visible', 1)
+      ->where('products.status', true)
+      ->where('products.visible', true)
       ->get();
 
 
@@ -573,6 +601,8 @@ class IndexController extends Controller
       'price.district.province',
       'price.district.province.department'
     ])
+      ->join('prices', 'prices.id', 'addresses.price_id')
+      ->where('prices.status', 1)
       ->where('email', $user->email)
       ->get();
 
@@ -623,17 +653,19 @@ class IndexController extends Controller
   public function producto(string $id)
   {
 
-    
-    $is_reseller = false; 
-    if(Auth::check()){
-     $user = Auth::user();
-     $is_reseller = $user->hasRole('Reseller');
-     
-   }
+
+    $is_reseller = false;
+    if (Auth::check()) {
+      $user = Auth::user();
+      $is_reseller = $user->hasRole('Reseller');
+    }
 
     // $productos = Products::where('id', '=', $id)->first();
     // $especificaciones = Specifications::where('product_id', '=', $id)->get();
     $product = Products::findOrFail($id);
+    if ($product->status == 0 || $product->visible == 0) {
+      return redirect()->route('Catalogo.jsx');
+    }
     $especificaciones = Specifications::where('product_id', '=', $id)
       ->where(function ($query) {
         $query->whereNotNull('tittle')
@@ -858,7 +890,7 @@ class IndexController extends Controller
                 height: 800px;
                 margin: 0 auto;
                 text-align: center;
-                background-image:url(' . $appUrl . 'images/Ellipse_18.png),  url(' . $appUrl . 'images/Tabpanel.png);
+                background-image:url(' . $appUrl . '/images/Ellipse_18.png),  url(' . $appUrl . '/images/Tabpanel.png);
                 background-repeat: no-repeat, no-repeat;
                 background-position: center bottom , center bottom;;
                 background-size: fit , fit;
@@ -876,7 +908,7 @@ class IndexController extends Controller
                       margin: 40px;
                     "
                   >
-                    <img src="' . $appUrl . 'images/Group1.png" alt="mundo web"  style="
+                    <img src="' . $appUrl . '/images/Group1.png" alt="Boost_Peru"  style="
                     margin: auto;
                   "/>
                   </th>
@@ -982,6 +1014,8 @@ class IndexController extends Controller
         </body>
       </html>
       ';
+      $mail->addBCC('atencionalcliente@boostperu.com.pe', 'Atencion al cliente',);
+      $mail->addBCC('jefecomercial@boostperu.com.pe', 'Jefe Comercial',);
       $mail->isHTML(true);
       $mail->send();
     } catch (\Throwable $th) {
@@ -989,7 +1023,7 @@ class IndexController extends Controller
     }
   }
 
-  private function envioCorreoCompra($data)
+  public function envioCorreoCompra($data)
   {
 
     $appUrl = env('APP_URL');
@@ -1022,10 +1056,10 @@ class IndexController extends Controller
             <table
               style="
                 width: 600px;
-                height: 700px;
+                height: 900px;
                 margin: 0 auto;
                 text-align: center;
-                 background-image:url(' . $appUrl . 'images/Ellipse_18.png),  url(' . $appUrl . 'images/Tabpanel.png);
+                 background-image:url(' . $appUrl . '/images/Ellipse_18.png),  url(' . $appUrl . '/images/Tabpanel.png);
                 background-repeat: no-repeat, no-repeat;
                 background-position: center bottom , center bottom;;
                 background-size: fit , fit;
@@ -1043,7 +1077,7 @@ class IndexController extends Controller
                       margin: 40px;
                     "
                   >
-                     <img src="' . $appUrl . 'images/Group1.png" alt="mundo web"  style="
+                     <img src="' . $appUrl . '/images/Group1.png" alt="Boost_Peru"  style="
                     margin: auto;
                   "/>
                   </th>
@@ -1054,7 +1088,7 @@ class IndexController extends Controller
                   <td style="height: 10px">
                     <p
                       style="
-                        color: #ffffff;
+                        color: #4d86c3;
                         font-weight: 500;
                         font-size: 18px;
                         text-align: center;
@@ -1072,7 +1106,7 @@ class IndexController extends Controller
                   <td style="height: 10px">
                     <p
                       style="
-                        color: #ffffff;
+                        color: #4d86c3;
                         font-size: 40px;
                         font-family: Montserrat, sans-serif;
                         line-height: 60px;
@@ -1094,7 +1128,7 @@ class IndexController extends Controller
                       "
                     >
                       !Gracias
-                      <span style="color: #ffffff">por escribirnos!</span>
+                      <span style="color: #4d86c3">por tu Compra!</span>
                     </p>
                   </td>
                 </tr>
@@ -1102,7 +1136,7 @@ class IndexController extends Controller
                   <td style="height: 10px">
                     <p
                       style="
-                        color: #ffffff;
+                        color: #4d86c3;
                         font-weight: 500;
                         font-size: 18px;
                         text-align: center;
@@ -1112,7 +1146,7 @@ class IndexController extends Controller
                         line-height: 30px;
                       "
                     >
-                      En breve estaremos comunicandonos contigo.
+                      En breve momentos estaremos procesando tu pedido.
                     </p>
                   </td>
                 </tr>
@@ -1149,6 +1183,15 @@ class IndexController extends Controller
         </body>
       </html>
       ';
+      /* $mail->addBCC('atencionalcliente@boostperu.com.pe', 'Atencion al cliente', );
+      $mail->addBCC('jefecomercial@boostperu.com.pe', 'Jefe Comercial', ); */
+
+      $bccs = explode(',', env('MAIL_DEFAULT_BCC', ''));
+      foreach ($bccs as $bcc) {
+        $mail->addBCC($bcc);
+      }
+
+      // $mail->addBCC('carlosecolina89@gmail.com');
       $mail->isHTML(true);
       $mail->send();
     } catch (\Throwable $th) {

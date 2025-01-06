@@ -1,10 +1,27 @@
 <footer class="font-Inter_Medium bg-[#FFFFFF] mt-5">
   <style>
-    #modalPoliticasDev #modalTerminosCondiciones {
+    #modalPoliticasDev #modalTerminosCondiciones #modallinkPoliticasDatos {
+
+
+
+      ;
       height: 70vh;
       /* Establece la altura del modal al 70% de la altura de la ventana gráfica */
       overflow-y: auto;
       /* Permite el desplazamiento vertical si el contenido excede la altura del modal */
+    }
+
+    #modalPoliticasDev .prose,
+    #modalTerminosCondiciones .prose,
+    #modallinkPoliticasDatos .prose {
+      max-width: 100%;
+      text-align: justify;
+
+    }
+
+    .prose * {
+      margin-bottom: 0% !important;
+      margin-top: 0% !important;
     }
   </style>
 
@@ -20,32 +37,32 @@
 
       <div class="flex flex-row gap-4 text-[#333333] mt-6 pt-2">
         @if ($datosgenerales->facebook)
-          <a href="{{ $datosgenerales->facebook }}">
+          <a href="{{ $datosgenerales->facebook }}" target="_blank">
             <i class="fa-brands fa-facebook fa-2xl"></i>
           </a>
         @endif
         @if ($datosgenerales->instagram)
-          <a href="{{ $datosgenerales->instagram }}">
+          <a href="{{ $datosgenerales->instagram }}" target="_blank">
             <i class="fa-brands fa-instagram fa-2xl"></i>
           </a>
         @endif
         @if ($datosgenerales->linkedin)
-          <a href="{{ $datosgenerales->linkedin }}">
+          <a href="{{ $datosgenerales->linkedin }}" target="_blank">
             <i class="fa-brands fa-linkedin fa-2xl"></i>
           </a>
         @endif
         @if ($datosgenerales->tiktok)
-          <a href="{{ $datosgenerales->tiktok }}">
+          <a href="{{ $datosgenerales->tiktok }}" target="_blank">
             <i class="fa-brands fa-tiktok fa-2xl"></i>
           </a>
         @endif
         @if ($datosgenerales->twitter)
-          <a href="{{ $datosgenerales->twitter }}">
+          <a href="{{ $datosgenerales->twitter }}" target="_blank">
             <i class="fa-brands fa-twitter fa-2xl"></i>
           </a>
         @endif
         @if ($datosgenerales->youtube)
-          <a href="{{ $datosgenerales->youtube }}">
+          <a href="{{ $datosgenerales->youtube }}" target="_blank">
             <i class="fa-brands fa-youtube fa-2xl"></i>
           </a>
         @endif
@@ -76,7 +93,7 @@
       <div class="relative bg-[#F8F8F8] rounded-full p-2 px-4">
         <form id="subsEmail" class="flex">
           @csrf
-          <input type="email" name="email" id="email" placeholder="Déjanos tu e-mail"
+          <input type="email" name="email" id="emailFooter" placeholder="Déjanos tu e-mail"
             class="w-full border-none focus:border-transparent ring-0 focus:ring-0 p-2 bg-[#F8F8F8]" />
           <input type="text" name="tipo" value="Inscripción" hidden />
           <button type="submit" class=" text-[#444444] p-2 font-semibold">Enviar</button>
@@ -110,7 +127,7 @@
     <!-- Modal body -->
     <div class="p-4 ">
       <h1 class="font-Inter_SemiBold">Terminos y condiciones</h1>
-      <p class="font-Inter_Regular p-2 prose">{!! $terminos->content ?? '' !!}</p>
+      <p class="font-Inter_Regular  prose grid grid-cols-1">{!! $terminos->content ?? '' !!}</p>
     </div>
   </div>
   <div id="modalPoliticasDev" class="modal" style="max-width: 900px !important; width: 100% !important;  ">
@@ -118,7 +135,7 @@
     <div class="p-4 ">
       <h1 class="font-Inter_SemiBold">Politicas de devolucion</h1>
 
-      <p class="font-Inter_Regular p-2">{!! $politicas->content ?? '' !!}</p>
+      <p class="font-Inter_Regular  prose grid grid-cols-1 ">{!! $politicas->content ?? '' !!}</p>
 
 
     </div>
@@ -128,7 +145,7 @@
     <div class="p-4 ">
       <h1 class="font-Inter_SemiBold">Politicas de Datos</h1>
 
-      <p class="font-Inter_Regular  ">{!! $politicaDatos->content ?? '' !!}</p>
+      <p class="font-Inter_Regular  prose grid grid-cols-1">{!! $politicaDatos->content ?? '' !!}</p>
 
 
     </div>
@@ -211,7 +228,7 @@
       });
 
 
-      if (!validarEmail($('#email').val())) {
+      if (!validarEmail($('#emailFooter').val())) {
         return;
       };
       $.ajax({

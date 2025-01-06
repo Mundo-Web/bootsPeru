@@ -6,14 +6,14 @@ const ProductCard = ({ item, width, bgcolor, is_reseller }) => {
   const [showAmbiente, setShowAmbiente] = useState(false);
   const category = item.category;
 
-  console.log('item', item)
+
   return (
     <div
       onMouseEnter={() => setShowAmbiente(true)}
       onMouseLeave={() => setShowAmbiente(false)}
       className={`flex flex-col relative w-full md:${width} ${bgcolor}`} data-aos="zoom-in-left"
     >
-      <div className={`${bgcolor} product_container basis-4/5 flex flex-col justify-center relative`}>
+      <div className={`${bgcolor} product_container basis-4/5 flex flex-col justify-center relative border`}>
         <div className="absolute top-2 left-2 w-max">
           {item.tags?.map((tag) => (
             <div className="px-4 mb-1" key={tag.id}>
@@ -37,7 +37,7 @@ const ProductCard = ({ item, width, bgcolor, is_reseller }) => {
           }
         </div>
         <div>
-          <div className="relative flex justify-center items-center h-[300px]">
+          <div className="relative flex justify-center items-center h-max">
             <img
               style={{
                 opacity: !item.imagen_ambiente || !showAmbiente ? '1' : '0',
@@ -47,7 +47,7 @@ const ProductCard = ({ item, width, bgcolor, is_reseller }) => {
               src={item.imagen ? `/${item.imagen}` : '/images/img/noimagen.jpg'}
               alt={item.name}
               onError={(e) => e.target.src = '/images/img/noimagen.jpg'}
-              className={`transition ease-out duration-300 transform w-full h-[300px] object-${category.fit} absolute inset-0`}
+              className={`transition ease-out duration-300 transform w-full aspect-square object-cover inset-0`}
             />
 
             {item.imagen_ambiente && (
@@ -59,7 +59,7 @@ const ProductCard = ({ item, width, bgcolor, is_reseller }) => {
                 src={`/${item.imagen_ambiente}`}
                 alt={item.name}
                 onError={(e) => e.target.src = '/images/img/noimagen.jpg'}
-                className="transition ease-out duration-300 transform w-full h-[300px] object-cover absolute inset-0"
+                className="transition ease-out duration-300 transform w-full aspect-square object-cover absolute inset-0"
               />
             )}
           </div>
@@ -88,7 +88,7 @@ const ProductCard = ({ item, width, bgcolor, is_reseller }) => {
       </div>
       <a href={`/producto/${item.id}`} className='p-2'>
         <Tippy content={item.producto}>
-          <h2 className="block text-[17px] text-center overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 2, textOverflow: 'ellipsis', WebkitBoxOrient: 'vertical', height: '51px' }}>
+          <h2 className="block text-[17px] text-center overflow-hidden font-bold" style={{ display: '-webkit-box', WebkitLineClamp: 2, textOverflow: 'ellipsis', WebkitBoxOrient: 'vertical', height: '51px' }}>
             {item.producto}
           </h2>
         </Tippy>
@@ -108,10 +108,25 @@ const ProductCard = ({ item, width, bgcolor, is_reseller }) => {
               </div></>
 
             ) :
-            (<div className="flex content-between flex-row gap-4 items-center justify-center">
-              <span className="text-[#006BF6] text-[16.45px] font-bold">S/. {item.descuento > 0 ? item.descuento : item.precio}</span>
+            (<div className="w-full flex content-between flex-row gap-4 items-center justify-center text-center">
+              <span className="text-[#006BF6] text-[16.45px] font-bold">{item.descuento > 0 ? <div className='flex flex-col justify-center items-center'>
+                <span className='text-sm font-light'>Precio Promo</span>
+                <span className=''>S/. {item.descuento}</span>
+              </div> : <div className='flex flex-col justify-center items-center'>
+                <span className='text-sm font-light'>Precio Regular</span>
+                <span className='font-bold'>S/. {item.precio}</span>
+              </div>
+              }
+              </span>
               {item.descuento > 0 && (
-                <span className="text-sm text-[#15294C] opacity-60 line-through">S/. {item.precio}</span>
+                <>
+                  <div className='flex flex-col items-center'>
+                    <span className='text-sm text-[#15294C] font-light'>Precio Regular</span>
+                    <span className=" text-[#15294C] opacity-80 line-through font-bold"> S/. {item.precio}</span>
+                  </div>
+
+
+                </>
               )}
             </div>)
         }

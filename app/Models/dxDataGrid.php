@@ -40,7 +40,8 @@ class dxDataGrid
             }
         } else {
             $selector = $dxFilter[0];
-            if ($flat) $selector = \str_replace('.', '__', $dxFilter[0]);
+            // if ($flat) $selector = \str_replace('.', '__', $dxFilter[0]);
+            if ($flat) $selector =$dxFilter[0];
             switch ($dxFilter[1]) {
                 case 'contains':
                     $builder->where($selector, 'like', "%{$dxFilter[2]}%");

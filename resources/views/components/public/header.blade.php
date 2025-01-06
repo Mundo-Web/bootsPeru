@@ -132,34 +132,34 @@
             @if (count($categorias) > 0)
 
 
-              @foreach ($categorias as $item)
-                <a href="/catalogo/{{ $item->id }}"
-                  class="text-[#272727] flex items-center py-2 px-3 hover:opacity-75 transition-opacity duration-300"
-                  @click="openCategories[{{ $item->id }}] = !openCategories[{{ $item->id }}]">
-                  <span>{{ $item->name }}</span>
-                  {{--  <svg class="w-5 h-5 transform transition-transform"
-                            :class="{ 'rotate-180': openCategories[{{ $item->id }}] }" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
-                            </path>
-                          </svg> --}}
-                </a>
+              <div x-data="{ openCategories: {} }">
+                @foreach ($categorias as $item)
+                  <div
+                    class="text-[#272727] flex items-center py-2 px-3 hover:opacity-75 transition-opacity duration-300"
+                    @click="openCategories[{{ $item->id }}] = !openCategories[{{ $item->id }}]">
+                    <span>{{ $item->name }}</span>
+                    <svg class="w-5 h-5 transform transition-transform"
+                      :class="{ 'rotate-180': openCategories[{{ $item->id }}] }" fill="none"
+                      stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
 
-                {{-- <div x-show="openCategories[{{ $item->id }}]"
-                        class="p-4 border border-t-0 border-gray-200 space-y-4">
-                        @foreach ($item->subcategories as $subitem)
-                          <label for="item-category-{{ $subitem->id }}"
-                            class="text-custom-border flex flex-row gap-2 items-center cursor-pointer">
-                            <a href="/catalogo/{{ $subitem->id }}" id="item-category-{{ $subitem->id }}"
-                              name="category"
-                              class=" rounded-sm border-none text-[#272727] flex items-center py-2 px-3 hover:opacity-75 transition-opacity duration-300"
-                              value="{{ $subitem->id }}">
-                              {{ $subitem->name }}
-                            </a>
-                          </label>
-                        @endforeach
-                      </div> --}}
-              @endforeach
+                  <div x-show="openCategories[{{ $item->id }}]" class="p-2  border-t-0 border-gray-200 ">
+                    @foreach ($item->subcategories as $subitem)
+                      <label for="item-category-{{ $subitem->id }}"
+                        class="text-custom-border flex flex-row gap-2 items-center cursor-pointer">
+                        <a href="/catalogo?subcategoria={{ $subitem->id }}" id="item-category-{{ $subitem->id }}"
+                          name="category"
+                          class="rounded-sm border-none text-[#272727] flex items-center py-2 px-3 hover:opacity-75 transition-opacity duration-300"
+                          value="{{ $subitem->id }}">
+                          {{ $subitem->name }}
+                        </a>
+                      </label>
+                    @endforeach
+                  </div>
+                @endforeach
+              </div>
 
             @endif
           </li>
@@ -218,16 +218,28 @@
   @foreach ($datosgenerales as $item)
     <div
       class="bg-[#006BF6] h-[50px] flex lg:justify-between justify-center w-full px-[5%] xl:px-[8%] py-3 text-base items-center">
-      <div class="text-white font-Inter_Regular text-[17px] text-start flex gap-3">
-        <h3>
-          {{ $item->cellphone }}</h3>
+      <a class="hidden md:flex text-white font-Inter_Regular text-[17px] text-start  gap-3"
+        href="https://api.whatsapp.com/send?phone={{ $item->cellphone }}&text={{ $item->mensaje_whatsapp }}"
+        target="_blank">
+
+
+
+        <div class="flex flex-row gap-4 items-center">
+          <img src="{{ asset('images/img/WhatsApp.png') }}" alt="whatsapp" class="w-8" />
+          <h3>
+
+            {{ $item->cellphone }}
+          </h3>
+        </div>
+
+
 
         {{-- <div>|</div>
         <a href="#">Direccion</a> --}}
 
-      </div>
-      <h3 class="text-white font-Inter_Regular  text-center hidden lg:flex">
-        Cuéntale a un amigo sobre Boost y consigue un 20% de descuento *
+      </a>
+      <h3 class="text-white font-Inter_Regular  text-center  lg:flex">
+        {{ $datosgenerales[0]->cintillo }}
       </h3>
       <div class="text-white font-Inter_Regular  text-end hidden lg:flex">
         @if (Auth::user() == null)
@@ -246,22 +258,23 @@
           alt="menu hamburguesa" onclick="show()" />
       </div>
 
-      <div class="w-auto">
+      <div class="w-auto min-w-[110px]">
         <a href="#">
-          <img id="logo-boostperu" class="w-[170px] " {{-- public\images\svg\LOGO2.png --}}
-            src="{{ asset($isIndex ? 'images/svg/LOGO2.png' : 'images/svg/LOGO2.png') }}" alt="boostperu" />
+          <img id="logo-boostperu" class="w-[170px]  " {{-- public\images\svg\LOGO2.png --}}
+            src="{{ asset($isIndex ? 'images/svg/LogoBoost2.svg' : 'images/svg/LogoBoost2.svg') }}"
+            alt="boostperu" />
         </a>
       </div>
 
       <div class="hidden lg:flex items-center justify-center ">
         <div>
           <nav id="menu-items"
-            class=" text-[#333] text-base font-Inter_Medium flex gap-5 xl:gap-10 items-center justify-center "
+            class=" text-[#333] text-base font-Inter_Medium flex gap-5 xl:gap-6 items-center justify-center "
             x-data="{ openCatalogo: false, openSubMenu: null }">
-            <a href="/" class="font-medium hover:opacity-75 ">
+            <a href="/" class="font-medium hover:opacity-75 other-class">
               <span class="underline-this">INICIO</span>
             </a>
-            <a href="/nosotros" class="font-medium hover:opacity-75 ">
+            <a href="/nosotros" class="font-medium hover:opacity-75 other-class">
               <span class="underline-this">NOSOTROS</span>
             </a>
 
@@ -271,25 +284,26 @@
 
             </a>
 
-            @if ($offerExists)
-              <a href="{{ route('Ofertas.jsx') }}" class="font-medium hover:opacity-75">
-                <span class="underline-this">OFERTAS</span>
-              </a>
-            @endif
+
 
             @if ($blog > 0)
-              <a href="/blog/0" class="font-medium hover:opacity-75 ">
+              <a href="/blog/0" class="font-medium hover:opacity-75 other-class">
                 <span class="underline-this">BLOG </span>
               </a>
             @endif
 
 
-            <a href="/contacto" class="font-medium hover:opacity-75  ">
+            <a href="/contacto" class="font-medium hover:opacity-75  other-class">
               <span class="underline-this">CONTACTO</span>
             </a>
+            @if ($offerExists)
+              <a href="{{ route('Ofertas.jsx') }}" class="font-medium hover:opacity-75 other-class">
+                <span class="underline-this">OFERTAS</span>
+              </a>
+            @endif
             @if ($tags->count() > 0)
               @foreach ($tags as $item)
-                <a href="/catalogo?tag={{ $item->id }}" class="font-medium hover:opacity-75    "
+                <a href="/catalogo?tag={{ $item->id }}" class="font-medium hover:opacity-75    other-class"
                   style="color: {{ $item->color }}">
                   <span class="underline-this  ">
                     {{ $item->name }} </span>
@@ -313,7 +327,8 @@
               @click.prevent="open = !open" :aria-expanded="open">
               <div class="flex items-center truncate">
                 <span id="username"
-                  class="truncate ml-2 text-sm font-medium dark:text-slate-300 group-hover:opacity-75 dark:group-hover:text-slate-200 text-[#272727] ">{{ Auth::user()->name }}</span>
+                  class="truncate ml-2 text-sm font-medium dark:text-slate-300 group-hover:opacity-75 dark:group-hover:text-slate-200 text-[#272727] ">
+                  {{ explode(' ', Auth::user()->name)[0] }}</span>
                 <svg class="w-3 h-3 shrink-0 ml-1 fill-current text-slate-400" viewBox="0 0 12 12">
                   <path d="M5.9 11.4L.5 6l1.4-1.4 4 4 4-4L11.3 6z" />
                 </svg>
@@ -346,7 +361,7 @@
             <span id="itemsCount" class="text-white"></span>
           </div> --}}
 
-        <div class="relative inline-block cursor-pointer justify-center ">
+        <div class="relative inline-block cursor-pointer justify-center min-w-7">
           <button onclick="openSearch()" class="flex justify-center items-center">
             <img src="{{ asset('images/svg/search_boost.svg') }}"
               class="bg-white rounded-lg max-w-full h-auto cursor-pointer" />
@@ -355,7 +370,7 @@
         </div>
 
 
-        <div class="flex justify-center items-center">
+        <div class="flex justify-center items-center min-w-[38px]">
           <div id="open-cart" class="relative inline-block cursor-pointer pr-3">
             <span id="itemsCount"
               class="bg-[#EB5D2C] text-xs font-medium text-white text-center px-[7px] py-[2px]  rounded-full absolute bottom-0 right-0 ml-3">0</span>
@@ -370,14 +385,14 @@
     </div>
   </div>
 
-  {{--  <div class="flex justify-end relative">
+  <div class="flex justify-end relative">
     <div class="fixed bottom-[36px] z-[10] right-[128px] md:right-[25px] fixedWhastapp">
       <a href="https://api.whatsapp.com/send?phone={{ $datosgenerales[0]->whatsapp }}&text={{ $datosgenerales[0]->mensaje_whatsapp }}"
         target="_blank" class="">
         <img src="{{ asset('images/img/WhatsApp.png') }}" alt="whatsapp" class="w-20" />
       </a>
     </div>
-  </div> --}}
+  </div>
 
   <div id="myOverlay" class="overlay" style="z-index: 200;">
     <span class="closebtn" onclick="closeSearch()">×</span>
@@ -427,6 +442,7 @@
 
 <script>
   let clockSearch;
+  let ajaxRequest;
 
   function openSearch() {
     document.getElementById("myOverlay").style.display = "block";
@@ -444,24 +460,32 @@
 
   $('#buscarproducto').keyup(function() {
 
-    clearTimeout(clockSearch);
+    // clearTimeout(clockSearch);
     var query = $(this).val().trim();
 
     if (query !== '') {
-      clockSearch = setTimeout(() => {
-        $.ajax({
-          url: '{{ route('buscar') }}',
-          method: 'GET',
-          data: {
-            query: query
-          },
-          success: function(data) {
-            var resultsHtml = '';
-            var url = '{{ asset('') }}';
-            data.forEach(function(result) {
-              const price = Number(result.precio) || 0
-              const discount = Number(result.descuento) || 0
-              resultsHtml += `<a href="/producto/${result.id}">
+      // clockSearch = setTimeout(() => {
+      if (ajaxRequest) {
+        ajaxRequest.abort();
+      }
+
+      ajaxRequest = $.ajax({
+        url: '{{ route('buscar') }}',
+        method: 'GET',
+        data: {
+          query: query
+        },
+        success: function(data) {
+          var resultsHtml = '';
+          var url = '{{ asset('') }}';
+          if (data.length == 0) {
+            resultsHtml =
+              '<div class="w-full flex flex-row py-3 px-5 hover:bg-slate-200"><p class="text-center">No se encontraron resultados</p></div>';
+          }
+          data.forEach(function(result) {
+            const price = Number(result.precio) || 0
+            const discount = Number(result.descuento) || 0
+            resultsHtml += `<a href="/producto/${result.id}">
               <div class="w-full flex flex-row py-3 px-5 hover:bg-slate-200">
                 <div class="w-[10%]">
                   <img class="w-14 rounded-md" src="${url}${result.imagen}" onerror="imagenError(this)" />
@@ -476,13 +500,13 @@
                 </div>
               </div>
             </a>`;
-            });
+          });
 
-            $('#resultados').html(resultsHtml);
-          }
-        });
+          $('#resultados').html(resultsHtml);
+        }
+      });
 
-      }, 300);
+      // }, 300);
 
     } else {
       $('#resultados').empty();
@@ -563,44 +587,64 @@
   var articulosCarrito = []
   articulosCarrito = Local.get('carrito') || [];
 
-  function addOnCarBtn(id, operacion) {
+  function addOnCarBtn(id, isCombo) {
+    let prodRepetido = articulosCarrito.map(item => {
+      if (item.id === id && item.isCombo == isCombo) {
 
-    const prodRepetido = articulosCarrito.map(item => {
-      if (item.id === id) {
-        item.cantidad += Number(1);
-        return item; // retorna el objeto actualizado 
-      } else {
-        return item; // retorna los objetos que no son duplicados 
+        item.cantidad += 1;
       }
-
+      return item;
     });
-    Local.set('carrito', articulosCarrito)
-    // localStorage.setItem('carrito', JSON.stringify(articulosCarrito));
-    limpiarHTML()
-    PintarCarrito()
 
-
+    Local.set('carrito', articulosCarrito);
+    limpiarHTML();
+    PintarCarrito();
   }
 
-  function deleteOnCarBtn(id, operacion) {
-    const prodRepetido = articulosCarrito.map(item => {
-      if (item.id === id && item.cantidad > 0) {
-        item.cantidad -= Number(1);
-        return item; // retorna el objeto actualizado 
-      } else {
-        return item; // retorna los objetos que no son duplicados 
+  function deleteOnCarBtn(id, isCombo) {
+    let prodRepetido = articulosCarrito.map(item => {
+      if (item.id === id && item.isCombo == isCombo && item.cantidad > 0) {
+
+        item.cantidad -= 1;
       }
-
+      return item;
     });
-    Local.set('carrito', articulosCarrito)
-    limpiarHTML()
-    PintarCarrito()
 
-
+    Local.set('carrito', articulosCarrito);
+    limpiarHTML();
+    PintarCarrito();
   }
 
-  function deleteItem(id) {
-    articulosCarrito = articulosCarrito.filter(objeto => objeto.id !== id);
+  function deleteItem(id, isCombo) {
+
+    let idCount = {};
+    let duplicates = [];
+    articulosCarrito.forEach(item => {
+      if (idCount[item.id]) {
+        idCount[item.id]++;
+      } else {
+        idCount[item.id] = 1;
+      }
+    });
+
+    for (let id in idCount) {
+      if (idCount[id] > 1) {
+        duplicates.push(id);
+      }
+    }
+
+    if (duplicates.length > 0) {
+      console.log('Duplicate IDs found:', duplicates);
+      let index = articulosCarrito.findIndex(item => item.id === id && item.isCombo == isCombo);
+      if (index > -1) {
+        articulosCarrito.splice(index, 1);
+      }
+    } else {
+      articulosCarrito = articulosCarrito.filter(objeto => objeto.id !== id);
+
+    }
+
+    // return
 
     Local.set('carrito', articulosCarrito)
     limpiarHTML()
@@ -616,12 +660,13 @@
 
   }
   var appUrl = "{{ env('APP_URL') }}";
-  console.log(appUrl)
+
   $(document).ready(function() {
 
 
     PintarCarrito()
-    console.log('pintar carrito ')
+
+
 
 
 
@@ -680,6 +725,13 @@
   });
 </script>
 <script>
+  $(document).ready(function() {
+    $(document).on('mouseenter', '.other-class', function() {
+      console.log('detected hover');
+      cerrar()
+    });
+  })
+
   const categorias = @json($categorias);
   var activeHover = false
   document.getElementById('productos-link').addEventListener('mouseenter', function(event) {
@@ -699,7 +751,7 @@
         if (element.subcategories.length == 0) return;
         let ul = document.createElement('ul');
         ul.className =
-          'text-[#006BF6] font-bold font-poppins text-md py-2 px-3 block   duration-300 w-full whitespace-nowrap gap-4';
+          'text-[#006BF6] font-bold font-poppins text-md py-2 px-3    duration-300 w-full whitespace-nowrap gap-4';
 
         ul.innerHTML = element.name;
         element.subcategories.forEach(subcategoria => {
@@ -713,7 +765,7 @@
           let a = document.createElement('a');
           a.href = `/catalogo?subcategoria=${subcategoria.id}`;
           a.innerHTML = subcategoria.name;
-          a.className = 'block w-full h-full'; // Para que el enlace ocupe todo el 'li'
+          a.className = ' w-full h-full'; // Para que el enlace ocupe todo el 'li'
 
           // Añadir el elemento 'a' al 'li'
           li.appendChild(a);
@@ -732,7 +784,10 @@
     }
   });
 
+
+
   function cerrar() {
+    console.log('cerrando')
     let padre = document.getElementById('productos-link-h');
     activeHover = false
     padre.innerHTML = '';
@@ -760,7 +815,7 @@
           precio_reseller
         } = success.data
         let is_reseller = success.is_reseller
-        console.log('is_reseller', is_reseller)
+
 
         if (is_reseller) {
           descuento = precio_reseller
@@ -770,6 +825,7 @@
         let detalleProducto = {
           id,
           producto,
+          isCombo: false,
           descuento,
           precio,
           imagen,
@@ -777,16 +833,17 @@
           color
 
         }
-        let existeArticulo = articulosCarrito.some(item => item.id === detalleProducto.id)
+        let existeArticulo = articulosCarrito.some(item => item.id === detalleProducto.id && item.isCombo ==
+          false, )
         if (existeArticulo) {
           //sumar al articulo actual 
           const prodRepetido = articulosCarrito.map(item => {
-            if (item.id === detalleProducto.id) {
+            if (item.id === detalleProducto.id && item.isCombo == false) {
               item.cantidad += Number(detalleProducto.cantidad);
-              return item; // retorna el objeto actualizado 
-            } else {
-              return item; // retorna los objetos que no son duplicados 
+              // retorna el objeto actualizado 
             }
+            return item; // retorna los objetos que no son duplicados 
+
 
           });
         } else {
@@ -806,7 +863,7 @@
           icon: '/images/svg/Boost.svg',
           title: 'Producto agregado',
           body: 'El producto se agregó correctamente al carrito',
-          type: 'success',
+          type: 'primary',
         })
 
         /* Swal.fire({
@@ -825,6 +882,9 @@
     })
   }
   $(document).on('click', '#btnAgregarCarritoPr', function() {
+
+    console.log('agregando al carrito');
+
     let url = window.location.href;
     let partesURL = url.split('/');
     let productoEncontrado = partesURL.find(parte => parte === 'producto');
@@ -849,7 +909,7 @@
   $(document).on('click', '#btnAgregarCarrito', function() {
 
     let item = $(this).data('id')
-    console.log(item)
+
     let cantidad = 1
     try {
       agregarAlCarrito(item, cantidad)

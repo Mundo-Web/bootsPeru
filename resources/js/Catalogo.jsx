@@ -8,50 +8,81 @@ import FilterPagination from './components/Filter/FilterPagination'
 import arrayJoin from './Utils/ArrayJoin'
 import ProductCard from './components/Product/ProductCard'
 import { set } from 'sode-extend-react/sources/cookies'
+import axios from 'axios'
+
 
 
 
 
 const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_cat: selected_category, tag_id, subCatId }) => {
   const take = 12
+  const [items, setItems] = useState([]);
+  const [filter, setFilter] = useState({});
+  const [totalCount, setTotalCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showModal, setShowModal] = useState(false);
+  const is_proveedor = useRef(false);
+  const cancelTokenSource = useRef(null);
+  const [priceOrder, setPriceOrder] = useState('')
+
   useEffect(() => {
     const script = document.createElement('script');
-    script.src = "https://cdn.sode.me/extends/notify.extend.min.js";
+    script.src = "js/notify.extend.min.js";
     script.async = true;
     document.body.appendChild(script);
 
     return () => {
       document.body.removeChild(script);
     };
-  }, [null]);
+  }, []);
 
-  const [items, setItems] = useState([])
-  const [filter, setFilter] = useState(selected_category ? { category_id: [selected_category] } : { 'txp.tag_id': [tag_id] })
-  const [totalCount, setTotalCount] = useState(0)
-  const [currentPage, setCurrentPage] = useState(1)
+  useEffect(() => {
+    // Leer el parámetro 'tag' de la URL
+    const params = new URLSearchParams(window.location.search);
+    const tag = params.get('tag');
 
-  const [showModal, setShowModal] = useState(false)
-  const is_proveedor = useRef(false);
+    // Actualizar el filtro con el 'tag_id' si existe
+    if (tag) {
+      setFilter(prevFilter => ({
+        ...prevFilter,
+        'txp.tag_id': [tag]
+      }));
+    }
 
+    // Si hay una categoría seleccionada, agregarla al filtro
+    if (selected_category) {
+      setFilter(prevFilter => ({
+        ...prevFilter,
+        category_id: [selected_category]
+      }));
+    }
+  }, [selected_category]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+    getItems();
+  }, [filter]);
+
+  useEffect(() => {
+    getItems();
+  }, [currentPage]);
 
   useEffect(() => {
     if (subCatId !== null) {
-      setFilter({ ...filter, subcategory_id: [subCatId] })
+      setFilter({ ...filter, subcategory_id: [subCatId] });
     }
-  }, [])
-
-  useEffect(() => {
-    setCurrentPage(1)
-    getItems()
-  }, [filter])
-
-  useEffect(() => {
-    getItems()
-  }, [currentPage])
+  }, []);
 
   const getItems = async () => {
-    const filterBody = []
+    // Cancelar la solicitud anterior si existe
+    if (cancelTokenSource.current) {
+      cancelTokenSource.current.cancel('Operation canceled due to new request.');
+    }
+
+    // Crear un nuevo token de cancelación
+    cancelTokenSource.current = axios.CancelToken.source();
+
+    const filterBody = [];
 
     if (filter.maxPrice || filter.minPrice) {
       if (filter.maxPrice && filter.minPrice) {
@@ -59,102 +90,153 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
           [
             ['precio', '>=', filter.minPrice],
             'or',
-            ['descuento', '>=', filter.minPrice]
+            [
+              ['descuento', '>=', filter.minPrice],
+              'and',
+              ['descuento', '<>', 0]
+            ]
           ],
           'and',
           [
             ['precio', '<=', filter.maxPrice],
             'or',
-            ['descuento', '<=', filter.maxPrice]
+            [
+              ['descuento', '<=', filter.maxPrice],
+              'and',
+              ['descuento', '<>', 0]
+            ]
           ]
-        ])
+        ]);
       } else if (filter.minPrice) {
         filterBody.push([
           ['precio', '>=', filter.minPrice],
           'or',
-          ['descuento', '>=', filter.minPrice]
-        ])
+          [
+            ['descuento', '>=', filter.minPrice],
+            'and',
+            ['descuento', '<>', 0]
+          ]
+        ]);
       } else if (filter.maxPrice) {
         filterBody.push([
           ['precio', '<=', filter.maxPrice],
           'or',
-          ['descuento', '<=', filter.maxPrice]
-        ])
+          [
+            ['descuento', '<=', filter.maxPrice],
+            'and',
+            ['descuento', '<>', 0]
+          ]
+        ]);
+      }
+    }
+    let sort = [];
+
+
+    if (priceOrder) {
+      if (priceOrder === 'price_high') {
+        sort.push({
+          selector: 'products.preciofiltro',
+          desc: true
+        });
+      } else if (priceOrder === 'price_low') {
+        sort.push({
+          selector: 'products.preciofiltro',
+          desc: false
+        });
+      } else {
+        sort.push({
+          selector: 'products.created_at',
+          desc: true
+        });
       }
     }
 
-
     if (filter['txp.tag_id'] && filter['txp.tag_id'].length > 0) {
-      const tagsFilter = []
+      const tagsFilter = [];
       filter['txp.tag_id'].forEach((x, i) => {
-        if (i == 0) {
-          tagsFilter.push(['txp.tag_id', '=', x])
+        if (i === 0) {
+          tagsFilter.push(['txp.tag_id', '=', x]);
         } else {
-          tagsFilter.push('or', ['txp.tag_id', '=', x])
+          tagsFilter.push('or', ['txp.tag_id', '=', x]);
         }
-      })
-      filterBody.push(tagsFilter)
+      });
+      filterBody.push(tagsFilter);
     }
 
     for (const key in filter) {
-      if (!key.startsWith('attribute-')) continue
-      if (filter[key].length == 0) continue
-      const [, attribute_id] = key.split('-')
-      const attributeFilter = []
+      if (!key.startsWith('attribute-')) continue;
+      if (filter[key].length === 0) continue;
+      const [, attribute_id] = key.split('-');
+      const attributeFilter = [];
       filter[key].forEach((x, i) => {
-        if (i == 0) {
-          attributeFilter.push(['apv.attribute_value_id', '=', x])
+        if (i === 0) {
+          attributeFilter.push(['apv.attribute_value_id', '=', x]);
         } else {
-          attributeFilter.push('or', ['apv.attribute_value_id', '=', x])
+          attributeFilter.push('or', ['apv.attribute_value_id', '=', x]);
         }
-      })
+      });
       filterBody.push([
         ['a.id', '=', attribute_id],
         'and',
         attributeFilter
-      ])
+      ]);
     }
 
     if (filter['category_id'] && filter['category_id'].length > 0) {
-      const categoryFilter = []
+      const categoryFilter = [];
       filter['category_id'].forEach((x, i) => {
-        if (i == 0) {
-          categoryFilter.push(['categoria_id', '=', x])
+        if (i === 0) {
+          categoryFilter.push(['categoria_id', '=', x]);
         } else {
-          categoryFilter.push('or', ['categoria_id', '=', x])
+          categoryFilter.push('or', ['categoria_id', '=', x]);
         }
-      })
-      filterBody.push(categoryFilter)
+      });
+      filterBody.push(categoryFilter);
     }
-
 
     if (filter['subcategory_id'] && filter['subcategory_id'].length > 0) {
-      const subcategoryFilter = []
+      const subcategoryFilter = [];
       filter['subcategory_id'].forEach((x, i) => {
-        if (i == 0) {
-          subcategoryFilter.push(['subcategory_id', '=', x])
+        if (i === 0) {
+          subcategoryFilter.push(['subcategory_id', '=', x]);
         } else {
-          subcategoryFilter.push('or', ['subcategory_id', '=', x])
+          subcategoryFilter.push('or', ['subcategory_id', '=', x]);
         }
-      })
-      filterBody.push(subcategoryFilter)
+      });
+      filterBody.push(subcategoryFilter);
     }
 
-    const { status, result } = await Fetch('/api/products/paginate', {
-      method: 'POST',
-      body: JSON.stringify({
+    try {
+      const { status, data: result } = await axios.post('/api/products/paginate', {
         requireTotalCount: true,
         filter: arrayJoin([...filterBody, ['products.visible', '=', true]], 'and'),
         take,
-        skip: take * (currentPage - 1)
-      })
-    })
-    console.log('result', result)
-    is_proveedor.current = result?.is_proveedor ?? false
-    console.log('is_proveedor', is_proveedor.current)
-    setItems(result?.data ?? [])
-    setTotalCount(result?.totalCount ?? 0)
-  }
+        skip: take * (currentPage - 1),
+        sort
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        cancelToken: cancelTokenSource.current.token
+      });
+
+      is_proveedor.current = result?.is_proveedor ?? false;
+
+      setItems(result?.data ?? []);
+      setTotalCount(result?.totalCount ?? 0);
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        console.log('Request canceled', error.message);
+      } else {
+        // Manejar otros errores
+        console.error(error);
+      }
+    }
+  };
+  useEffect(() => {
+    setCurrentPage(1)
+    getItems()
+  }, [priceOrder])
 
   const attributes = attribute_values.reduce((acc, item) => {
     // If the attribute_id does not exist in the accumulator, create a new array for it
@@ -172,7 +254,19 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
     </style>
     <form className="flex flex-col md:flex-row gap-6  mx-auto font-poppins bg-[#F1F1F1] w-full" style={{ padding: '40px' }}>
       <section className="hidden md:flex md:flex-col gap-4 md:basis-3/12 bg-white p-6 rounded-lg h-max md:sticky top-2">
-        <FilterContainer setFilter={setFilter} filter={filter} minPrice={minPrice ?? 0} maxPrice={maxPrice ?? 0} categories={categories} tags={tags} attribute_values={Object.values(attributes)} selected_category={selected_category} tag_id={tag_id} />
+        <FilterContainer
+          setFilter={setFilter}
+          filter={filter}
+          minPrice={minPrice ?? 0}
+          maxPrice={maxPrice ?? 0}
+          categories={categories}
+          tags={tags}
+          attribute_values={Object.values(attributes)}
+          selected_category={selected_category}
+          tag_id={tag_id}
+          setPriceOrder={setPriceOrder}
+          priceOrder={priceOrder}
+        />
       </section>
       <section className="flex flex-col gap-6 md:basis-9/12">
         <div className="w-full bg-white rounded-lg font-medium flex flex-row justify-between items-center px-2 py-3">
@@ -183,7 +277,7 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
             <button type="button" className='md:hidden text-[#006BF6]' onClick={() => setShowModal(true)}> Mostrar Filtros</button>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:pr-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-4 md:pr-4">
           {items.map((item, i) => <ProductCard key={`product-${item.id}`} item={item} bgcolor={'bg-white'} is_reseller={is_proveedor.current} />)}
         </div>
         <div className="w-full font-medium flex flex-row justify-center items-center">
@@ -200,7 +294,9 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
         </div>
 
         <div className='flex flex-col gap-4 md:basis-3/12 bg-white p-6 rounded-lg top-2 overflow-y-auto mt-10' style={{ maxHeight: '90vh', maxWidth: "85vh" }}>
-          <FilterContainer setFilter={setFilter} filter={filter} minPrice={minPrice ?? 0} maxPrice={maxPrice ?? 0} categories={categories} tags={tags} attribute_values={Object.values(attributes)} selected_category={selected_category} tag_id={tag_id} />
+          <FilterContainer
+            priceOrder={priceOrder}
+            setPriceOrder={setPriceOrder} setFilter={setFilter} filter={filter} minPrice={minPrice ?? 0} maxPrice={maxPrice ?? 0} categories={categories} tags={tags} attribute_values={Object.values(attributes)} selected_category={selected_category} tag_id={tag_id} />
         </div>
 
       </div>)}

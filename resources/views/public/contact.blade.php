@@ -76,7 +76,10 @@
       </div>
 
       <div class="grid grid-cols-1 w-11/12 m-auto px-16 mt-10">
-        <img class="w-full" src="{{ asset('images\Figmap.png') }}" alt="">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3900.937710661743!2d-77.0299873!3d-12.1164145!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x29d29e03062cc93%3A0xb0fb1dfd433e34f!2sBOOST%20PERU!5e0!3m2!1ses!2spe!4v1724283038116!5m2!1ses!2spe"
+          width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"></iframe>
       </div>
 
 
@@ -90,7 +93,7 @@
               class="w-full h-14 bg-[#F8F8F8] rounded-xl border-none">
           </div>
           <div class="col-span-2 sm:col-span-1 w-full">
-            <input type="text" placeholder="Correo Electronico" name="email"
+            <input type="text" placeholder="Correo Electronico" name="email" id="email"
               class="w-full h-14 bg-[#F8F8F8] rounded-xl border-none">
           </div>
           <div class="col-span-3 md:col-span-2 w-full mt-8">
@@ -105,17 +108,22 @@
 
       </div>
       <div class="flex justify-start mt-7 w-11/12 m-auto px-16 pt-16">
-        <button class="bg-[#006BF6] text-white font-Inter_Medium text-[20px] px-10 py-3 rounded-full w-[280px]">Enviar
+        <button class="bg-[#006BF6] text-white font-Inter_Medium text-[20px] px-10 py-3 rounded-full w-[280px]"
+          id="btnEnviar">Enviar
           Mensaje</button>
       </div>
 
     </form>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-11/12 m-auto px-8 sm:px-16  gap-8">
-      <p>Deseas ser Revendedor de nuestros productos ? <a href="{{ route('Register.jsx') }}" class="text-[#006BF6]">Sigue
-          el
-          siguiente
-          enlace </a></p>
+      @if (!Auth::check())
+        <p>Deseas ser Revendedor de nuestros productos ? <a href="{{ route('Register.jsx') }}"
+            class="text-[#006BF6]">Sigue
+            el
+            siguiente
+            enlace </a></p>
+      @endif
+
 
     </div>
 
@@ -146,20 +154,39 @@
     $('#formContactos').submit(function(event) {
       // Evita que se envíe el formulario automáticamente
       //console.log('evcnto')
+      let btnEnviar = $('#btnEnviar');
+      btnEnviar.prop('disabled', true);
+      btnEnviar.text('Enviando...');
+      btnEnviar.css('cursor', 'not-allowed');
 
       event.preventDefault();
       let formDataArray = $(this).serializeArray();
 
       if (!validarEmail($('#email').val())) {
+        btnEnviar.prop('disabled', false);
+        btnEnviar.text('Enviar Mensaje');
+        btnEnviar.css('cursor', 'pointer');
         return;
       };
+
 
       /* console.log(formDataArray); */
       $.ajax({
         url: '{{ route('guardarContactos') }}',
         method: 'POST',
         data: $(this).serialize(),
+        beforeSend: function() {
+          Swal.fire({
+            title: 'Enviando...',
+            text: 'Por favor, espere',
+            allowOutsideClick: false,
+            onBeforeOpen: () => {
+              Swal.showLoading();
+            }
+          });
+        },
         success: function(response) {
+          Swal.close(); // Close the loading message
           $('#formContactos')[0].reset();
           Swal.fire({
             title: response.message,
@@ -169,9 +196,12 @@
           if (!window.location.href.includes('#formularioenviado')) {
             window.location.href = window.location.href.split('#')[0] + '#formularioenviado';
           }
-
+          btnEnviar.prop('disabled', false);
+          btnEnviar.text('Enviar Mensaje');
+          btnEnviar.css('cursor', 'pointer');
         },
         error: function(error) {
+          Swal.close(); // Close the loading message
           const obj = error.responseJSON.message;
           const keys = Object.keys(error.responseJSON.message);
           let flag = false;
@@ -186,6 +216,9 @@
               flag = true; // Marcar como mostrado
             }
           });
+          btnEnviar.prop('disabled', false);
+          btnEnviar.text('Enviar Mensaje');
+          btnEnviar.css('cursor', 'pointer');
         }
       });
     })

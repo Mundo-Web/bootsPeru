@@ -68,7 +68,7 @@ class RegisterResponse implements RegisterResponseContract
                     height: 700px;
                     margin: 0 auto;
                     text-align: center;
-                    background-image:url(' . $appUrl . 'images/Ellipse_18.png),  url(' . $appUrl . 'images/Tabpanel.png);
+                    background-image:url(' . $appUrl . '/images/Ellipse_18.png),  url(' . $appUrl . '/images/Tabpanel.png);
                   background-repeat: no-repeat, no-repeat;
                   background-position: center bottom , center bottom;;
                   background-size: fit , fit;
@@ -86,7 +86,7 @@ class RegisterResponse implements RegisterResponseContract
                           margin: 40px;
                         "
                       >
-                        <img src="' . $appUrl . 'images/Group1.png" alt="mundo web"  style="
+                        <img src="' . $appUrl . '/images/Group1.png" alt="Boost_Peru"  style="
                     margin: auto;
                   "/>
                       </th>

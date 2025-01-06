@@ -1,4 +1,4 @@
-<div class="swiper header-slider-categorias" data-aos="fade-left">
+<div class="swiper header-slider-categorias h-[480px] " data-aos="fade-left">
   <div class="swiper-wrapper">
     @foreach ($items as $item)
       <div class="swiper-slide">
@@ -14,39 +14,48 @@
             </a>
           </div>
 
-          <div class="h-72 relative z-10 -mt-10 flex flex-col items-end justify-end">
-            <img class="block h-full object-contain object-bottom"
+          <div class="h-64 relative z-10 -mt-10 flex flex-col items-end justify-end">
+            <img class="block h-full object-contain object-bottom p-4"
               src="{{ asset($item->url_image . $item->name_image) }}" alt="">
           </div>
         </div>
       </div>
     @endforeach
   </div>
+  <div class="swiper-button-next"></div>
+  <div class="swiper-button-prev"></div>
+  <div class="swiper-pagination "></div>
 </div>
+
 
 <script>
   new Swiper(".header-slider-categorias", {
-    slidesPerView: 2,
+    slidesPerView: 2.5,
     spaceBetween: 30,
     loop: true,
     autoplay: false,
     grab: true,
     centeredSlides: false,
     initialSlide: 0, // Empieza en el cuarto slide (índice 3)
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
     pagination: {
-      el: ".swiper-pagination-slider-header",
+      el: ".swiper-pagination",
       clickable: true,
+
     },
     breakpoints: {
       0: {
-        slidesPerView: 1,
+        slidesPerView: 1.1,
       },
       768: {
-        slidesPerView: 2,
+        slidesPerView: 3.1,
         spaceBetween: 20,
       },
       1024: {
-        slidesPerView: 2,
+        slidesPerView: 4.1,
         spaceBetween: 20,
       },
     },

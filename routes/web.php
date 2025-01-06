@@ -100,7 +100,7 @@ Route::get('/politicas-de-devolucion', [IndexController::class, 'politicasDevolu
 Route::get('/terminos-y-condiciones', [IndexController::class, 'TerminosyCondiciones'])->name('terms_condition');
 
 
-// Route::post('/payment/culqi', [PaymentController::class, 'culqi'])->name('payment.culqi');
+
 Route::get('/buscarblog', [IndexController::class, 'searchBlog'])->name('buscarblog');
 
 Route::post('guardarUserNewsLetter', [NewsletterSubscriberController::class, 'guardarUserNewsLetter'])->name('guardarUserNewsLetter');
@@ -123,6 +123,7 @@ Route::middleware(['auth:sanctum', 'verified', 'can:Admin'])->group(function () 
 
 
         Route::resource('/pedidos', SaleController::class);
+        Route::get('/transactions', [TransactionController::class, 'reactView'])->name('Admin/Transactions.jsx');
 
         Route::get('/politica-datos/{id}', [PoliticaDatosController::class, 'edit'])->name('politicadatos.detalle');
         Route::post('/politica-datos/update/{id}', [PoliticaDatosController::class, 'update'])->name('politicadatos.act');

@@ -14,7 +14,11 @@ const ProductItem = ({ onClick = () => { }, onRemoveClicked, radioName = null, i
         {radioName && <Tippy content="Marcar como producto principal">
           <input className='mx-1 cursor-pointer' type="radio" name={radioName} defaultChecked={isParent} value={item.id} required />
         </Tippy>}
-        <span className="font-semibold text-gray-900 dark:text-white" >{item.producto}</span> {item.description || <i className='text-gray-400'>- Sin Descripcion -</i>}</div>
+        <span className="font-semibold text-gray-900 dark:text-white" >
+          {
+            item.sku && <span class="bg-blue-100 text-blue-800 text-xs font-medium me-1 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">{item.sku}</span>
+          }
+          {item.producto}</span> {item.description || <i className='text-gray-400'>- Sin Descripcion -</i>}</div>
       <div className="text-xs font-semibold text-blue-600 dark:text-blue-500">S/. {price.toFixed(2)}</div>
     </div>
     {onRemoveClicked && <div className="flex-shrink-0 ps-3">

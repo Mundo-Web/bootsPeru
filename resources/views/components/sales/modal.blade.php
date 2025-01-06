@@ -10,13 +10,15 @@
     <b class="block" id="address-tipo-comprobante"></b>
     <b class="block" id="n_document"></b>
     <h4 class="h4 mb-1">S/. <span id="invoice-price"></span></h4>
-    <span id="invoice-address-price"
-      class="w-max block mx-auto text-xs font-medium px-2.5 py-0.5 mb-1 rounded-full"></span>
+    {{--  <span id="invoice-address-price"
+      class="w-max block mx-auto text-xs font-medium px-2.5 py-0.5 mb-1 rounded-full"></span> --}}
   </div>
   <h4 class="h4 mb-2 mt-2">Orden #<span id="invoice-code"></span></h4>
   <p id="invoice-client" class="font-bold mb-2"></p>
   <span>Direccion Envio:</span>
   <p id="invoice-address" class="text-gray-700 mb-2"></p>
+  <span>Telefono: </span>
+  <p id="invoice-telefono" class="text-gray-700 mb-2"></p>
 
   <p class="font-bold"> Datos Facturacion: </p>
   <p class=" ">
@@ -27,6 +29,9 @@
     <span> Direccion Fiscal:</span>
     <span id="dirFact"></span>
   </p>
+  <div id="containerTRansferencia">
+
+  </div>
 
   @if ($isAdmin)
     <div class="mb-2 flex gap-2 items-center">
@@ -64,6 +69,7 @@
       <div
         class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
       </div>
+
       <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
         @if (!$isAdmin)
           Productos entregados
@@ -100,18 +106,27 @@
 </div>
 
 <script>
+  // $(document).on('click', '#invoice-modal .close-modal', function() {
+  //   console.log('close')
+  //   $('#invoice-modal').modal('close')
+  // })
   const isAdmin = {{ $isAdmin }};
   const openSaleModal = (data) => {
     const isFree = !Boolean(Number(data.address_price))
+    const envio = data.address_price
+
+    console.log(data)
 
     $('#invoice-id').val(data.id)
     $('#address-tipo-comprobante').text(data.tipo_comprobante.toUpperCase())
     $('#n_document').text(data.doc_number)
     $('#razonS').text(data.razon_fact)
     $('#dirFact').text(data.direccion_fact)
-    $('#invoice-price').text(data.total)
-    $('#invoice-address-price').text(isFree ? 'Envio gratis' :
-      `S/. ${Number(data.address_price).toFixed(2)}`)
+    let totalInvoice = Number(data.total) + Number(envio)
+    $('#invoice-price').text(totalInvoice)
+    $('#invoice-telefono').text(data.phone ?? '')
+    /* $('#invoice-address-price').text(isFree ? 'Envio gratis' :
+      `S/. ${Number(data.address_price).toFixed(2)}`) */
     if (isFree) $('#invoice-address-price')
       .addClass('bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300')
       .removeClass('bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300')
@@ -143,6 +158,21 @@
         <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-8"></div>
       </td>
     </tr>`)
+    if (data.img_transferencia) {
+      var enlace = document.createElement('a');
+      let extencion = data.img_transferencia.split('.').pop();
+      console.log(extencion)
+      enlace.className = 'underline pb-6';
+      enlace.href = `/${data.img_transferencia}`;
+      enlace.download = `transferencia.${extencion}`;
+      enlace.target = '_blank';
+      enlace.textContent = 'Img Transferencia';
+
+      // Insertar el enlace dentro del div con el ID containerTRansferencia
+      document.getElementById('containerTRansferencia').appendChild(enlace);
+    }
+
+
     fetch(`/api/saledetails/${data.id}`)
       .then(res => res.json())
       .then(data => {
@@ -155,10 +185,11 @@
           </tr>`)
           return
         }
+        console.log(data)
         data.forEach(item => {
           $('#invoice-products').append(`<tr class="bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-              ${item.product_name}
+              ${item.product_name} 
             </th>
             <td class="px-6 py-4">
               S/. ${Number(item.price).toFixed(2)}
@@ -171,6 +202,20 @@
             </td>
           </tr>`)
         })
+        $('#invoice-products').append(`<tr class="bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+              Envio 
+            </th>
+            <td class="px-6 py-4">
+              S/. ${envio}
+            </td>
+            <td class="px-6 py-4">
+              1
+            </td>
+            <td class="px-6 py-4">
+              S/. ${envio}
+            </td>
+          </tr>`)
       })
 
     $('#invoice-modal').modal('show')
@@ -210,7 +255,7 @@
     salesDataGrid.refresh()
   })
 
-  $('#invoice-status-id').on('click', function() {
+  $('#invoice-status-id').on('change', function() {
     const id = $('#invoice-id').val()
     const status_id = this.value
     fetch("{{ route('sales.status') }}", {
