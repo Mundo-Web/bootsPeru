@@ -473,7 +473,7 @@
 
       <div class="text-center mb-6">
         <h2 class="text-2xl font-bold text-green-600 mb-2"></h2>
-        <p class="mb-2">¡Estás a un paso de completar tu compra ! Escanea el codigo y continua con la compra </p>
+        <p class="mb-2">¡Estás a un paso de completar tu compra ! Escanea el codigo DESDE TU APLICATIVO DE YAPE Y/O PLIN para realizar el pago </p>
         <p class="mb-2">RUC: 20612977985</p>
         <p class="mb-2">TIENDAS B PERU SAC</p>
         <p class="mb-2">También puedes enviarnos tu confirmación de pago a través de WhatsApp.</p>
