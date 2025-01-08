@@ -6,12 +6,17 @@
 <div id="invoice-modal" class="modal !max-w-[720px] relative">
   @csrf
   <input type="hidden" id="invoice-id" value="">
-  <div class="relative md:absolute border rounded-lg right-8 top-6 py-2 px-3 mb-2 text-center">
-    <b class="block" id="address-tipo-comprobante"></b>
-    <b class="block" id="n_document"></b>
-    <h4 class="h4 mb-1">S/. <span id="invoice-price"></span></h4>
-    {{--  <span id="invoice-address-price"
-      class="w-max block mx-auto text-xs font-medium px-2.5 py-0.5 mb-1 rounded-full"></span> --}}
+  <div class="relative md:absolute  right-8 top-6  mb-2 text-center">
+    <div class="border rounded-lg py-2 px-3">
+      <b class="block" id="address-tipo-comprobante"></b>
+      <b class="block" id="n_document"></b>
+      <h4 class="h4 mb-1">S/. <span id="invoice-price"></span></h4>
+      {{--  <span id="invoice-address-price"
+        class="w-max block mx-auto text-xs font-medium px-2.5 py-0.5 mb-1 rounded-full"></span> --}}
+    </div>
+    <a href="" id="enlaceImagenTransferencia">
+      <img src="" alt="" class="w-full aspect-square object-cover object-center">
+    </a>
   </div>
   <h4 class="h4 mb-2 mt-2">Orden #<span id="invoice-code"></span></h4>
   <p id="invoice-client" class="font-bold mb-2"></p>
@@ -154,13 +159,16 @@
     </tr>`)
     if (data.img_transferencia) {
       var enlace = document.createElement('a');
-      let extencion = data.img_transferencia.split('.').pop();
-      console.log(extencion)
+      let ext = data.img_transferencia.split('.').pop();
       enlace.className = 'underline pb-6';
       enlace.href = `/${data.img_transferencia}`;
-      enlace.download = `transferencia.${extencion}`;
+      enlace.download = `${data.code}.${ext}`;
       enlace.target = '_blank';
       enlace.textContent = 'Img Transferencia';
+
+      $('#enlaceImagenTransferencia').attr('href', `/${data.img_transferencia}`)
+      $('#enlaceImagenTransferencia img').attr('src', `/${data.img_transferencia}`)
+
       // Insertar el enlace dentro del div con el ID containerTRansferencia
       document.getElementById('containerTRansferencia').appendChild(enlace);
     }
