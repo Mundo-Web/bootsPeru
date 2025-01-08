@@ -27,9 +27,14 @@ class SaleController extends Controller
 
     public function paginate(Request $request): HttpResponse|ResponseFactory
     {
+        $estado = $request->estado ?? 0;
         $response =  new dxResponse();
         try {
             $instance = Sale::select()->with('status');
+
+            if ($estado !== null && $estado != 0) {
+                $instance->where('status_id', $estado);
+            }
 
             if ($request->group != null) {
                 [$grouping] = $request->group;
