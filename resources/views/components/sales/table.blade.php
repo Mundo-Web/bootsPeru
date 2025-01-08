@@ -242,6 +242,27 @@
 
           container.html(div)
         }
+      },
+      {
+        dataField: 'tipo_pago',
+        caption: 'Tipo de pago',
+        lookup: {
+          dataSource: [{
+              value: 'culqi',
+              text: 'Culqi'
+            },
+            {
+              value: 'transferencia',
+              text: 'Transferencia'
+            },
+            {
+              value: 'billetera',
+              text: 'Yape/Plin'
+            }
+          ],
+          valueExpr: 'value',
+          displayExpr: 'text'
+        }
       }
     ],
     onContentReady: (...props) => {
