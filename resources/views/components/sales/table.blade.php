@@ -184,6 +184,7 @@
         dataField: 'created_at',
         caption: 'Fecha',
         allowFiltering: false,
+        sortOrder: 'desc',
         cellTemplate: (container, {
           data
         }) => {
