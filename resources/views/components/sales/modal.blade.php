@@ -14,7 +14,7 @@
       {{--  <span id="invoice-address-price"
         class="w-max block mx-auto text-xs font-medium px-2.5 py-0.5 mb-1 rounded-full"></span> --}}
     </div>
-    <a href="" id="enlaceImagenTransferencia">
+    <a href="" id="enlaceImagenTransferencia" class="w-[180px] mt-5 block" target="_blank">
       <img src="" alt="" class="w-full aspect-square object-cover object-center">
     </a>
   </div>
