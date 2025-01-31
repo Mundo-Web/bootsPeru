@@ -105,6 +105,7 @@ class DashboardController extends Controller
             DB::raw('SUM(quantity * price) AS total_price')
         ])
             ->join('sales', 'sale_details.sale_id', '=', 'sales.id')
+            ->where('sales.status_id', 9)
             ->groupBy('product_name', 'product_image', 'product_color')
             ->orderBy($orderBy, 'desc')
             ->limit(10);
@@ -129,6 +130,7 @@ class DashboardController extends Controller
         ])
             // ->whereNotNull('address_district')
             ->groupBy('department', 'province', 'district')
+            ->where('status_id', 9)
             ->limit(10)
             ->orderBy('quantity', 'desc')
             ->orderBy('district', 'asc');
