@@ -24,7 +24,7 @@
 
               @foreach ($mensajes as $item)
                 <tr>
-                  <td class="dark:bg-slate-800">
+                  <td>
                     @if ($item->is_read == '0')
                       <a href="{{ route('reclamo.show', $item->id) }}"><span class="mr-4"><i
                             class="fa-regular fa-envelope"></i></span><span
@@ -35,10 +35,10 @@
                     @endif
 
                   </td>
-                  <td class="dark:bg-slate-800">{{ $item->email }}</td>
+                  <td>{{ $item->email }}</td>
                   <td>{{ $item->cellphone }}</td>
-                  <td>{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d H:i:s') }}</td>
-                  <td class="flex flex-row items-center justify-center dark:bg-slate-800">
+                  <td>{{ $item->created_at ? \Carbon\Carbon::parse($item->created_at)->format('Y-m-d H:i:s') : '' }}</td>
+                  <td class="flex flex-row items-center justify-center">
 
                     <a href="{{ route('reclamo.show', $item->id) }}"
                       class="bg-green-300 px-3 py-2 rounded text-white  "><i class="fa-regular fa-eye"></i></a>
