@@ -21,6 +21,7 @@ class DashboardController extends Controller
             DB::raw('DATE_FORMAT(created_at, "%Y-%m") AS month')
         ])
             ->whereBetween('created_at', [$startDate, $endDate])
+            ->where('status_id', 9)
             ->groupBy('month')
             ->orderBy('month', 'desc')
             ->get();
