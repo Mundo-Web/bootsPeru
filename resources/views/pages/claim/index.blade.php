@@ -17,6 +17,7 @@
                 <th>Nombre completo</th>
                 <th>Correo</th>
                 <th>Celular</th>
+                <th>Fecha de incidente</th>
                 <th class="w-32">Acciones</th>
               </tr>
             </thead>
