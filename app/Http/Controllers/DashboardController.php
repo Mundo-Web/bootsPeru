@@ -49,12 +49,13 @@ class DashboardController extends Controller
             DB::raw('SUM(total) AS total')
         ])
             ->whereMonth('created_at', now()->month)
+            ->where('status_id', 9)
             ->groupBy('day')
             ->orderBy('day', 'asc')
             ->get();
 
-        $pendingSales = Sale::where('confirmation_user', false)->count();
-        $servedSales = Sale::where('confirmation_user', true)->count();
+        $pendingSales = Sale::where('status_id', 3)->count();
+        $servedSales = Sale::where('status_id', 9)->count();
 
         // $topProducts = SaleDetail::select([
         //     'sale_details.product_image AS image',
@@ -77,6 +78,7 @@ class DashboardController extends Controller
             DB::raw('COUNT(id) AS quantity')
         ])
             ->whereNotNull('address_district')
+            ->where('status_id', 9)
             ->groupBy('department', 'province', 'district')
             ->limit(10)
             ->orderBy('quantity', 'desc')
