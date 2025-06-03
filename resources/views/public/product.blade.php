@@ -265,7 +265,7 @@
               <div class="xl:ml-8 flex flex-row gap-5 justify-start items-center">
                 @if ($product->status == 1 && $product->visible == 1)
                   <button id="btnAgregarCarritoPr" data-id="{{ $product->id }}"
-                    class="bg-[#0D2E5E] w-[286px] h-16  text-white text-center rounded-full font-Inter_SemiBold tracking-wide text-lg hover:bg-[#1E8E9E]">
+                    class="bg-[#0D2E5E] w-[286px] h-16  text-white text-center rounded-full font-Inter_SemiBold tracking-wide text-lg hover:bg-[#1E8E9E] disabled:cursor-not-allowed" @if ($product->stock == 0) disabled @endif>
                     Agregar
                     al Carrito
                   </button>

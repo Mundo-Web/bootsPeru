@@ -15,7 +15,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('countries', function (Blueprint $table) {
-            $table->char('id', 2)->index();
+            $table->char('id', 2)->unique()->index();
             $table->string('description');
             $table->boolean('active')->default(true);
         });
@@ -264,7 +264,7 @@ return new class extends Migration
         ]);
 
         Schema::create('departments', function (Blueprint $table) {
-            $table->char('id', 2)->index();
+            $table->char('id', 2)->unique()->index();
             $table->string('description');
             $table->boolean('active')->default(true);
         });
@@ -298,7 +298,7 @@ return new class extends Migration
         ]);
 
         Schema::create('provinces', function (Blueprint $table) {
-            $table->char('id', 4)->index();
+            $table->char('id', 4)->unique()->index();
             $table->char('department_id', 2);
             $table->string('description');
             $table->boolean('active')->default(true);
@@ -506,7 +506,7 @@ return new class extends Migration
         ]);
 
         Schema::create('districts', function (Blueprint $table) {
-            $table->char('id', 6)->index();
+            $table->char('id', 6)->unique()->index();
             $table->char('province_id', 4);
             $table->string('description');
             $table->boolean('active')->default(true);
