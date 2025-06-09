@@ -760,12 +760,12 @@
           li.style.setProperty('padding-right', '2px', 'important');
 
           li.className =
-            'text-[#272727] px-2 rounded-sm cursor-pointer font-normal font-poppins text-[13px] py-2 px-3 hover:bg-blue-200 hover:opacity-75 transition-opacity duration-300 w-full whitespace-nowrap';
+            'text-[#272727] px-2 rounded-sm cursor-pointer font-normal font-poppins text-[13px] hover:bg-blue-200 hover:opacity-75 transition-opacity duration-300 w-full whitespace-nowrap';
           // Crear el elemento 'a'
           let a = document.createElement('a');
           a.href = `/catalogo?subcategoria=${subcategoria.id}`;
           a.innerHTML = subcategoria.name;
-          a.className = ' w-full h-full'; // Para que el enlace ocupe todo el 'li'
+          a.className = 'block w-full h-full py-2 px-3'; // Para que el enlace ocupe todo el 'li'
 
           // Añadir el elemento 'a' al 'li'
           li.appendChild(a);
