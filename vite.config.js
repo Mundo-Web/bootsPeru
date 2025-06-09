@@ -11,10 +11,9 @@ export default defineConfig({
     plugins: [
         laravel({
             input: [
-                ...glob.sync('resources/js/**/*.jsx'),
                 'resources/css/app.css',
                 'resources/js/app.js',
-                
+                ...glob.sync('resources/js/**/*.jsx'),
             ],
             refresh: true,
         }),

@@ -1,24 +1,25 @@
 {
-  "_AuthRest-CRkagwLa.js": {
-    "file": "assets/AuthRest-CRkagwLa.js",
+  "_AuthRest-GdI5eaRl.js": {
+    "file": "assets/AuthRest-GdI5eaRl.js",
     "imports": [
-      "resources/js/components/form/SelectAPIFormGroup.jsx"
+      "resources/js/components/Filter/FilterContainer.jsx"
     ]
   },
-  "_CreateReactScript-PevQqOAi.js": {
-    "file": "assets/CreateReactScript-PevQqOAi.js",
+  "_CreateReactScript-my1HhmNP.js": {
+    "file": "assets/CreateReactScript-my1HhmNP.js",
     "imports": [
       "resources/js/Utils/CreateReactScript.jsx",
-      "resources/js/components/form/SelectAPIFormGroup.jsx"
+      "resources/js/components/Filter/FilterContainer.jsx"
     ]
   },
   "_JSEncrypt-jwo8Dr6z.js": {
     "file": "assets/JSEncrypt-jwo8Dr6z.js"
   },
-  "_ProductCard-wNmq0RPd.js": {
-    "file": "assets/ProductCard-wNmq0RPd.js",
+  "_ProductCard-Z0krrd6s.js": {
+    "file": "assets/ProductCard-Z0krrd6s.js",
     "imports": [
       "resources/js/components/DataGrid.jsx",
+      "resources/js/components/Filter/FilterContainer.jsx",
       "_arrayJoin-QZyv0n10.js",
       "resources/js/components/form/TippyButton.jsx"
     ]
@@ -33,8 +34,8 @@
       "_index-peyf00p_.js"
     ]
   },
-  "_axios-_sX4vCAy.js": {
-    "file": "assets/axios-_sX4vCAy.js"
+  "_axios-wPXW9W4H.js": {
+    "file": "assets/axios-wPXW9W4H.js"
   },
   "_index-VFMbf6KQ.js": {
     "file": "assets/index-VFMbf6KQ.js",
@@ -52,17 +53,17 @@
     "file": "assets/moment-UpGjyhjE.js"
   },
   "resources/css/app.css": {
-    "file": "assets/app-v8WyKngM.css",
+    "file": "assets/app-lhfFAqLV.css",
     "isEntry": true,
     "src": "resources/css/app.css"
   },
   "resources/js/Admin/Offers.jsx": {
-    "file": "assets/Offers-ObXI4Kk8.js",
+    "file": "assets/Offers-F0hzmc8F.js",
     "imports": [
       "resources/js/components/DataGrid.jsx",
       "resources/js/Utils/ReactAppend.jsx",
-      "_CreateReactScript-PevQqOAi.js",
-      "resources/js/components/form/SelectAPIFormGroup.jsx",
+      "_CreateReactScript-my1HhmNP.js",
+      "resources/js/components/Filter/FilterContainer.jsx",
       "resources/js/components/Offer/OfferCard.jsx",
       "_arrayJoin-QZyv0n10.js",
       "resources/js/components/form/TippyButton.jsx",
@@ -70,39 +71,39 @@
       "__commonjsHelpers-4gQjN7DL.js",
       "_index-peyf00p_.js",
       "resources/js/Utils/CreateReactScript.jsx",
-      "_axios-_sX4vCAy.js",
+      "_axios-wPXW9W4H.js",
       "_index-VFMbf6KQ.js"
     ],
     "isEntry": true,
     "src": "resources/js/Admin/Offers.jsx"
   },
   "resources/js/Admin/Transactions.jsx": {
-    "file": "assets/Transactions-g98xbvc3.js",
+    "file": "assets/Transactions-QKifBEFR.js",
     "imports": [
       "resources/js/components/DataGrid.jsx",
       "resources/js/Utils/ReactAppend.jsx",
       "resources/js/components/form/TippyButton.jsx",
-      "resources/js/components/form/SelectAPIFormGroup.jsx",
-      "_CreateReactScript-PevQqOAi.js",
+      "resources/js/components/Filter/FilterContainer.jsx",
+      "_CreateReactScript-my1HhmNP.js",
       "__commonjsHelpers-4gQjN7DL.js",
       "_moment-UpGjyhjE.js",
       "_index-peyf00p_.js",
       "resources/js/Utils/CreateReactScript.jsx",
-      "_axios-_sX4vCAy.js"
+      "_axios-wPXW9W4H.js"
     ],
     "isEntry": true,
     "src": "resources/js/Admin/Transactions.jsx"
   },
   "resources/js/Catalogo.jsx": {
-    "file": "assets/Catalogo-YxoqECAX.js",
+    "file": "assets/Catalogo-bAowbUPe.js",
     "imports": [
       "resources/js/components/DataGrid.jsx",
       "resources/js/Utils/ReactAppend.jsx",
-      "_CreateReactScript-PevQqOAi.js",
-      "_ProductCard-wNmq0RPd.js",
-      "resources/js/components/form/SelectAPIFormGroup.jsx",
+      "_CreateReactScript-my1HhmNP.js",
+      "_ProductCard-Z0krrd6s.js",
+      "resources/js/components/Filter/FilterContainer.jsx",
       "_arrayJoin-QZyv0n10.js",
-      "_axios-_sX4vCAy.js",
+      "_axios-wPXW9W4H.js",
       "__commonjsHelpers-4gQjN7DL.js",
       "_index-peyf00p_.js",
       "resources/js/Utils/CreateReactScript.jsx",
@@ -112,82 +113,82 @@
     "src": "resources/js/Catalogo.jsx"
   },
   "resources/js/ConfirmEmail.jsx": {
-    "file": "assets/ConfirmEmail-FXTTtwSh.js",
+    "file": "assets/ConfirmEmail-sViiHAds.js",
     "imports": [
       "resources/js/Utils/ReactAppend.jsx",
       "resources/js/components/DataGrid.jsx",
       "_JSEncrypt-jwo8Dr6z.js",
-      "_CreateReactScript-PevQqOAi.js",
-      "resources/js/components/form/SelectAPIFormGroup.jsx",
+      "_CreateReactScript-my1HhmNP.js",
+      "resources/js/components/Filter/FilterContainer.jsx",
       "resources/js/Utils/CreateReactScript.jsx",
       "_index-peyf00p_.js",
       "__commonjsHelpers-4gQjN7DL.js",
-      "_axios-_sX4vCAy.js"
+      "_axios-wPXW9W4H.js"
     ],
     "isEntry": true,
     "src": "resources/js/ConfirmEmail.jsx"
   },
   "resources/js/Login.jsx": {
-    "file": "assets/Login-eYaW3QJy.js",
+    "file": "assets/Login-QECK7wi-.js",
     "imports": [
       "resources/js/Utils/ReactAppend.jsx",
       "resources/js/components/DataGrid.jsx",
       "_JSEncrypt-jwo8Dr6z.js",
-      "_CreateReactScript-PevQqOAi.js",
-      "_AuthRest-CRkagwLa.js",
+      "_CreateReactScript-my1HhmNP.js",
+      "_AuthRest-GdI5eaRl.js",
       "resources/js/Utils/CreateReactScript.jsx",
       "resources/js/components/Offer/OfferCard.jsx",
-      "resources/js/components/form/SelectAPIFormGroup.jsx",
+      "resources/js/components/Filter/FilterContainer.jsx",
       "_index-peyf00p_.js",
       "__commonjsHelpers-4gQjN7DL.js",
-      "_axios-_sX4vCAy.js"
+      "_axios-wPXW9W4H.js"
     ],
     "isEntry": true,
     "src": "resources/js/Login.jsx"
   },
   "resources/js/Ofertas.jsx": {
-    "file": "assets/Ofertas-RHhsGh1w.js",
+    "file": "assets/Ofertas-8WXHrVDe.js",
     "imports": [
       "resources/js/components/DataGrid.jsx",
       "resources/js/Utils/ReactAppend.jsx",
-      "_CreateReactScript-PevQqOAi.js",
-      "_ProductCard-wNmq0RPd.js",
-      "resources/js/components/form/SelectAPIFormGroup.jsx",
+      "_CreateReactScript-my1HhmNP.js",
+      "_ProductCard-Z0krrd6s.js",
+      "resources/js/components/Filter/FilterContainer.jsx",
       "_arrayJoin-QZyv0n10.js",
       "__commonjsHelpers-4gQjN7DL.js",
       "_index-peyf00p_.js",
       "resources/js/Utils/CreateReactScript.jsx",
-      "_axios-_sX4vCAy.js",
+      "_axios-wPXW9W4H.js",
       "resources/js/components/form/TippyButton.jsx"
     ],
     "isEntry": true,
     "src": "resources/js/Ofertas.jsx"
   },
   "resources/js/Register.jsx": {
-    "file": "assets/Register-dwTesTkK.js",
+    "file": "assets/Register-PbRo1PxQ.js",
     "imports": [
       "resources/js/Utils/ReactAppend.jsx",
       "resources/js/components/DataGrid.jsx",
       "_JSEncrypt-jwo8Dr6z.js",
-      "_CreateReactScript-PevQqOAi.js",
-      "_AuthRest-CRkagwLa.js",
+      "_CreateReactScript-my1HhmNP.js",
+      "_AuthRest-GdI5eaRl.js",
       "_index-VFMbf6KQ.js",
       "__commonjsHelpers-4gQjN7DL.js",
       "resources/js/Utils/CreateReactScript.jsx",
       "resources/js/components/Offer/OfferCard.jsx",
       "_index-peyf00p_.js",
-      "resources/js/components/form/SelectAPIFormGroup.jsx",
-      "_axios-_sX4vCAy.js"
+      "resources/js/components/Filter/FilterContainer.jsx",
+      "_axios-wPXW9W4H.js"
     ],
     "isEntry": true,
     "src": "resources/js/Register.jsx"
   },
   "resources/js/Utils/CreateReactScript.jsx": {
-    "file": "assets/CreateReactScript-iObpGMbC.js",
+    "file": "assets/CreateReactScript-d0ApP_b3.js",
     "imports": [
-      "_axios-_sX4vCAy.js",
+      "_axios-wPXW9W4H.js",
       "__commonjsHelpers-4gQjN7DL.js",
-      "resources/js/components/form/SelectAPIFormGroup.jsx",
+      "resources/js/components/Filter/FilterContainer.jsx",
       "resources/js/components/DataGrid.jsx"
     ],
     "isEntry": true,
@@ -236,9 +237,9 @@
     "css": [
       "assets/app-dGvTjJ5y.css"
     ],
-    "file": "assets/app-smupNbK4.js",
+    "file": "assets/app-glEDzCJU.js",
     "imports": [
-      "_axios-_sX4vCAy.js",
+      "_axios-wPXW9W4H.js",
       "__commonjsHelpers-4gQjN7DL.js",
       "_moment-UpGjyhjE.js"
     ],
@@ -254,7 +255,7 @@
     "src": "resources/js/components/DataGrid.jsx"
   },
   "resources/js/components/Filter/FilterContainer.jsx": {
-    "file": "assets/FilterContainer-kOezc7Fp.js",
+    "file": "assets/FilterContainer-nIO6wzPs.js",
     "imports": [
       "resources/js/components/DataGrid.jsx",
       "__commonjsHelpers-4gQjN7DL.js"
@@ -299,21 +300,21 @@
     "src": "resources/js/components/Modal.jsx"
   },
   "resources/js/components/Offer/OfferCard.jsx": {
-    "file": "assets/OfferCard-2JNwxqGF.js",
+    "file": "assets/OfferCard-4Mw9-81Q.js",
     "imports": [
       "resources/js/components/DataGrid.jsx",
-      "resources/js/components/form/SelectAPIFormGroup.jsx",
+      "resources/js/components/Filter/FilterContainer.jsx",
       "__commonjsHelpers-4gQjN7DL.js"
     ],
     "isEntry": true,
     "src": "resources/js/components/Offer/OfferCard.jsx"
   },
   "resources/js/components/Offer/OfferForm.jsx": {
-    "file": "assets/OfferForm-xx_oda-4.js",
+    "file": "assets/OfferForm-chCXymR6.js",
     "imports": [
       "resources/js/components/DataGrid.jsx",
       "resources/js/components/form/TippyButton.jsx",
-      "resources/js/components/form/SelectAPIFormGroup.jsx",
+      "resources/js/components/Filter/FilterContainer.jsx",
       "__commonjsHelpers-4gQjN7DL.js",
       "_index-peyf00p_.js",
       "_index-VFMbf6KQ.js"
@@ -429,9 +430,10 @@
     "src": "resources/js/components/form/QuillFormGroup.jsx"
   },
   "resources/js/components/form/SelectAPIFormGroup.jsx": {
-    "file": "assets/SelectAPIFormGroup-nIO6wzPs.js",
+    "file": "assets/SelectAPIFormGroup-scdkf-Rw.js",
     "imports": [
       "resources/js/components/DataGrid.jsx",
+      "resources/js/components/Filter/FilterContainer.jsx",
       "__commonjsHelpers-4gQjN7DL.js"
     ],
     "isEntry": true,

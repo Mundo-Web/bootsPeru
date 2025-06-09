@@ -276,8 +276,7 @@
     }
 
     function calcularTotal() {
-      let articulos = Local.get('carrito')
-      console.log(articulos)
+      let articulos = Local.get('carrito') ?? []
       let total = articulos.map(item => {
         let monto
         if (Number(item.descuento) !== 0) {

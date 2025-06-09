@@ -656,7 +656,7 @@ class IndexController extends Controller
 
     $is_reseller = false;
     if (Auth::check()) {
-      $user = Auth::user();
+      $user = User::find(Auth::id());
       $is_reseller = $user->hasRole('Reseller');
     }
 

@@ -13,6 +13,7 @@ use App\Models\Products;
 use App\Models\Specifications;
 use App\Models\SubCategory;
 use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Intervention\Image\ImageManager;
@@ -22,6 +23,7 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use SoDe\Extend\JSON;
 use Illuminate\Support\Facades\Auth;
+use SoDe\Extend\Response;
 
 use function PHPUnit\Framework\isNull;
 
@@ -48,18 +50,7 @@ class ProductsController extends Controller
 
   public function paginate(Request $request, $flag = null)
   {
-    //validar el rol del usuario logueado 
-    // $user = Auth::user();
-    // dump($user->hasRole('Reseller'));
-
-    $user = false;
-   
-
-
-    
-    
-    $response =  new dxResponse();
-    try {
+    $response = Response::simpleTryCatch(function ($response) use ($request, $flag) {
       $instance = Products::select([
         DB::raw('DISTINCT products.*')
       ])
@@ -67,22 +58,24 @@ class ProductsController extends Controller
         ->leftJoin('attribute_product_values AS apv', 'products.id', 'apv.product_id')
         ->leftJoin('attributes AS a', 'apv.attribute_id', 'a.id')
         ->leftJoin('tags_xproducts AS txp', 'txp.producto_id', 'products.id')
-        ->leftJoin('categories', 'categories.id', 'products.categoria_id') ;    
-        if ($flag !== 'admin') {
-          $instance->where('categories.visible', 1)
+        ->leftJoin('categories', 'categories.id', 'products.categoria_id');
+
+      if ($flag !== 'admin') {
+        $instance->where('categories.visible', 1)
           ->where('categories.status', 1)
           ->where('products.visible', 1)
           ->where('products.status', 1);
+      }
+
+      $isProvider = false;
+      if (Auth::check()) {
+        $user = User::find(Auth::id());
+        $isProvider = $user->hasRole('Reseller');
+        if ($isProvider) {
+          $instance->where('products.precio_reseller', '>', 0);
         }
-        
-        if(Auth::check()){
-          $user = Auth::user();
-          $user = $user->hasRole('Reseller');
-          if ($user) { // Cambia 'admin' por el rol que deseas validar
-            $instance->where('products.precio_reseller', '>', 0);
-         }
-        }
-        
+      }
+
 
       if ($request->group != null) {
         [$grouping] = $request->group;
@@ -96,6 +89,16 @@ class ProductsController extends Controller
       if ($request->filter) {
         $instance->where(function ($query) use ($request) {
           dxDataGrid::filter($query, $request->filter ?? [], false);
+        });
+      }
+
+      $searchValue = $request->searchValue;
+      if ($searchValue) {
+        $instance->where(function ($sql) use ($searchValue) {
+          $words = explode(' ', $searchValue);
+          foreach ($words as $word) {
+            $sql->where('producto', 'like', '%' . $word . '%');
+          }
         });
       }
 
@@ -138,16 +141,10 @@ class ProductsController extends Controller
       $response->message = 'Operación correcta';
       $response->data = $jpas;
       $response->totalCount = $totalCount;
-      $response->is_proveedor = $user ; 
-    } catch (\Throwable $th) {
-      $response->status = 400;
-      $response->message = $th->getMessage() . " " . $th->getFile() . ' Ln.' . $th->getLine();
-    } finally {
-      return response(
-        $response->toArray(),
-        $response->status
-      );
-    }
+      $response->is_proveedor = $isProvider;
+    });
+
+    return response($response->toArray(), $response->status);
   }
   public function paginateOffers(Request $request)
   {
@@ -295,7 +292,7 @@ class ProductsController extends Controller
       return null;
     } catch (\Throwable $th) {
       //throw $th;
-      
+
     }
   }
 
@@ -304,11 +301,11 @@ class ProductsController extends Controller
    */
   public function store(Request $request)
   {
-    
+
     try {
       $especificaciones = [];
       $data = $request->all();
-      
+
       $atributos = null;
       $tagsSeleccionados = $request->input('tags_id');
       // $valorprecio = $request->input('precio') - 0.1;
@@ -359,7 +356,7 @@ class ProductsController extends Controller
       });
 
       if (!isset($cleanedData['stock'])) {
-         $cleanedData['stock'] = 0 ;
+        $cleanedData['stock'] = 0;
       }
 
       $slug = strtolower(str_replace(' ', '-', $request->producto . '-' . $request->color));
@@ -403,7 +400,7 @@ class ProductsController extends Controller
       $this->GuardarEspecificaciones($producto->id, $especificaciones);
       $producto->tags()->sync($tagsSeleccionados);
 
-      $precioFiltro = 0 ;
+      $precioFiltro = 0;
       if ($producto['descuento'] == 0 || is_null($producto['descuento'])) {
         $precioFiltro = $producto['precio'];
       } else {
@@ -428,7 +425,7 @@ class ProductsController extends Controller
       return redirect()->route('products.index')->with('success', 'Publicación creado exitosamente.');
     } catch (\Throwable $th) {
       //  dump($th->getMessage());
-      
+
     }
   }
 

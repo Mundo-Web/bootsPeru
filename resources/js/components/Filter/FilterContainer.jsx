@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react'
 import FilterItem from './FilterItem'
 import FilterItemSelect2 from './FilterItemSelect2'
+import { GET } from 'sode-extend-react'
 
 const FilterContainer = ({ priceOrder, setPriceOrder, minPrice, setFilter, filter, maxPrice, categories = [], tags = [], brands = [], sizes = [], colors = [], attribute_values, tag_id, selected_category }) => {
   const categoryRef = useRef()
@@ -66,7 +67,9 @@ const FilterContainer = ({ priceOrder, setPriceOrder, minPrice, setFilter, filte
   };
   const limpiarFiltro = () => {
     setPriceOrder(null)
-
+    setFilter({})
+    window.history.pushState({}, '', '/catalogo');
+    GET.search = null
   }
 
   let selectedoption = 'Ordenar por'

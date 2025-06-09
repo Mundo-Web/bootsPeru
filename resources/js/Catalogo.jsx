@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import CreateReactScript from './Utils/CreateReactScript'
 import FilterContainer from './components/Filter/FilterContainer'
 import ProductContainer from './components/Product/ProductContainer'
-import { Fetch } from 'sode-extend-react'
+import { Cookies, Fetch, GET, Notify } from 'sode-extend-react'
 import FilterPagination from './components/Filter/FilterPagination'
 import arrayJoin from './Utils/ArrayJoin'
 import ProductCard from './components/Product/ProductCard'
@@ -25,16 +25,16 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
   const cancelTokenSource = useRef(null);
   const [priceOrder, setPriceOrder] = useState('')
 
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = "js/notify.extend.min.js";
-    script.async = true;
-    document.body.appendChild(script);
+  // useEffect(() => {
+  //   const script = document.createElement('script');
+  //   script.src = "js/notify.extend.min.js";
+  //   script.async = true;
+  //   document.body.appendChild(script);
 
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
+  //   return () => {
+  //     document.body.removeChild(script);
+  //   };
+  // }, []);
 
   useEffect(() => {
     // Leer el parámetro 'tag' de la URL
@@ -58,14 +58,20 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
     }
   }, [selected_category]);
 
-  useEffect(() => {
-    setCurrentPage(1);
-    getItems();
-  }, [filter]);
+  const [prevCurrentPage, setPrevCurrentPage] = useState(currentPage)
 
   useEffect(() => {
+    setCurrentPage(1);
+    if (prevCurrentPage == currentPage && currentPage != 1) return
+    setPrevCurrentPage(currentPage);
     getItems();
-  }, [currentPage]);
+  }, [filter, priceOrder])
+
+  useEffect(() => {
+    if (currentPage == prevCurrentPage) return
+    setPrevCurrentPage(currentPage);
+    getItems()
+  }, [currentPage, prevCurrentPage]);
 
   useEffect(() => {
     if (subCatId !== null) {
@@ -207,18 +213,36 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
     }
 
     try {
-      const { status, data: result } = await axios.post('/api/products/paginate', {
-        requireTotalCount: true,
-        filter: arrayJoin([...filterBody, ['products.visible', '=', true]], 'and'),
-        take,
-        skip: take * (currentPage - 1),
-        sort
-      }, {
+      // const { status, data: result } = await axios.post('/api/products/paginate', {
+      //   requireTotalCount: true,
+      //   filter: arrayJoin([...filterBody, ['products.visible', '=', true]], 'and'),
+      //   take,
+      //   skip: take * (currentPage - 1),
+      //   searchValue: GET.search ?? null,
+      //   sort
+      // }, {
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   },
+      //   cancelToken: cancelTokenSource.current.token
+      // });
+
+      const { status, result } = await Fetch('/api/products/paginate', {
+        method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'X-Xsrf-Token': decodeURIComponent(Cookies.get('XSRF-TOKEN'))
         },
-        cancelToken: cancelTokenSource.current.token
-      });
+        body: JSON.stringify({
+          requireTotalCount: true,
+          filter: arrayJoin([...filterBody, ['products.visible', '=', true]], 'and'),
+          take,
+          skip: take * (currentPage - 1),
+          searchValue: GET.search ?? null,
+          sort
+        })
+      })
+
+      if (!status) throw new Error(result?.message ?? 'Ocurrió un error desconocido al obtener los productos')
 
       is_proveedor.current = result?.is_proveedor ?? false;
 
@@ -231,12 +255,14 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
         // Manejar otros errores
         console.error(error);
       }
+      Notify.add({
+        type: 'danger',
+        icon: '/images/svg/Boost.svg',
+        title: 'Error al obtener los productos',
+        body: error.message
+      })
     }
   };
-  useEffect(() => {
-    setCurrentPage(1)
-    getItems()
-  }, [priceOrder])
 
   const attributes = attribute_values.reduce((acc, item) => {
     // If the attribute_id does not exist in the accumulator, create a new array for it
@@ -281,7 +307,7 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
           {items.map((item, i) => <ProductCard key={`product-${item.id}`} item={item} bgcolor={'bg-white'} is_reseller={is_proveedor.current} />)}
         </div>
         <div className="w-full font-medium flex flex-row justify-center items-center">
-          <FilterPagination current={currentPage} setCurrent={setCurrentPage} pages={Math.ceil(totalCount / take)} />
+          <FilterPagination current={currentPage} setCurrent={setCurrentPage} pages={Math.ceil(totalCount / take) || 1} />
         </div>
       </section>
       {/* modal */}

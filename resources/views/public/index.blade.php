@@ -187,7 +187,7 @@
     let pops = @json($popups);
 
     function calcularTotal() {
-      let articulos = Local.get('carrito')
+      let articulos = Local.get('carrito') ?? []
       let total = articulos.map(item => {
         let monto
         if (Number(item.descuento) !== 0) {
