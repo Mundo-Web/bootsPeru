@@ -59,7 +59,6 @@ class PopupController extends Controller
             $producto = Popup::find($request->id);
             $ruta = $producto->$field;
     
-            // dump($ruta);
             //borrar imagen
             if (!empty($ruta) && file_exists($ruta)) {
               // Borrar imagen

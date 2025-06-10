@@ -264,7 +264,6 @@ class ProductsController extends Controller
         $producto = Products::find($request->id);
         $ruta = $producto->$field;
 
-        // dump($ruta);
         //borrar imagen
         if (!empty($ruta) && file_exists($ruta)) {
           // Borrar imagen
@@ -424,8 +423,6 @@ class ProductsController extends Controller
 
       return redirect()->route('products.index')->with('success', 'Publicación creado exitosamente.');
     } catch (\Throwable $th) {
-      //  dump($th->getMessage());
-
     }
   }
 

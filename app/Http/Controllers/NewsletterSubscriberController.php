@@ -248,7 +248,6 @@ class NewsletterSubscriberController extends Controller
       $mail->send();
     } catch (\Throwable $th) {
       //throw $th;
-      // dump($th);
     }
   }
 
@@ -455,7 +454,6 @@ class NewsletterSubscriberController extends Controller
       return response()->json(['message' => 'Correo enviado']);
     } catch (\Throwable $th) {
       //throw $th;
-      // dump($th);
     }
    
   }
