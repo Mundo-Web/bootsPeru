@@ -90,7 +90,7 @@ class IndexController extends Controller
     return view('public.index', compact('url_env', 'popups', 'banners', 'blogs', 'categoriasAll', 'productosPupulares', 'ultimosProductos', 'productos', 'destacados', 'descuentos', 'general', 'benefit', 'faqs', 'testimonie', 'slider', 'categorias', 'category'));
   }
 
-  public function catalogo(Request $request, string $id_cat = null)
+  public function catalogo(Request $request, ?string $id_cat = null)
   {
     $tag_id = null;
     $tag_id = $request->input('tag');

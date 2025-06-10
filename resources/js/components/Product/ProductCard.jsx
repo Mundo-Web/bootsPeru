@@ -11,7 +11,7 @@ const ProductCard = ({ item, width, bgcolor, is_reseller }) => {
     <div
       onMouseEnter={() => setShowAmbiente(true)}
       onMouseLeave={() => setShowAmbiente(false)}
-      className={`flex flex-col relative w-full md:${width} ${bgcolor}`} data-aos="zoom-in-left"
+      className={`flex flex-col relative w-full md:${width} ${bgcolor}`} data-aos="zoom-in-up"
     >
       <div className={`${bgcolor} product_container basis-4/5 flex flex-col justify-center relative border`}>
         <div className="absolute top-2 left-2 w-max">

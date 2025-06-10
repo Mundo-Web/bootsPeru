@@ -45,7 +45,7 @@ class PaymentController extends Controller
       $charge = $culqi->Charges->create($config);
 
       if (gettype($charge) == 'string') {
-        $res = JSON::parse($charge);
+        $res = JSON::parse((string) $charge);
         throw new Exception($res['user_message']);
       }
 
@@ -108,7 +108,7 @@ class PaymentController extends Controller
       $charge = $culqi->Orders->create($config);
 
       if (gettype($charge) == 'string') {
-        $res = JSON::parse($charge);
+        $res = JSON::parse((string) $charge);
         throw new Exception($res['user_message']);
       }
 
@@ -203,8 +203,8 @@ class PaymentController extends Controller
 
     $productsJpa = [];
 
-    if (Auth::check() && Auth::user()->hasRole('Reseller')) {
-
+    $userJpa = User::find(Auth::id()) ?? new User();
+    if ($userJpa->hasRole('Reseller')) {
       $productsJpa = Products::select([
         'products.id',
         'products.imagen',

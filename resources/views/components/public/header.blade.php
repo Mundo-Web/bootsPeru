@@ -66,13 +66,13 @@
 
 {{-- <img src="{{ asset('images/contacto.png') }}" class="absolute top-0 left-0 w-full z-[99999] opacity-30"></img> --}}
 
-<div class="navigation shadow-xl px-5 overflow-y-auto" style="z-index: 9999; background-color: #fff !important ">
+<div class="navigation shadow-xl p-4 overflow-y-auto overflow-x-hidden" style="z-index: 9999; background-color: #fff !important ">
     <button aria-label="hamburguer" type="button" class="hamburger" id="position" onclick="show()">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M18 2L2 18M18 18L2 2" stroke="#272727" stroke-width="2.66667" stroke-linecap="round" />
         </svg>
     </button>
-    <nav class="w-full h-full overflow-y-auto p-8" x-data="{ openCatalogo: true, openSubMenu: null }">
+    <nav class="w-full h-full overflow-visible" x-data="{ openCatalogo: true, openSubMenu: null }">
         <ul class="space-y-1">
             <li>
                 <a href="/"
@@ -134,32 +134,43 @@
 
                             <div x-data="{ openCategories: {} }">
                                 @foreach ($categorias as $item)
-                                    <div class="text-[#272727] flex items-center py-2 px-3 hover:opacity-75 transition-opacity duration-300"
-                                        @click="openCategories[{{ $item->id }}] = !openCategories[{{ $item->id }}]">
-                                        <span>{{ $item->name }}</span>
-                                        <svg class="w-5 h-5 transform transition-transform"
-                                            :class="{ 'rotate-180': openCategories[{{ $item->id }}] }"
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M19 9l-7 7-7-7"></path>
-                                        </svg>
-                                    </div>
+                                    @if (count($item->subcategories) > 0)
+                                        <div class="text-[#272727] flex items-center cursor-pointer py-2 px-3 hover:opacity-75 transition-opacity duration-300"
+                                            @click="openCategories[{{ $item->id }}] = !openCategories[{{ $item->id }}]">
+                                            <span>{{ $item->name }}</span>
+                                            <svg class="w-5 h-5 transform transition-transform"
+                                                :class="{ 'rotate-180': openCategories[{{ $item->id }}] }"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 9l-7 7-7-7"></path>
+                                            </svg>
+                                        </div>
 
-                                    <div x-show="openCategories[{{ $item->id }}]"
-                                        class="p-2  border-t-0 border-gray-200 ">
-                                        @foreach ($item->subcategories as $subitem)
-                                            <label for="item-category-{{ $subitem->id }}"
+                                        <div x-show="openCategories[{{ $item->id }}]"
+                                            class="p-2  border-t-0 border-gray-200 ">
+                                            <label for="category-{{ $item->id }}"
                                                 class="text-custom-border flex flex-row gap-2 items-center cursor-pointer">
-                                                <a href="/catalogo?subcategoria={{ $subitem->id }}"
-                                                    id="item-category-{{ $subitem->id }}" name="category"
+                                                <a href="/catalogo?category={{ $item->id }}"
+                                                    id="category-{{ $item->id }}" name="category"
                                                     class="rounded-sm border-none text-[#272727] flex items-center py-2 px-3 hover:opacity-75 transition-opacity duration-300"
-                                                    value="{{ $subitem->id }}">
-                                                    {{ $subitem->name }}
+                                                    value="{{ $item->id }}">
+                                                    Todos
                                                 </a>
                                             </label>
-                                        @endforeach
-                                    </div>
+                                            @foreach ($item->subcategories as $subitem)
+                                                <label for="item-category-{{ $subitem->id }}"
+                                                    class="text-custom-border flex flex-row gap-2 items-center cursor-pointer">
+                                                    <a href="/catalogo?subcategoria={{ $subitem->id }}"
+                                                        id="item-category-{{ $subitem->id }}" name="subcategory"
+                                                        class="rounded-sm border-none text-[#272727] flex items-center py-2 px-3 hover:opacity-75 transition-opacity duration-300"
+                                                        value="{{ $subitem->id }}">
+                                                        {{ $subitem->name }}
+                                                    </a>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    @endif
                                 @endforeach
                             </div>
 
@@ -253,7 +264,7 @@
     @endforeach
 
     <div>
-        <div id="header-menu" class="flex justify-between gap-5 w-full px-[5%] xl:px-[8%] py-2  text-[17px] relative">
+        <div id="header-menu" class="flex justify-between gap-5 w-full px-[5%] xl:px-[8%] py-2  text-[17px] relative items-center">
 
             <div id="menu-burguer" class="lg:hidden z-10 w-max">
                 <img class="h-10 w-10 cursor-pointer" src="{{ asset('images/img/menu_hamburguer.png') }}"
@@ -541,7 +552,7 @@
         if ({{ $isIndex ? 1 : 0 }}) {
             $(window).scroll(function() {
                 var scroll = $(window).scrollTop();
-                var categoriasOffset = $('#categorias').offset().top;
+                var categoriasOffset = $('#productos-link-h').offset().top;
 
                 const headerMenu = $('#header-menu')
                 const logo = $('#logo-decotab')
@@ -762,8 +773,8 @@
                 ul.innerHTML = element.name;
                 element.subcategories.forEach(subcategoria => {
                     let li = document.createElement('li');
-                    li.style.setProperty('padding-left', '4px', 'important');
-                    li.style.setProperty('padding-right', '2px', 'important');
+                    // li.style.setProperty('padding-left', '4px', 'important');
+                    // li.style.setProperty('padding-right', '2px', 'important');
 
                     li.className =
                         'text-[#272727] rounded-sm cursor-pointer font-normal font-poppins text-[13px] hover:bg-blue-200 hover:opacity-75 transition-opacity duration-300 w-full whitespace-nowrap';
@@ -800,14 +811,15 @@
 
     function agregarAlCarrito(item, cantidad) {
         $.ajax({
-
             url: `{{ route('carrito.buscarProducto') }}`,
             method: 'POST',
+            headers: {
+                'X-Xsrf-Token': decodeURIComponent(Cookies.get('XSRF-TOKEN'))
+            },
             data: {
                 _token: $('input[name="_token"]').val(),
                 id: item,
-                cantidad
-
+                cantidad,
             },
             success: function(success) {
                 let {

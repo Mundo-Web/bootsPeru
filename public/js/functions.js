@@ -40,7 +40,7 @@ const card = document.querySelector(".cartContainer");
 // }
 
 // Detener la propagación de clics dentro del nav para evitar cerrarlo al hacer clic dentro
-if (bag){
+if (bag) {
   bag.addEventListener("click", function (event) {
     event.stopPropagation(); // Evitar que el clic se propague al documento
   });
@@ -50,9 +50,17 @@ if (bag){
 
 
 
-function show() {
-  document.querySelector(".hamburger").classList.toggle("open");
-  document.querySelector(".navigation").classList.toggle("active");
+function show(toShow = null) {
+  if (toShow === true) {
+    document.querySelector(".hamburger").classList.add("open");
+    document.querySelector(".navigation").classList.add("active");
+  } else if (toShow === false) {
+    document.querySelector(".hamburger").classList.remove("open");
+    document.querySelector(".navigation").classList.remove("active");
+  } else {
+    document.querySelector(".hamburger").classList.toggle("open");
+    document.querySelector(".navigation").classList.toggle("active");
+  }
 }
 
 
@@ -381,7 +389,7 @@ radProvincia.forEach((item) => {
 var input = document.querySelector(".input-box");
 
 (input ?? {}).onclick = function () {
-  
+
   this.classList.toggle("open");
   let list = this.nextElementSibling;
   if (list.style.maxHeight) {
@@ -397,7 +405,7 @@ var input = document.querySelector(".input-box");
 var rad = document.querySelectorAll(".radio");
 rad.forEach((item) => {
   item.addEventListener("change", () => {
-    
+
     input.innerHTML = item.nextElementSibling.innerHTML;
     input.click();
   });
@@ -421,13 +429,14 @@ cuentas.forEach((cuenta) => {
 
 
 function PintarCarrito() {
-  
 
+
+  const articulosCarrito = Local.get("carrito") ?? [];
   let itemsCarrito = $('#itemsCarrito')
   let itemsCarritoCheck = $('#itemsCarritoCheck')
 
   articulosCarrito.forEach(element => {
-    
+
     let plantilla = `<tr class=" font-poppins border-b">
           <td class="p-2">
             <img src="${appUrl}/${element.imagen}" class="block bg-[#F3F5F7] rounded-md p-0 " alt="producto" onerror="this.onerror=null;this.src='/images/img/noimagen.jpg';"  style="width: 100px; height: 75px; object-fit: contain; object-position: center;" />
@@ -485,7 +494,6 @@ function calcularTotal() {
   const suma = total.reduce((total, elemento) => total + elemento, 0);
 
   $('#itemsTotal').text(`S/. ${suma.toFixed(2)} `)
-  console.log("tofixed  ", suma.toFixed(2))
 
 }
 

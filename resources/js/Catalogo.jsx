@@ -17,7 +17,11 @@ import axios from 'axios'
 const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_cat: selected_category, tag_id, subCatId }) => {
   const take = 12
   const [items, setItems] = useState([]);
-  const [filter, setFilter] = useState({});
+  const [filter, setFilter] = useState({
+    category_id: selected_category ? [selected_category] : [],
+    subcategory_id: subCatId ? [subCatId] : [],
+    'txp.tag_id': tag_id ? [tag_id] : [],
+  });
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
@@ -25,38 +29,16 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
   const cancelTokenSource = useRef(null);
   const [priceOrder, setPriceOrder] = useState('')
 
-  // useEffect(() => {
-  //   const script = document.createElement('script');
-  //   script.src = "js/notify.extend.min.js";
-  //   script.async = true;
-  //   document.body.appendChild(script);
-
-  //   return () => {
-  //     document.body.removeChild(script);
-  //   };
-  // }, []);
-
   useEffect(() => {
-    // Leer el parámetro 'tag' de la URL
-    const params = new URLSearchParams(window.location.search);
-    const tag = params.get('tag');
+    const script = document.createElement('script');
+    script.src = "js/notify.extend.min.js";
+    script.async = true;
+    document.body.appendChild(script);
 
-    // Actualizar el filtro con el 'tag_id' si existe
-    if (tag) {
-      setFilter(prevFilter => ({
-        ...prevFilter,
-        'txp.tag_id': [tag]
-      }));
-    }
-
-    // Si hay una categoría seleccionada, agregarla al filtro
-    if (selected_category) {
-      setFilter(prevFilter => ({
-        ...prevFilter,
-        category_id: [selected_category]
-      }));
-    }
-  }, [selected_category]);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   const [prevCurrentPage, setPrevCurrentPage] = useState(currentPage)
 
@@ -72,12 +54,6 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
     setPrevCurrentPage(currentPage);
     getItems()
   }, [currentPage, prevCurrentPage]);
-
-  useEffect(() => {
-    if (subCatId !== null) {
-      setFilter({ ...filter, subcategory_id: [subCatId] });
-    }
-  }, []);
 
   const getItems = async () => {
     // Cancelar la solicitud anterior si existe
@@ -189,15 +165,12 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
     }
 
     if (filter['category_id'] && filter['category_id'].length > 0) {
-      const categoryFilter = [];
-      filter['category_id'].forEach((x, i) => {
-        if (i === 0) {
-          categoryFilter.push(['categoria_id', '=', x]);
-        } else {
-          categoryFilter.push('or', ['categoria_id', '=', x]);
-        }
-      });
-      filterBody.push(categoryFilter);
+      if (filter['category_id'].length == 1) {
+        filterBody.push(['categoria_id', '=', filter['category_id'][0]])
+      } else {
+        const categoryFilter = filter['category_id'].map((category_id) => (['categoria_id', '=', category_id]));
+        filterBody.push(arrayJoin(categoryFilter, 'or'));
+      }
     }
 
     if (filter['subcategory_id'] && filter['subcategory_id'].length > 0) {
@@ -213,20 +186,6 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
     }
 
     try {
-      // const { status, data: result } = await axios.post('/api/products/paginate', {
-      //   requireTotalCount: true,
-      //   filter: arrayJoin([...filterBody, ['products.visible', '=', true]], 'and'),
-      //   take,
-      //   skip: take * (currentPage - 1),
-      //   searchValue: GET.search ?? null,
-      //   sort
-      // }, {
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   },
-      //   cancelToken: cancelTokenSource.current.token
-      // });
-
       const { status, result } = await Fetch('/api/products/paginate', {
         method: 'POST',
         headers: {
@@ -249,12 +208,6 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
       setItems(result?.data ?? []);
       setTotalCount(result?.totalCount ?? 0);
     } catch (error) {
-      if (axios.isCancel(error)) {
-        console.log('Request canceled', error.message);
-      } else {
-        // Manejar otros errores
-        console.error(error);
-      }
       Notify.add({
         type: 'danger',
         icon: '/images/svg/Boost.svg',
@@ -279,7 +232,7 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
 
     </style>
     <form className="flex flex-col md:flex-row gap-6  mx-auto font-poppins bg-[#F1F1F1] w-full" style={{ padding: '40px' }}>
-      <section className="hidden md:flex md:flex-col gap-4 md:basis-3/12 bg-white p-6 rounded-lg h-max md:sticky top-2">
+      <section className="hidden md:flex md:flex-col gap-4 md:basis-3/12 bg-white p-6 rounded-lg h-max md:sticky top-8">
         <FilterContainer
           setFilter={setFilter}
           filter={filter}

@@ -1,8 +1,10 @@
 import { createInertiaApp } from '@inertiajs/react'
-import { Cookies, FetchParams } from 'sode-extend-react'
+import { Cookies, FetchParams, Notify } from 'sode-extend-react'
+
+window.Cookies = Cookies
+window.Notify = Notify
 
 const CreateReactScript = (render) => {
-
   createInertiaApp({
     resolve: name => `/${name}.jsx`,
     setup: ({ el, props }) => {
