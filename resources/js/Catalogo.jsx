@@ -191,7 +191,7 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
 
     try {
 
-      const { status, result } = await fetch('/api/products/paginate', {
+      const res = await fetch('/api/products/paginate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -209,12 +209,14 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
         signal
       })
 
-      if (!status) throw new Error(result?.message ?? 'Ocurrió un error desconocido al obtener los productos')
+      const data = await res.json();
 
-      is_proveedor.current = result?.is_proveedor ?? false;
+      if (data.status != 200) throw new Error(data.message?? 'Ocurrió un error desconocido al obtener los productos')
 
-      setItems(result?.data ?? []);
-      setTotalCount(result?.totalCount ?? 0);
+      is_proveedor.current = data?.is_proveedor ?? false;
+
+      setItems(data?.data ?? []);
+      setTotalCount(data?.totalCount ?? 0);
     } catch (error) {
       Notify.add({
         type: 'danger',
