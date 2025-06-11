@@ -102,8 +102,14 @@ class IndexController extends Controller
 
     // $categories = Category::with('subcategories')->where('visible', true)->get();
     $categories = Category::with(['subcategories' => function ($query) {
-      $query->whereHas('products');
-    }])->where('visible', true)->get();
+      $query
+        ->whereHas('products')
+        ->where('visible', true)
+        ->where('status', true);
+    }])
+    ->where('visible', true)
+    ->where('status', true)
+    ->get();
 
     $tags = Tag::where('visible', true)->get();
 
