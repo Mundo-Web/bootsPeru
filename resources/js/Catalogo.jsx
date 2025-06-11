@@ -13,6 +13,7 @@ import axios from 'axios'
 
 
 
+let abortController = new AbortController()
 
 const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_cat: selected_category, tag_id, subCatId }) => {
   const take = 12
@@ -56,6 +57,9 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
   }, [currentPage, prevCurrentPage]);
 
   const getItems = async () => {
+    abortController.abort();
+    abortController = new AbortController();
+    const signal = abortController.signal;
     // Cancelar la solicitud anterior si existe
     if (cancelTokenSource.current) {
       cancelTokenSource.current.cancel('Operation canceled due to new request.');
@@ -186,7 +190,8 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
     }
 
     try {
-      const { status, result } = await Fetch('/api/products/paginate', {
+
+      const { status, result } = await fetch('/api/products/paginate', {
         method: 'POST',
         headers: {
           'X-Xsrf-Token': decodeURIComponent(Cookies.get('XSRF-TOKEN'))
@@ -198,7 +203,8 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
           skip: take * (currentPage - 1),
           searchValue: GET.search ?? null,
           sort
-        })
+        }),
+        signal
       })
 
       if (!status) throw new Error(result?.message ?? 'Ocurrió un error desconocido al obtener los productos')
