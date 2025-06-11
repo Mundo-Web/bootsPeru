@@ -194,6 +194,8 @@ const Catalogo = ({ minPrice, maxPrice, categories, tags, attribute_values, id_c
       const { status, result } = await fetch('/api/products/paginate', {
         method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'X-Xsrf-Token': decodeURIComponent(Cookies.get('XSRF-TOKEN'))
         },
         body: JSON.stringify({
