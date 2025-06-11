@@ -149,7 +149,7 @@
 
                                         <div x-show="openCategories[{{ $item->id }}]"
                                             class="p-2  border-t-0 border-gray-200 ">
-                                            <label for="category-{{ $item->id }}"
+                                            {{-- <label for="category-{{ $item->id }}"
                                                 class="text-custom-border flex flex-row gap-2 items-center cursor-pointer">
                                                 <a href="/catalogo?category={{ $item->id }}"
                                                     id="category-{{ $item->id }}" name="category"
@@ -157,7 +157,7 @@
                                                     value="{{ $item->id }}">
                                                     Todos
                                                 </a>
-                                            </label>
+                                            </label> --}}
                                             @foreach ($item->subcategories as $subitem)
                                                 <label for="item-category-{{ $subitem->id }}"
                                                     class="text-custom-border flex flex-row gap-2 items-center cursor-pointer">

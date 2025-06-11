@@ -153,13 +153,13 @@ const FilterContainer = ({ priceOrder, setPriceOrder, minPrice, setFilter, filte
               </div>
               {openCategories[item.id] && (
                 <div className="p-4 border border-t-0 border-gray-200 space-y-4">
-                  <label key={'category' + item.id} htmlFor={`category-${item.id}`} className="text-custom-border flex flex-row gap-2  items-center cursor-pointer">
+                  {/* <label key={'category' + item.id} htmlFor={`category-${item.id}`} className="text-custom-border flex flex-row gap-2  items-center cursor-pointer">
                     <input id={`item-category-${item.id}`} name='category' type="checkbox" className="bg-blue-500 rounded-sm  border-none" value={item.id} onChange={({target}) => onClick(`category_id`, target.value, target.checked)}
                       // defaultChecked={filter?.category_id?.includes(item.id)}
                       checked={filter?.['category_id']?.includes(String(item.id))}
                     />
                     Todos
-                  </label>
+                  </label> */}
                   {
                     item.subcategories.map((subitem) => {
                       console.log(filter)

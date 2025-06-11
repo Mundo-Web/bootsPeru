@@ -15,8 +15,8 @@
   "_JSEncrypt-jwo8Dr6z.js": {
     "file": "assets/JSEncrypt-jwo8Dr6z.js"
   },
-  "_ProductCard-6PPsXlYe.js": {
-    "file": "assets/ProductCard-6PPsXlYe.js",
+  "_ProductCard-jPS2k7Y2.js": {
+    "file": "assets/ProductCard-jPS2k7Y2.js",
     "imports": [
       "resources/js/components/DataGrid.jsx",
       "_index-TykbAVkI.js",
@@ -119,13 +119,13 @@
     "src": "resources/js/Admin/Transactions.jsx"
   },
   "resources/js/Catalogo.jsx": {
-    "file": "assets/Catalogo-oBckgq9E.js",
+    "file": "assets/Catalogo-6YHcQ3oh.js",
     "imports": [
       "resources/js/components/DataGrid.jsx",
       "_index-TykbAVkI.js",
       "resources/js/Utils/ReactAppend.jsx",
       "_CreateReactScript-QPtQNesA.js",
-      "_ProductCard-6PPsXlYe.js",
+      "_ProductCard-jPS2k7Y2.js",
       "_main-jzs2GwAM.js",
       "_arrayJoin-F1p6nII-.js",
       "_axios-wPXW9W4H.js",
@@ -174,13 +174,13 @@
     "src": "resources/js/Login.jsx"
   },
   "resources/js/Ofertas.jsx": {
-    "file": "assets/Ofertas-FIMsgWGc.js",
+    "file": "assets/Ofertas-mYebLTyd.js",
     "imports": [
       "resources/js/components/DataGrid.jsx",
       "_index-TykbAVkI.js",
       "resources/js/Utils/ReactAppend.jsx",
       "_CreateReactScript-QPtQNesA.js",
-      "_ProductCard-6PPsXlYe.js",
+      "_ProductCard-jPS2k7Y2.js",
       "_main-jzs2GwAM.js",
       "_arrayJoin-F1p6nII-.js",
       "__commonjsHelpers-4gQjN7DL.js",
