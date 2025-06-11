@@ -58,11 +58,14 @@ class ProductsController extends Controller
         ->leftJoin('attribute_product_values AS apv', 'products.id', 'apv.product_id')
         ->leftJoin('attributes AS a', 'apv.attribute_id', 'a.id')
         ->leftJoin('tags_xproducts AS txp', 'txp.producto_id', 'products.id')
-        ->leftJoin('categories', 'categories.id', 'products.categoria_id');
+        ->leftJoin('categories', 'categories.id', 'products.categoria_id')
+        ->leftJoin('subcategories', 'subcategories.id', 'products.subcategory_id');
 
       if ($flag !== 'admin') {
         $instance->where('categories.visible', 1)
           ->where('categories.status', 1)
+          ->where('subcategories.visible', 1)
+          ->where('subcategories.status', 1)
           ->where('products.visible', 1)
           ->where('products.status', 1);
       }
