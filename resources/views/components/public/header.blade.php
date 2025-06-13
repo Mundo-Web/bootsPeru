@@ -410,7 +410,7 @@
     <div id="myOverlay" class="overlay" style="z-index: 200;">
         <span class="closebtn" onclick="closeSearch()">×</span>
         <div class="overlay-content w-3/4 md:w-1/2 z-30">
-            <form>
+            <form action="/catalogo">
                 <input type="text" placeholder="Buscar.." name="search" id="buscarproducto"
                     class="rounded-2xl ">
             </form>
