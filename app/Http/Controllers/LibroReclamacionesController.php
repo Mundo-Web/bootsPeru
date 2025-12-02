@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 use Illuminate\Support\Str;
+use Symfony\Component\Yaml\Dumper;
+use Illuminate\Support\Facades\Log;
+
 
 
 class LibroReclamacionesController extends Controller
@@ -79,7 +82,7 @@ class LibroReclamacionesController extends Controller
         $validatedData['department'] = Department::where('id', $validatedData['department'])->first()->description;
         $validatedData['province'] = Province::where('id', $validatedData['province'])->first()->description;
         $validatedData['district'] = District::where('id', $validatedData['district'])->first()->description;
-        $this-> envioCorreoLibrodeReclamacion($validatedData);
+        $this->envioCorreoLibrodeReclamacion($validatedData);
         return response()->json(['message' => 'Mensaje enviado']);
         
     }
@@ -220,7 +223,7 @@ class LibroReclamacionesController extends Controller
             $mail->send();
             
         } catch (\Throwable $th) {
-            //throw $th;
+            Log::error('Error al enviar correo: ' . $th->getMessage());
         }  
       }
 }
