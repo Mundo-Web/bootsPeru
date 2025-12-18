@@ -20,7 +20,7 @@ class SaleController extends Controller
 
     public function index(Request $request)
     {
-        $statuses = Status::all();
+        $statuses = Status::where('status', true)->get();
         return view('pages.pedidos.index')
             ->with('statuses', $statuses);
     }
