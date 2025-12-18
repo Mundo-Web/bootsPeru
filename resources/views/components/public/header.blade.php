@@ -66,7 +66,8 @@
 
 {{-- <img src="{{ asset('images/contacto.png') }}" class="absolute top-0 left-0 w-full z-[99999] opacity-30"></img> --}}
 
-<div class="navigation shadow-xl p-4 overflow-y-auto overflow-x-hidden" style="z-index: 9999; background-color: #fff !important ">
+<div class="navigation shadow-xl p-4 overflow-y-auto overflow-x-hidden"
+    style="z-index: 9999; background-color: #fff !important ">
     <button aria-label="hamburguer" type="button" class="hamburger" id="position" onclick="show()">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M18 2L2 18M18 18L2 2" stroke="#272727" stroke-width="2.66667" stroke-linecap="round" />
@@ -264,7 +265,8 @@
     @endforeach
 
     <div>
-        <div id="header-menu" class="flex justify-between gap-5 w-full px-[5%] xl:px-[8%] py-2  text-[17px] relative items-center">
+        <div id="header-menu"
+            class="flex justify-between gap-5 w-full px-[5%] xl:px-[8%] py-2  text-[17px] relative items-center">
 
             <div id="menu-burguer" class="lg:hidden z-10 w-max">
                 <img class="h-10 w-10 cursor-pointer" src="{{ asset('images/img/menu_hamburguer.png') }}"
@@ -292,7 +294,9 @@
                         </a>
 
                         <div id="productos-link" href="" class="block font-medium top-0">
-                            <a href="{{ route('Catalogo.jsx') }}" class="block underline-this h-[30px]">PRODUCTOS</a>
+                            <a href="{{ route('Catalogo.jsx') }}" class="flex items-center underline-this hover:opacity-75 h-[30px]">
+                                <span class="underline-this">PRODUCTOS</span>
+                            </a>
                             <div id="productos-link-h" class="w-0"></div>
                         </div>
 
